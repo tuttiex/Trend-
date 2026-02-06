@@ -1,0 +1,4 @@
+{"level":"info","message":"Scraping trends from: https://getdaytrends.com/nigeria/","service":"trend-agent","timestamp":"2026-02-06T10:22:25.586Z"}
+{"level":"info","message":"Detected Top Trend for Nigeria: Kwara (Vol: 0)","service":"trend-agent","timestamp":"2026-02-06T10:22:27.849Z"}
+{"level":"info","message":"Scraping trends from: https://getdaytrends.com/united-states/","service":"trend-agent","timestamp":"2026-02-06T10:22:27.865Z"}
+{"level":"info","message":"Detected Top Trend for United States: #TheFallOff (Vol: 0)","service":"trend-agent","timestamp":"2026-02-06T10:22:28.202Z"}
