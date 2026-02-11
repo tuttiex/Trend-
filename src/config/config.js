@@ -29,11 +29,20 @@ module.exports = {
         localPrivateKey: process.env.AGENT_WALLET_PRIVATE_KEY
     },
     twitter: {
+        // Official API (Legacy/Fallback)
         apiKey: process.env.TWITTER_API_KEY,
         apiSecret: process.env.TWITTER_API_SECRET,
         accessToken: process.env.TWITTER_ACCESS_TOKEN,
         accessSecret: process.env.TWITTER_ACCESS_SECRET,
-        bearerToken: process.env.TWITTER_BEARER_TOKEN
+        bearerToken: process.env.TWITTER_BEARER_TOKEN,
+
+        // TwitterAPI.io (RapidAPI)
+        twitterApiIoKey: process.env.TWITTERAPI_IO_KEY,
+        username: process.env.TWITTER_USERNAME, // For login/cookie generation
+        password: process.env.TWITTER_PASSWORD,  // For login/cookie generation
+        email: process.env.TWITTER_EMAIL,        // Required for login
+        proxy: process.env.TWITTER_PROXY,        // Required for login (http://user:pass@host:port)
+        totpSecret: process.env.TWITTER_2FA_SECRET // Required for 2FA login
     },
     database: {
         url: process.env.DATABASE_URL

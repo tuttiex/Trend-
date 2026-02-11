@@ -2,3 +2,248 @@
 {"level":"info","message":"Detected Top Trend for Nigeria: Kwara (Vol: 0)","service":"trend-agent","timestamp":"2026-02-06T10:22:27.849Z"}
 {"level":"info","message":"Scraping trends from: https://getdaytrends.com/united-states/","service":"trend-agent","timestamp":"2026-02-06T10:22:27.865Z"}
 {"level":"info","message":"Detected Top Trend for United States: #TheFallOff (Vol: 0)","service":"trend-agent","timestamp":"2026-02-06T10:22:28.202Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-06T19:29:54.292Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-06T19:29:54.323Z"}
+{"level":"info","message":"Fetching trends for WOEID: 23424908 via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:29:54.324Z"}
+{"level":"error","message":"Failed to fetch trends for 23424908:","service":"trend-agent","timestamp":"2026-02-06T19:31:02.648Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-06T19:31:02.655Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:31:30.120Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:31:30.124Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:31:30.126Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:34:57.784Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:34:57.787Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:34:57.788Z"}
+{"detail":"Method Not Allowed","level":"error","message":"Login failed:","service":"trend-agent","timestamp":"2026-02-06T19:35:03.353Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-06T19:35:23.323Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-06T19:35:23.328Z"}
+{"level":"info","message":"Fetching trends for WOEID: 23424908 via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:35:23.329Z"}
+{"level":"warn","message":"No valid trends found for Nigeria (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-06T19:35:29.432Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-06T19:35:29.436Z"}
+{"level":"info","message":"Fetching trends for WOEID: 23424977 via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:35:29.439Z"}
+{"error":"Too Many Requests","level":"error","message":"Failed to fetch trends for 23424977: For free-tier users, the QPS limit is one request every 5 seconds.","service":"trend-agent","timestamp":"2026-02-06T19:35:31.117Z"}
+{"level":"error","message":"Error detecting trend for US:","service":"trend-agent","timestamp":"2026-02-06T19:35:31.120Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:40:14.377Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:40:14.382Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:40:14.384Z"}
+{"detail":"user_name is required","level":"error","message":"Login failed:","service":"trend-agent","timestamp":"2026-02-06T19:40:21.269Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:40:53.586Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:40:53.590Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:40:53.591Z"}
+{"detail":"user_name is required","level":"error","message":"Login failed:","service":"trend-agent","timestamp":"2026-02-06T19:40:59.163Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-06T19:41:11.033Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-06T19:41:11.038Z"}
+{"level":"info","message":"Fetching trends for WOEID: 23424908 via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:41:11.039Z"}
+{"level":"warn","message":"No valid trends found for Nigeria (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-06T19:41:28.712Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-06T19:41:34.727Z"}
+{"level":"info","message":"Fetching trends for WOEID: 23424977 via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:41:34.730Z"}
+{"level":"warn","message":"No valid trends found for US (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-06T19:41:45.255Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:45:04.247Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:45:04.251Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:45:04.253Z"}
+{"detail":"email is required","level":"error","message":"Login failed:","service":"trend-agent","timestamp":"2026-02-06T19:45:12.671Z"}
+{"level":"info","message":"Attempting to post tweet...","service":"trend-agent","timestamp":"2026-02-06T19:56:56.187Z"}
+{"level":"warn","message":"No active cookie found. Logging in...","service":"trend-agent","timestamp":"2026-02-06T19:56:56.191Z"}
+{"level":"info","message":"Attempting to log in via TwitterAPI.io...","service":"trend-agent","timestamp":"2026-02-06T19:56:56.191Z"}
+{"detail":"proxy is required","level":"error","message":"Login failed:","service":"trend-agent","timestamp":"2026-02-06T19:57:00.148Z"}
+{"level":"warn","message":"TwitterService initialized WITHOUT keys. Posting will fail.","service":"trend-agent","timestamp":"2026-02-06T20:14:34.892Z"}
+{"level":"info","message":"Attempting to post tweet via Official X API...","service":"trend-agent","timestamp":"2026-02-06T20:14:34.899Z"}
+{"level":"error","message":"Failed to post tweet (Official API): TwitterService not initialized with API Keys","service":"trend-agent","stack":"Error: TwitterService not initialized with API Keys\n    at TwitterService.postTweet (C:\\Users\\USER\\Trend-\\src\\services\\twitterService.js:35:23)\n    at main (C:\\Users\\USER\\Trend-\\scripts\\testTwitterPost.js:10:45)\n    at Object.<anonymous> (C:\\Users\\USER\\Trend-\\scripts\\testTwitterPost.js:21:1)\n    at Module._compile (node:internal/modules/cjs/loader:1521:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)\n    at Module.load (node:internal/modules/cjs/loader:1266:32)\n    at Module._load (node:internal/modules/cjs/loader:1091:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)\n    at node:internal/main/run_main_module:28:49","timestamp":"2026-02-06T20:14:34.903Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:13:51.498Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:13:51.517Z"}
+{"level":"info","message":"Fetching trends from TwitterAPI.io for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:13:51.519Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:14:22.135Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:14:22.144Z"}
+{"level":"info","message":"Fetching trends from TwitterAPI.io for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:14:22.145Z"}
+{"level":"error","message":"TwitterAPI.io getTrends Error: You are not subscribed to this API.","service":"trend-agent","timestamp":"2026-02-07T10:14:23.454Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T10:14:23.456Z"}
+{"level":"warn","message":"Twitter Client v2 missing credentials! Posting will fail.","service":"trend-agent","timestamp":"2026-02-07T10:14:29.970Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:19:45.369Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:19:45.401Z"}
+{"level":"info","message":"Fetching trends from TwitterAPI.io for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:19:45.402Z"}
+{"data":{"message":"You are not subscribed to this API."},"headers":{"connection":"keep-alive","content-type":"application/json","date":"Sat, 07 Feb 2026 10:19:47 GMT","server":"RapidAPI-1.2.8","transfer-encoding":"chunked","x-rapidapi-proxy-response":"true","x-rapidapi-region":"AWS - eu-central-1","x-rapidapi-request-id":"f6cce332933f6071ffc869234e1d123e48a9c38c37e434d272078e794b988dd9","x-rapidapi-version":"1.2.8"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":403,"timestamp":"2026-02-07T10:19:47.177Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T10:19:47.184Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:23:58.244Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:23:58.253Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:23:58.255Z"}
+{"level":"warn","message":"No valid trends found for Nigeria (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:23:59.499Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T10:24:05.514Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-07T10:24:05.516Z"}
+{"level":"warn","message":"No valid trends found for US (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:24:06.548Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:28:26.850Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:28:26.860Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:28:26.862Z"}
+{"level":"info","message":"Raw API Response:","service":"trend-agent","timestamp":"2026-02-07T10:28:28.090Z"}
+{"level":"warn","message":"No valid trends found for Nigeria (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:28:28.092Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T10:28:34.102Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-07T10:28:34.104Z"}
+{"level":"info","message":"Raw API Response:","service":"trend-agent","timestamp":"2026-02-07T10:28:35.543Z"}
+{"level":"warn","message":"No valid trends found for US (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:28:35.544Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:28:58.609Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:28:58.620Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:28:58.623Z"}
+{"level":"warn","message":"No valid trends found for Nigeria (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:28:59.842Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T10:29:05.913Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-07T10:29:05.948Z"}
+{"level":"warn","message":"No valid trends found for US (all lacked volume data?)","service":"trend-agent","timestamp":"2026-02-07T10:29:07.164Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T10:29:39.712Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T10:29:39.717Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T10:29:39.718Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T10:29:46.874Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-07T10:29:46.876Z"}
+{"level":"info","message":"Twitter Client v2 initialized with OAuth 1.0a credentials.","service":"trend-agent","timestamp":"2026-02-07T10:47:42.228Z"}
+{"level":"info","message":"Attempting to post tweet: \"Test Tweet from Trend- Bot at 2026-02-07T10:47:42.240Z\"","service":"trend-agent","timestamp":"2026-02-07T10:47:42.240Z"}
+{"code":403,"data":{"detail":"Your client app is not configured with the appropriate oauth1 app permissions for this endpoint.","status":403,"title":"Forbidden","type":"https://api.twitter.com/2/problems/oauth1-permissions"},"error":true,"headers":{"api-version":"2.158","cache-control":"no-cache, no-store, max-age=0","cf-cache-status":"DYNAMIC","cf-ray":"9ca24f913f0a92a2-FRA","connection":"keep-alive","content-disposition":"attachment; filename=json.json","content-encoding":"gzip","content-length":"176","content-type":"application/json; charset=utf-8","date":"Sat, 07 Feb 2026 10:47:43 GMT","origin-cf-ray":"9ca24f913f0a92a2-FRA","perf":"7402827104","server":"cloudflare envoy","set-cookie":["guest_id_marketing=v1%3A177046126362777112; Max-Age=63072000; Expires=Mon, 07 Feb 2028 10:47:43 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","guest_id_ads=v1%3A177046126362777112; Max-Age=63072000; Expires=Mon, 07 Feb 2028 10:47:43 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","personalization_id=\"v1_z4iMHFeNvWi+8jGf0bzfwQ==\"; Max-Age=63072000; Expires=Mon, 07 Feb 2028 10:47:43 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","guest_id=v1%3A177046126362777112; Max-Age=63072000; Expires=Mon, 07 Feb 2028 10:47:43 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","__cf_bm=CiG2_yZxjWHLNzn69zllD719nMmoL2czCpcVQqesHk0-1770461263.5607429-1.0.1.1-ZJA_ErPpB2WB5uvSvqcyZDrEAfz71msmfb.LLZVY5Uc9194d5hnvoAYpm5NlE2UIJ18AU3.d_JhhHYTcOiShpGUgjFd9zcPgWeOnztAkD4oy0JBxGe8LyagzuAMGea2y; HttpOnly; Secure; Path=/; Domain=x.com; Expires=Sat, 07 Feb 2026 11:17:43 GMT"],"strict-transport-security":"max-age=631138519; includeSubdomains","vary":"accept-encoding","x-access-level":"read","x-content-type-options":"nosniff","x-frame-options":"SAMEORIGIN","x-rate-limit-limit":"1080000","x-rate-limit-remaining":"1079999","x-rate-limit-reset":"1770462163","x-response-time":"15","x-served-by":"t4_a","x-transaction-id":"dd6c59b9f436fcad","x-xss-protection":"0"},"level":"error","message":"Error posting tweet: Request failed with code 403","rateLimit":{"limit":1080000,"remaining":1079999,"reset":1770462163},"service":"trend-agent","stack":"Error: Request failed with code 403\n    at RequestHandlerHelper.createResponseError (C:\\Users\\USER\\Trend-\\node_modules\\twitter-api-v2\\dist\\cjs\\client-mixins\\request-handler.helper.js:104:16)\n    at RequestHandlerHelper.onResponseEndHandler (C:\\Users\\USER\\Trend-\\node_modules\\twitter-api-v2\\dist\\cjs\\client-mixins\\request-handler.helper.js:269:25)\n    at Gunzip.emit (node:events:524:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)","timestamp":"2026-02-07T10:47:43.184Z","type":"response"}
+{"level":"info","message":"Twitter Client v2 initialized with OAuth 1.0a credentials.","service":"trend-agent","timestamp":"2026-02-07T11:28:59.002Z"}
+{"level":"info","message":"Attempting to post tweet: \"Test Tweet from Trend- Bot at 2026-02-07T11:28:59.010Z\"","service":"trend-agent","timestamp":"2026-02-07T11:28:59.010Z"}
+{"code":402,"data":{"account_id":2019714648526753800,"detail":"Your enrolled account [2019714648526753792] does not have any credits to fulfill this request.","title":"CreditsDepleted","type":"https://api.twitter.com/2/problems/credits"},"error":true,"headers":{"api-version":"2.158","cache-control":"no-cache, no-store, max-age=0","cf-cache-status":"DYNAMIC","cf-ray":"9ca28c091d92dbcd-FRA","connection":"keep-alive","content-disposition":"attachment; filename=json.json","content-encoding":"gzip","content-length":"186","content-type":"application/json; charset=utf-8","date":"Sat, 07 Feb 2026 11:29:00 GMT","origin-cf-ray":"9ca28c091d92dbcd-FRA","perf":"7402827104","server":"cloudflare envoy","set-cookie":["guest_id_marketing=v1%3A177046374039936688; Max-Age=63072000; Expires=Mon, 07 Feb 2028 11:29:00 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","guest_id_ads=v1%3A177046374039936688; Max-Age=63072000; Expires=Mon, 07 Feb 2028 11:29:00 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","personalization_id=\"v1_h39IMsjPQzjBnfAIZA8w/w==\"; Max-Age=63072000; Expires=Mon, 07 Feb 2028 11:29:00 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","guest_id=v1%3A177046374039936688; Max-Age=63072000; Expires=Mon, 07 Feb 2028 11:29:00 GMT; Path=/; Domain=.x.com; Secure; SameSite=None","__cf_bm=Mf1yMFm26KjPqve4O40iVkous1AJMn9g5i1G0ZhuKbU-1770463740.3384523-1.0.1.1-LlszpfZ7RMwtY3e73uSqGvCyTuATJ6rDWZQQOIEl3GAC62BLklWvWcuT92ot4mtUVvsMunMe5K75Zm21TsK1q0y96BLEpRrkFmXPMKR7XuuaQZjRMNiSpR4RzjQBa6g4; HttpOnly; Secure; Path=/; Domain=x.com; Expires=Sat, 07 Feb 2026 11:59:00 GMT"],"strict-transport-security":"max-age=631138519; includeSubdomains","vary":"accept-encoding","x-access-level":"read-write","x-content-type-options":"nosniff","x-frame-options":"SAMEORIGIN","x-rate-limit-limit":"1080000","x-rate-limit-remaining":"1079999","x-rate-limit-reset":"1770464640","x-response-time":"27","x-served-by":"t4_a","x-transaction-id":"0d4e7a633abb54ad","x-xss-protection":"0"},"level":"error","message":"Error posting tweet: Request failed with code 402","rateLimit":{"limit":1080000,"remaining":1079999,"reset":1770464640},"service":"trend-agent","stack":"Error: Request failed with code 402\n    at RequestHandlerHelper.createResponseError (C:\\Users\\USER\\Trend-\\node_modules\\twitter-api-v2\\dist\\cjs\\client-mixins\\request-handler.helper.js:104:16)\n    at RequestHandlerHelper.onResponseEndHandler (C:\\Users\\USER\\Trend-\\node_modules\\twitter-api-v2\\dist\\cjs\\client-mixins\\request-handler.helper.js:269:25)\n    at Gunzip.emit (node:events:524:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)","timestamp":"2026-02-07T11:28:59.888Z","type":"response"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T11:34:02.492Z"}
+{"data":{"detail":"Method Not Allowed"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":405,"timestamp":"2026-02-07T11:34:03.589Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T11:37:55.117Z"}
+{"data":{"detail":"Method Not Allowed"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":405,"timestamp":"2026-02-07T11:37:55.918Z"}
+{"level":"warn","message":"TWITTER_PROXY is missing in .env. TwitterAPI.io post usually requires a residential proxy.","service":"trend-agent","timestamp":"2026-02-07T11:38:25.245Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T11:38:25.249Z"}
+{"data":{"detail":"Method Not Allowed"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":405,"timestamp":"2026-02-07T11:38:26.679Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:11:11.662Z"}
+{"data":{"detail":"Method Not Allowed"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":405,"timestamp":"2026-02-07T12:11:13.565Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:13:03.516Z"}
+{"data":{"message":"Internal server error"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":500,"timestamp":"2026-02-07T12:13:04.747Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:15:28.603Z"}
+{"data":{"message":"Internal server error"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":500,"timestamp":"2026-02-07T12:15:29.339Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:16:03.082Z"}
+{"level":"error","login_cookies":"eyJfX2N1aWQiOiAiZDhjN2E3Yzg5NzE0MDBjMTkwYTM1YmRjYTMwYjE0YzUiLCAia2R0IjogIllJamV3Z3h5Q1hLVjRJZW1Tc0E5VTA3aVJ1VW5jNEJGbUgzWEdOYUYiLCAiZ3Vlc3RfaWQiOiAidjElM0ExNzcwNDY2NTY1OTgwNDIxODgiLCAiX19jZl9ibSI6ICJqV2hNUVZYMWdqM2t2TTIwU2hVdC5kRC5oZjRsYjI2c3hLajFPYmpvZlJrLTE3NzA0NjY1NjcuNzQ1NTAwOC0xLjAuMS4xLTEzaXk0V2ZmMldUaF9CVTNXSTk5ZHhrN1cwaWpWNEFlR3J4cDMzYUxIUU5FWDlwc2tQbklIa0tLckxhc2RWVXpJdXlYdjNpMjhvQkFWYnhMT3dQZ0lLN0hNTVJ3clRZWTlYY2d3c3R0eEZDSlBFRDZyYTVyQmtsbXprTmtUcUFsIiwgImF0dCI6ICIxLXBBM0xVNmJJdVVrcDZVaThLUk80SDlCTjJJa0huS3hUREVEelM1V24iLCAidHdpZCI6ICJ1PTIwMTg3Mjg4NDc1MDAzMTI1NzYiLCAiY3QwIjogImY4OGRkMTNhOTZkZmEyMjMyZThiM2M5NzdkYTUwYTUwIiwgImF1dGhfdG9rZW4iOiAiMjhhNzAyM2ZhZmRkOGNkM2RiY2I2YzViN2Q0NmFlNDgxMDFiNjJlYSJ9","message":"Login Failed - No cookie returned: login success ","service":"trend-agent","status":"success","timestamp":"2026-02-07T12:16:08.248Z"}
+{"level":"error","message":"TwitterAPI.io Posting specific error:","service":"trend-agent","timestamp":"2026-02-07T12:16:08.251Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:17:36.113Z"}
+{"level":"error","login_cookies":"eyJfX2N1aWQiOiAiNmZkODI3NmI3ODJhYzc3MTI3NWU4YzI3OGMzZTgzNmMiLCAia2R0IjogIjJPVE4zNVpjOXZuTVphRW1ldmV4WXJUM2FkUVQwdzNKMndHNklTbnIiLCAiZ3Vlc3RfaWQiOiAidjElM0ExNzcwNDY2NjU5NDUxNTM5MzIiLCAiX19jZl9ibSI6ICJ6Znk0UVZMUW9HZ3JPbGpkbTc1NjFOY0VGV1ExazlDeXFVbHhucnlIYzVFLTE3NzA0NjY2NjEuMTA0NjA1LTEuMC4xLjEtZjdabHFpTjNPMzJMQm9uOFAxSW5qWF9Yb05tTUs2cUNWdHl4UDEwSElOTFJTblRNRjh1MVJTcXhpaGlKeHVxQVNvc1lhZnJ3bjJCeGdVdmwuYnhIbzc3c093LkdkVF9WLkJTVG9SdzRndzl2UEdRMGc1NUU4U0tzSWFMOFFhWVYiLCAiYXR0IjogIjEtcHJndEV0RjR4RmxlbEpXbFJHQXNhMUttaFFZRFV0cGFkd2c2MUtnSiIsICJ0d2lkIjogInU9MjAxODcyODg0NzUwMDMxMjU3NiIsICJjdDAiOiAiYjU4MzhiYTFiMDgzN2RlMmMxNjM4NDZlOWFiZjE0NjUiLCAiYXV0aF90b2tlbiI6ICI3MjYwNjVmN2FkM2JmZWM3NjkyZGQzMzFjNmVlNDE4OThjY2I5Yjc5In0=","message":"Login Failed - No cookie returned: login success ","service":"trend-agent","status":"success","timestamp":"2026-02-07T12:17:41.580Z"}
+{"level":"error","message":"TwitterAPI.io Posting specific error:","service":"trend-agent","timestamp":"2026-02-07T12:17:41.583Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:18:11.757Z"}
+{"level":"info","message":"Login successful, constructed cookie string.","service":"trend-agent","timestamp":"2026-02-07T12:18:16.765Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:18:11.754Z\"","service":"trend-agent","timestamp":"2026-02-07T12:18:16.766Z"}
+{"data":{"error":"Too Many Requests","message":"For free-tier users, the QPS limit is one request every 5 seconds."},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":429,"timestamp":"2026-02-07T12:18:17.040Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:19:03.835Z"}
+{"level":"info","message":"Login successful, constructed cookie string.","service":"trend-agent","timestamp":"2026-02-07T12:19:08.682Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:19:08.682Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:19:03.831Z\"","service":"trend-agent","timestamp":"2026-02-07T12:19:14.689Z"}
+{"data":{"detail":"tweet_text is required"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":400,"timestamp":"2026-02-07T12:19:15.294Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:19:41.862Z"}
+{"level":"info","message":"Login successful, constructed cookie string.","service":"trend-agent","timestamp":"2026-02-07T12:19:46.616Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:19:46.618Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:19:41.859Z\"","service":"trend-agent","timestamp":"2026-02-07T12:19:52.620Z"}
+{"data":{"detail":"login_cookies is not valid"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":400,"timestamp":"2026-02-07T12:19:53.210Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:21:17.589Z"}
+{"0":"message","1":"login_cookies","level":"info","message":"Login successful. Cookie keys:","service":"trend-agent","timestamp":"2026-02-07T12:21:21.395Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:21:21.396Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:21:17.587Z\"","service":"trend-agent","timestamp":"2026-02-07T12:21:27.400Z"}
+{"data":{"detail":"login_cookies is not valid"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":400,"timestamp":"2026-02-07T12:21:27.996Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:22:03.436Z"}
+{"level":"info","message":"Login successful. Got login_cookies.","service":"trend-agent","timestamp":"2026-02-07T12:22:06.832Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:22:06.832Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:22:03.431Z\"","service":"trend-agent","timestamp":"2026-02-07T12:22:12.849Z"}
+{"level":"info","message":"Tweet posted successfully via TwitterAPI.io! API returned status 422","service":"trend-agent","status":"error","timestamp":"2026-02-07T12:22:14.891Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:22:41.904Z"}
+{"level":"info","message":"Login successful. Got login_cookies.","service":"trend-agent","timestamp":"2026-02-07T12:22:45.207Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:22:45.208Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:22:41.896Z\"","service":"trend-agent","timestamp":"2026-02-07T12:22:51.210Z"}
+{"level":"info","message":"Tweet posted response: API returned status 422","service":"trend-agent","status":"error","timestamp":"2026-02-07T12:22:53.820Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:23:16.211Z"}
+{"level":"info","message":"Login successful. Got login_cookies.","service":"trend-agent","timestamp":"2026-02-07T12:23:19.638Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:23:19.639Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:23:16.208Z - 653\"","service":"trend-agent","timestamp":"2026-02-07T12:23:25.654Z"}
+{"level":"info","message":"Tweet posted response: API returned status 422","service":"trend-agent","status":"error","timestamp":"2026-02-07T12:23:27.765Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:29:01.700Z"}
+{"level":"info","message":"Login successful. Got login_cookies.","service":"trend-agent","timestamp":"2026-02-07T12:29:06.097Z"}
+{"level":"info","message":"Waiting 6 seconds to respect rate limit...","service":"trend-agent","timestamp":"2026-02-07T12:29:06.098Z"}
+{"level":"info","message":"Posting tweet: \"Test Tweet via API.io from Trend- Bot at 2026-02-07T12:29:01.696Z - 100\"","service":"trend-agent","timestamp":"2026-02-07T12:29:12.100Z"}
+{"level":"info","message":"Tweet posted response: API returned status 422","service":"trend-agent","status":"error","timestamp":"2026-02-07T12:29:15.148Z"}
+{"level":"info","message":"Logging in to TwitterAPI.io as trendsagent_...","service":"trend-agent","timestamp":"2026-02-07T12:29:56.057Z"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"level":"error","message":"TwitterAPI.io Posting Error:","service":"trend-agent","status":402,"timestamp":"2026-02-07T12:29:56.791Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T12:32:51.582Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T12:32:51.587Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T12:32:51.588Z"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"headers":{"cf-cache-status":"DYNAMIC","cf-ray":"9ca2e999bc2039df-FRA","connection":"keep-alive","content-length":"74","content-type":"application/json","date":"Sat, 07 Feb 2026 12:32:52 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=jbnNOFL1%2Fyauh0HDV9f2%2F6tIlKKYcHdxPhAX6oJkgSx5hJwkQZWBA2xnUwPpf%2B1maRJm0IEDwamhhe7lnJH5%2F0UpQaivJkKGNMRNl6Mlb24%3D\"}]}","server":"cloudflare","x-trace-id":"801f7ebe-8f6e-4fc8-9cee-c94edf75a91b"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":402,"timestamp":"2026-02-07T12:32:52.317Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T12:32:52.320Z"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-07T12:50:32.348Z"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"Test Tweet via TweetAPI.com from Trend- Bot at 2026-02-07T12:50:32.346Z - 36\"","service":"trend-agent","timestamp":"2026-02-07T12:50:32.351Z"}
+{"data":{"message":"Authorization: You have reached your daily limit for sending Tweets and messages. Please try again later. (344)","statusCode":403},"level":"error","message":"TweetAPI.com Posting Error:","service":"trend-agent","status":403,"timestamp":"2026-02-07T12:50:34.980Z"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-07T12:58:00.352Z"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"Test Tweet via TweetAPI.com from Trend- Bot at 2026-02-07T12:58:00.349Z - 73\"","service":"trend-agent","timestamp":"2026-02-07T12:58:00.358Z"}
+{"data":{"action":"create_tweet","id":"2020119864602427641","metadata":{"author_username":"trendsagent_","created_at":"Sat Feb 07 12:58:02 +0000 2026","text":"Test Tweet via https://t.co/Of2IaGTuKS from Trend- Bot at 2026-02-07T12:58:00.349Z - 73","tweet_id":"2020119864602427641","url":"https://twitter.com/trendsagent_/status/2020119864602427641"},"success":true,"timestamp":"2026-02-07T12:58:02.634Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-07T12:58:02.088Z"}
+{"level":"info","message":"Fetching trends from TweetAPI.com for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-07T13:16:02.004Z"}
+{"level":"error","message":"TweetAPI.com Trends Error: Not found","service":"trend-agent","statusCode":404,"timestamp":"2026-02-07T13:16:02.832Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:28:35.466Z"}
+{"level":"info","message":"Scraped 56 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:28:39.083Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:28:39.087Z"}
+{"level":"info","message":"Scraped 60 trends for united states.","service":"trend-agent","timestamp":"2026-02-07T13:28:39.692Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:29:31.690Z"}
+{"level":"info","message":"Scraped 56 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:29:32.837Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:29:32.842Z"}
+{"level":"info","message":"Scraped 60 trends for united states.","service":"trend-agent","timestamp":"2026-02-07T13:29:33.294Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:30:23.156Z"}
+{"level":"info","message":"Scraped 56 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:30:24.165Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:30:24.169Z"}
+{"level":"info","message":"Scraped 60 trends for united states.","service":"trend-agent","timestamp":"2026-02-07T13:30:24.546Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:31:10.880Z"}
+{"level":"info","message":"Scraped 34 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:31:12.133Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:31:12.363Z"}
+{"level":"info","message":"Scraped 45 trends for united states.","service":"trend-agent","timestamp":"2026-02-07T13:31:12.911Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T13:31:40.127Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T13:31:40.135Z"}
+{"level":"warn","message":"TweetAPI.com failed to fetch trends for Nigeria: tweetApiCom is not defined. Trying backup...","service":"trend-agent","timestamp":"2026-02-07T13:31:40.136Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Backup) for Nigeria...","service":"trend-agent","timestamp":"2026-02-07T13:31:40.139Z"}
+{"level":"error","message":"Backup (TwitterAPI.io) also failed for Nigeria: twitterApiIo is not defined","service":"trend-agent","timestamp":"2026-02-07T13:31:40.140Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T13:31:40.141Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T13:32:17.541Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T13:32:17.548Z"}
+{"level":"warn","message":"TweetAPI.com failed to fetch trends for Nigeria: tweetApiCom is not defined. Trying backup...","service":"trend-agent","timestamp":"2026-02-07T13:32:17.550Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Backup) for Nigeria...","service":"trend-agent","timestamp":"2026-02-07T13:32:17.550Z"}
+{"level":"error","message":"Backup (TwitterAPI.io) also failed for Nigeria: twitterApiIo is not defined","service":"trend-agent","timestamp":"2026-02-07T13:32:17.551Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T13:32:17.553Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T13:33:06.681Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T13:33:06.688Z"}
+{"level":"warn","message":"TweetAPI.com failed to fetch trends for Nigeria: tweetApiCom is not defined. Trying backup...","service":"trend-agent","timestamp":"2026-02-07T13:33:06.691Z"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Backup) for Nigeria...","service":"trend-agent","timestamp":"2026-02-07T13:33:06.692Z"}
+{"level":"error","message":"Backup (TwitterAPI.io) also failed for Nigeria: twitterApiIo is not defined","service":"trend-agent","timestamp":"2026-02-07T13:33:06.693Z"}
+{"level":"error","message":"Error detecting trend for Nigeria:","service":"trend-agent","timestamp":"2026-02-07T13:33:06.695Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T13:34:29.863Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T13:34:29.870Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:34:29.871Z"}
+{"level":"info","message":"Scraped 34 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:34:31.045Z"}
+{"level":"info","message":"Successfully scraped trends for Nigeria (34 found)","service":"trend-agent","timestamp":"2026-02-07T13:34:31.046Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T13:34:37.063Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:34:37.064Z"}
+{"level":"info","message":"Scraped 45 trends for united-states.","service":"trend-agent","timestamp":"2026-02-07T13:34:37.952Z"}
+{"level":"info","message":"Successfully scraped trends for US (45 found)","service":"trend-agent","timestamp":"2026-02-07T13:34:37.953Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T13:37:50.071Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T13:37:50.080Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T13:37:50.081Z"}
+{"level":"info","message":"Scraped 34 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T13:37:52.066Z"}
+{"level":"info","message":"Successfully scraped trends for Nigeria (34 found)","service":"trend-agent","timestamp":"2026-02-07T13:37:52.075Z"}
+{"level":"info","message":"Fetching trends for US (WOEID: 23424977)...","service":"trend-agent","timestamp":"2026-02-07T13:37:58.109Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/united-states/...","service":"trend-agent","timestamp":"2026-02-07T13:37:58.110Z"}
+{"level":"info","message":"Scraped 45 trends for united-states.","service":"trend-agent","timestamp":"2026-02-07T13:37:58.932Z"}
+{"level":"info","message":"Successfully scraped trends for US (45 found)","service":"trend-agent","timestamp":"2026-02-07T13:37:58.933Z"}
+{"level":"info","message":"Planning next action based on detected trends...","service":"trend-agent","timestamp":"2026-02-07T13:57:22.787Z"}
+{"level":"info","message":"Sending prompt to LLM via OpenClaw interface...","service":"trend-agent","timestamp":"2026-02-07T13:57:22.792Z"}
+{"action":"DEPLOY","initialLiquidity":0.01,"level":"info","message":"Planning complete.","rationale":"Trend \"Romero\" has high volume (9000) and is suitable for a launch.","service":"trend-agent","timestamp":"2026-02-07T13:57:22.795Z","tokenName":"Romero Coin","tokenSymbol":"ROME","tweetText":"Just launched $ROME on Base! Trending now: Romero 🚀"}
+{"level":"info","message":"Planning next action based on detected trends...","service":"trend-agent","timestamp":"2026-02-07T13:57:22.804Z"}
+{"level":"info","message":"Planning next action based on detected trends...","service":"trend-agent","timestamp":"2026-02-07T14:00:47.599Z"}
+{"level":"info","message":"Sending prompt to LLM via OpenClaw interface...","service":"trend-agent","timestamp":"2026-02-07T14:00:47.604Z"}
+{"action":"DEPLOY","initialLiquidity":0.01,"level":"info","message":"Planning complete.","rationale":"Trend \"Romero\" has high volume (9000) and is suitable for a launch.","service":"trend-agent","timestamp":"2026-02-07T14:00:47.607Z","tokenName":"Romero Coin","tokenSymbol":"ROME","tweetText":"Just launched $ROME on Base! Trending now: Romero 🚀"}
+{"level":"info","message":"Planning next action based on detected trends...","service":"trend-agent","timestamp":"2026-02-07T14:00:47.618Z"}
+{"level":"info","message":"Moderating topic: \"Romero\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.721Z"}
+{"level":"info","message":"Moderating topic: \"Tottenham Hotspur\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.743Z"}
+{"level":"info","message":"Moderating topic: \"Election 2024\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.746Z"}
+{"level":"warn","message":"Moderation REJECTED (Blocklist): \"Election 2024\" matched term \"election\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.747Z"}
+{"level":"info","message":"Moderating topic: \"Terrorist Attack\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.749Z"}
+{"level":"warn","message":"Moderation REJECTED (LLM): \"Terrorist Attack\" deemed sensitive by AI.","service":"trend-agent","timestamp":"2026-02-07T14:44:04.751Z"}
+{"level":"info","message":"Moderating topic: \"BadWord Shit\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.754Z"}
+{"level":"warn","message":"Moderation REJECTED (Blocklist): \"BadWord Shit\" matched term \"shit\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.755Z"}
+{"level":"info","message":"Moderating topic: \"Hospital Fire\"","service":"trend-agent","timestamp":"2026-02-07T14:44:04.757Z"}
+{"level":"warn","message":"Moderation REJECTED (LLM): \"Hospital Fire\" deemed sensitive by AI.","service":"trend-agent","timestamp":"2026-02-07T14:44:04.759Z"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-07T17:31:45.709Z"}
+{"level":"info","message":"Fetching trends for Nigeria (WOEID: 23424908)...","service":"trend-agent","timestamp":"2026-02-07T17:31:45.739Z"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-07T17:31:45.741Z"}
+{"level":"info","message":"Scraped 45 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-07T17:31:47.754Z"}
+{"level":"info","message":"Successfully scraped trends for Nigeria (45 found)","service":"trend-agent","timestamp":"2026-02-07T17:31:47.755Z"}
+{"level":"info","message":"Moderating topic: \"Cole Palmer\"","service":"trend-agent","timestamp":"2026-02-07T17:31:47.757Z"}
+{"level":"info","message":"Checking pool for token: 0x804Aa353d53BCde9c6858d71aCAE0E8Da5f071De / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-07T18:27:39.318Z"}
+{"level":"info","message":"Checking pool for token: 0xbbF48060149A38A45B5b184C7Bd507767eb3f987 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-07T18:30:42.361Z"}
