@@ -1573,3 +1573,9 @@
 {"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-12 14:28:04"}
 {"level":"info","message":"OpenClaw Scheduler starting...","service":"trend-agent","timestamp":"2026-02-12 15:01:24"}
 {"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-12 15:01:25"}
+{"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-12 19:37:30"}
+{"level":"info","message":"OpenClaw Scheduler starting...","service":"trend-agent","timestamp":"2026-02-12 19:38:31"}
+{"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-12 19:38:31"}
+{"level":"info","message":"OpenClaw Gateway exited with code 3221225786","service":"trend-agent","timestamp":"2026-02-12 20:00:13"}
+{"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-12 20:00:15"}
+{"level":"info","message":"OpenClaw Gateway exited with code 3221225786","service":"trend-agent","timestamp":"2026-02-12 20:00:40"}
