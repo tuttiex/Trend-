@@ -41,7 +41,7 @@ Please provide a deployment plan in valid JSON format:
   "topic": "Trend Name",
   "symbol": "TRND",
   "rationale": "Why this trend?",
-  "initialLiquidityETH": "0.01",
+  "initialLiquidityETH": "0.0004",
   "initialLiquidityTokens": "100000000",
   "tweetContent": "Your generated tweet here with placeholders"
 }

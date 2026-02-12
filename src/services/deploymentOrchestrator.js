@@ -47,7 +47,7 @@ class DeploymentOrchestrator {
             // Calculate 20% of 1B supply if not specified (200,000,000)
             // Or use the plan input.
             const amountTokens = plan.initialLiquidityTokens || "200000000";
-            const amountETH = plan.initialLiquidityETH || "0.01";
+            const amountETH = plan.initialLiquidityETH || "0.0004";
 
             // 4. Calculate Initial Price (ETH per Token)
             // Price = ETH / Tokens
