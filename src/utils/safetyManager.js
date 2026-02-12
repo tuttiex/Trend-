@@ -6,6 +6,7 @@ class SafetyManager {
         this.signer = signer;
         this.DAILY_DEPLOYMENT_CAP = 2; // From Trend Plan Phase 5.2
         this.MIN_BALANCE_THRESHOLD = ethers.parseEther("0.05"); // Alert at 0.05 ETH
+        this.MIN_ETH_BALANCE = ethers.parseEther("0.00055"); // Minimum to proceed (User Override)
     }
 
     async checkSafety(plan) {
@@ -19,8 +20,7 @@ class SafetyManager {
             logger.warn('SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH');
         }
 
-        const estimatedCost = ethers.parseEther("0.02"); // Deployment + Liquidity
-        if (balance < estimatedCost) {
+        if (balance < this.MIN_ETH_BALANCE) {
             logger.error('SafetyManager: Insufficient funds for planned action.');
             return { safe: false, reason: 'insufficient_funds' };
         }

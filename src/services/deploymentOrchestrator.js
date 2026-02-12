@@ -71,11 +71,27 @@ class DeploymentOrchestrator {
             // 4. Verify/Post (Optional: Verify on Basescan programmatically via API? Skip for now.)
 
             // 5. Announce on X
+            // 5. Announce on X
             logger.info("Step 4: Posting Announcement to X...");
-            const tweetText = `🚀 New Trend Detected: ${plan.topic}!\n\n` +
-                `Deployed $${plan.symbol} on Base.\n` +
-                `Contract: ${tokenAddress}\n\n` +
-                `#Base #Crypto #${plan.symbol}`;
+
+            let tweetText = plan.tweetContent;
+
+            // Fallback if AI didn't provide a tweet or it's malformed
+            if (!tweetText || !tweetText.includes('{{CONTRACT}}')) {
+                logger.warn("Pipeline: AI did not provide a valid tweet. Using fallback template.");
+                tweetText = `🚀 New Trend Detected: ${plan.topic}!\n\n` +
+                    `Deployed $${plan.symbol} on Base.\n` +
+                    `Contract: {{CONTRACT}}\n\n` +
+                    `#Base #Crypto #${plan.symbol}`;
+            }
+
+            // Replace placeholders
+            tweetText = tweetText
+                .replace('{{TREND}}', plan.topic)
+                .replace('{{SYMBOL}}', plan.symbol)
+                .replace('{{CONTRACT}}', tokenAddress);
+
+            logger.info(`Generated Tweet: \n${tweetText}`);
 
             // We use safePost which handles error logging internaly
 
