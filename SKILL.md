@@ -1,6 +1,6 @@
 ---
 name: trend_agent
-description: An autonomous agent that scans trends and deploys tokens on Base Sepolia.
+description: An autonomous agent that scans trends and deploys tokens on Base Mainnet.
 ---
 # Trend Agent
 
