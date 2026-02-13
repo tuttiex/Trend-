@@ -1589,3 +1589,16 @@
 {"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-13 10:33:41"}
 {"level":"info","message":"OpenClaw Scheduler starting...","service":"trend-agent","timestamp":"2026-02-13 10:33:41"}
 {"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-13 10:33:41"}
+{"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-13 10:51:46"}
+{"level":"info","message":"TrendDetector initialized for regions: Nigeria, US","service":"trend-agent","timestamp":"2026-02-13 11:02:48"}
+{"level":"info","message":"--- Autonomous Social-Signal Token Agent Starting ---","service":"trend-agent","timestamp":"2026-02-13 11:02:49"}
+{"level":"info","message":"Agent active with address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","service":"trend-agent","timestamp":"2026-02-13 11:02:52"}
+{"level":"info","message":"Scheduler starting...","service":"trend-agent","timestamp":"2026-02-13 11:02:52"}
+{"level":"info","message":"Scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-13 11:02:52"}
+{"level":"info","message":"Agent is now running in autonomous mode.","service":"trend-agent","timestamp":"2026-02-13 11:02:52"}
+{"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-13 13:19:16"}
+{"level":"info","message":"OpenClaw Scheduler starting...","service":"trend-agent","timestamp":"2026-02-13 13:19:16"}
+{"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-13 13:19:16"}
+{"level":"info","message":"Starting OpenClaw Gateway via wrapper...","service":"trend-agent","timestamp":"2026-02-13 15:23:21"}
+{"level":"info","message":"OpenClaw Scheduler starting...","service":"trend-agent","timestamp":"2026-02-13 15:23:21"}
+{"level":"info","message":"OpenClaw scheduler jobs scheduled.","service":"trend-agent","timestamp":"2026-02-13 15:23:22"}

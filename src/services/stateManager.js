@@ -1,65 +1,65 @@
-const { Pool } = require('pg');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 const logger = require('../utils/logger');
 require('dotenv').config();
 
 class StateManager {
     constructor() {
-        this.pool = new Pool({
-            connectionString: process.env.DATABASE_URL,
-        });
+        const dbPath = process.env.DATABASE_URL.replace('./', '');
+        this.db = new sqlite3.Database(path.join(process.cwd(), dbPath));
     }
 
     async connect() {
-        try {
-            await this.pool.query('SELECT NOW()');
-            logger.info('StateManager: Connected to PostgreSQL.');
-        } catch (error) {
-            logger.error(`StateManager: Failed to connect to PostgreSQL: ${error.message}`);
-            throw error;
-        }
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.run(`CREATE TABLE IF NOT EXISTS deployments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    execution_id TEXT,
+                    token_address TEXT,
+                    token_name TEXT,
+                    token_symbol TEXT,
+                    pool_address TEXT,
+                    tx_hash TEXT,
+                    trend_topic TEXT,
+                    region TEXT,
+                    initial_eth TEXT,
+                    initial_tokens TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`, (err) => err ? reject(err) : resolve());
+
+                this.db.run(`CREATE TABLE IF NOT EXISTS trends (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    topic TEXT,
+                    region TEXT,
+                    volume TEXT,
+                    confidence TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`);
+            });
+            logger.info('StateManager: Connected to SQLite.');
+        });
     }
 
     async saveDeployment(data) {
-        const query = `
-      INSERT INTO deployments (
-        execution_id, token_address, token_name, token_symbol, 
-        pool_address, tx_hash, trend_topic, region, 
-        initial_eth, initial_tokens
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING id
-    `;
-        const values = [
-            data.executionId, data.tokenAddress, data.topic + " Token", data.symbol,
-            data.poolAddress, data.txHash, data.topic, data.region,
-            data.initialLiquidityETH, data.initialLiquidityTokens
-        ];
-
-        try {
-            const res = await this.pool.query(query, values);
-            logger.info(`StateManager: Saved deployment ${data.tokenAddress} with internal ID ${res.rows[0].id}`);
-            return res.rows[0].id;
-        } catch (error) {
-            logger.error(`StateManager: Failed to save deployment: ${error.message}`);
-            throw error;
-        }
+        const query = `INSERT INTO deployments (execution_id, token_address, token_name, token_symbol, pool_address, tx_hash, trend_topic, region, initial_eth, initial_tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [data.executionId, data.tokenAddress, data.topic + " Token", data.symbol, data.poolAddress, data.txHash, data.topic, data.region, data.initialLiquidityETH, data.initialLiquidityTokens];
+        return new Promise((resolve, reject) => {
+            this.db.run(query, values, function (err) {
+                if (err) return reject(err);
+                logger.info(`StateManager: Saved deployment ${data.tokenAddress}`);
+                resolve(this.lastID);
+            });
+        });
     }
 
     async logTrend(trend) {
-        const query = `
-      INSERT INTO trends (topic, region, volume, confidence)
-      VALUES ($1, $2, $3, $4)
-    `;
+        const query = `INSERT INTO trends (topic, region, volume, confidence) VALUES (?, ?, ?, ?)`;
         const values = [trend.topic, trend.region, trend.tweet_volume, trend.confidence];
-
-        try {
-            await this.pool.query(query, values);
-        } catch (error) {
-            logger.error(`StateManager: Failed to log trend: ${error.message}`);
-        }
+        this.db.run(query, values);
     }
 
     async close() {
-        await this.pool.end();
+        this.db.close();
     }
 }
 
