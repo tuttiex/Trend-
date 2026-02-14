@@ -3,7 +3,7 @@ const logger = require('./utils/logger');
 
 logger.info('Starting OpenClaw Gateway via wrapper...');
 
-const gateway = spawn('openclaw', ['gateway'], {
+const gateway = spawn('npx', ['openclaw', 'gateway'], {
     shell: true,
     stdio: 'inherit'
 });
