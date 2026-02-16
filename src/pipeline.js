@@ -18,20 +18,25 @@ class Pipeline {
         const executionId = `exec_${Date.now()}`;
         logger.info(`Pipeline: Starting execution ${executionId} for region: ${region}`);
 
+        // 0. DAILY GUARD: Prevent double-deployments
+        if (this.stateManager) {
+            try {
+                const alreadyDeployed = await this.stateManager.hasDeployedToday(region);
+                if (alreadyDeployed) {
+                    logger.warn(`🛑 DAILY GUARD: ${region} has already deployed a token today. Skipping cycle.`);
+                    return { status: 'skipped', reason: 'already_deployed_today' };
+                }
+            } catch (err) {
+                logger.error(`Daily Guard Check Failed: ${err.message}. Proceeding with caution.`);
+            }
+        }
+
         try {
             await this._runStages(region, executionId);
             return { status: 'success' };
         } catch (error) {
             logger.error(`Pipeline: Execution encountered an error: ${error.message}`);
-            // Implement retry logic (Retry once as per Trend Plan 8.0)
-            logger.info('Pipeline: Attempting single retry...');
-            try {
-                await this._runStages(region, executionId + "_retry");
-                return { status: 'success', note: 'succeeded_on_retry' };
-            } catch (retryError) {
-                logger.error(`Pipeline: Retry failed: ${retryError.message}`);
-                throw retryError;
-            }
+            throw error; // Let the caller (Scheduler) handle the top-level error
         }
     }
 

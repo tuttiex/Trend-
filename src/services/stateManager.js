@@ -58,6 +58,26 @@ class StateManager {
         this.db.run(query, values);
     }
 
+    async hasDeployedToday(region) {
+        // Normalize region for comparison (handle US vs United States)
+        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
+        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
+
+        const query = `
+            SELECT COUNT(*) as count 
+            FROM deployments 
+            WHERE (region IN ${regionQuery})
+            AND timestamp >= date('now', 'start of day')
+        `;
+
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [], (err, row) => {
+                if (err) return reject(err);
+                resolve(row.count > 0);
+            });
+        });
+    }
+
     async close() {
         this.db.close();
     }

@@ -19,12 +19,13 @@ Rules:
 
 Tweet Requirements:
 - The tweet should feel like a High-Signal Alert or a News Flash.
-- The tweet MUST include these EXACT placeholders: {{TREND}}, {{SYMBOL}}, and {{CONTRACT}}.
+- **The tweet MUST state the region** (e.g., Nigeria or US) to give context.
+- The tweet MUST include these EXACT placeholders: {{TREND}}, {{SYMBOL}}, {{CONTRACT}}, and {{REGION}}.
 - Do NOT include the contract address yourself; use the placeholder.
 - **IMPORTANT: VARY YOUR PHRASING.** Do NOT just use "Trend Alert" every time. 
 - Use different hooks like: "Breaking:", "Market Update:", "Volume Spike:", "Just In:", "New Deployment:", etc.
-- Example 1: "🚨 TREND ALERT: {{TREND}} is spiking. New token ${{ SYMBOL }} deployed. CA: {{CONTRACT}}"
-- Example 2: "📢 BREAKING: {{TREND}} volume is up. Deployed ${{ SYMBOL }} on Base. Contract: {{CONTRACT}}"`,
+- Example 1: "🚨 NIGERIA ALERT: {{TREND}} is spiking. Deployed ${{ SYMBOL }} on Base. CA: {{CONTRACT}} #Base #{{REGION}}"
+- Example 2: "📢 US NEWS: {{TREND}} volume is up. Deployed ${{ SYMBOL }} on Base. Contract: {{CONTRACT}} #Base #{{REGION}}"`,
 
   PLANNER_USER_PROMPT: (trends, state) => `
 Current Trends:

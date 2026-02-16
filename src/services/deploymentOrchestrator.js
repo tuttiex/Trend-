@@ -71,41 +71,53 @@ class DeploymentOrchestrator {
             // 4. Verify/Post (Optional: Verify on Basescan programmatically via API? Skip for now.)
 
             // 5. Announce on X
-            // 5. Announce on X
-            logger.info("Step 4: Posting Announcement to X...");
+            logger.info("Step 4: Preparing Announcement for X...");
+
+            // Human-like delay: wait 30-120 seconds before posting to avoid anti-bot flags
+            const tweetDelay = Math.floor(Math.random() * (120 - 30 + 1) + 30);
+            logger.info(`Waiting ${tweetDelay}s before posting to X for better human-mimicry...`);
+            await new Promise(resolve => setTimeout(resolve, tweetDelay * 1000));
 
             let tweetText = plan.tweetContent;
 
-            // Fallback if AI didn't provide a tweet or it's malformed
+            // Fallback templates for variety (Anti-Spam)
+            const fallbackTemplates = [
+                `🚀 New Trend Detected in {{REGION}}: {{TREND}}!\n\nDeployed ${{ SYMBOL }} on Base.\nContract: {{CONTRACT}}\n\n#Base #Crypto #{{SYMBOL}} #{{REGION}}`,
+                `🔥 JUST IN: {{TREND}} is sweeping {{REGION}}! \n\nWe launched ${{ SYMBOL }} on Base to capture the signal. \nAddress: {{CONTRACT}}\n\n#BaseEcosystem #{{SYMBOL}} #{{REGION}}`,
+                `📈 Social Signal Alert! {{TREND}} is viral in {{REGION}} right now.\n\nCaptured via ${{ SYMBOL }} on Base.\nCA: {{CONTRACT}}\n\n#Base #MemeCoin #{{SYMBOL}} #{{REGION}}`,
+                `🎯 The data is clear: {{TREND}} is the top move in {{REGION}}.\n\nGet in early on ${{ SYMBOL }} (Base).\nContract: {{CONTRACT}}\n\n#Trending #{{SYMBOL}} #{{REGION}}`
+            ];
+
+            // If AI didn't provide a tweet or it's malformed, pick a random fallback
             if (!tweetText || !tweetText.includes('{{CONTRACT}}')) {
-                logger.warn("Pipeline: AI did not provide a valid tweet. Using fallback template.");
-                tweetText = `🚀 New Trend Detected: ${plan.topic}!\n\n` +
-                    `Deployed $${plan.symbol} on Base.\n` +
-                    `Contract: {{CONTRACT}}\n\n` +
-                    `#Base #Crypto #${plan.symbol}`;
+                logger.warn("Pipeline: AI did not provide a valid tweet. Using randomized fallback.");
+                tweetText = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)];
             }
 
-            // Replace placeholders
+            // --- CACHE BUSTER (Anti-403 Logic) ---
+            // Add random emojis to ensure every tweet is unique even if the template repeats
+            const emojis = ['🚀', '🔥', '📈', '💎', '🟢', '📣', '🚨', '📢', '🎯', '✨', '⚡'];
+            const randomEmojis = Array(3).fill(0).map(() => emojis[Math.floor(Math.random() * emojis.length)]).join(' ');
+            tweetText = `${randomEmojis}\n\n${tweetText}\n\n${randomEmojis}`;
+
+            // Replace placeholders (Safety: ensure region is present)
+            const regionTag = plan.region || "World";
             tweetText = tweetText
-                .replace('{{TREND}}', plan.topic)
-                .replace('{{SYMBOL}}', plan.symbol)
-                .replace('{{CONTRACT}}', tokenAddress);
+                .replace(/{{TREND}}/g, plan.topic)
+                .replace(/{{SYMBOL}}/g, plan.symbol)
+                .replace(/{{CONTRACT}}/g, tokenAddress)
+                .replace(/{{REGION}}/g, regionTag);
 
             logger.info(`Generated Tweet: \n${tweetText}`);
-
-            // We use safePost which handles error logging internaly
 
             try {
                 await this.twitter.postTweet(tweetText);
                 logger.info("✅ Tweet posted successfully (Orchestrator).");
             } catch (tweetError) {
-                // If the tweet fails, DO NOT fail the deployment. It's done.
                 logger.warn(`Tweet failed, but deployment succeeded: ${tweetError.message}`);
-                // Proceed as success
             }
 
             return {
-                success: true,
                 success: true,
                 tokenAddress,
                 poolAddress,
