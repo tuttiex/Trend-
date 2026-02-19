@@ -1,62 +1,42 @@
 const hre = require("hardhat");
 
 /**
- * Script to deploy a TrendToken contract.
- * Expects environment variables for connection or args for trend data.
+ * Deploys the TrendToken contract.
+ * @param {Object} signer - The ethers signer
+ * @param {string} name - Token Name
+ * @param {string} symbol - Token Symbol
+ * @param {string} topic - Trend Topic
+ * @param {string} region - Trend Region
+ * @param {string} tokenURI - IPFS Metadata URI
  */
-async function main() {
-    console.log("--- Deploying TrendToken ---");
+async function deployToken(signer, name, symbol, topic, region, tokenURI) {
+    const TrendToken = await hre.ethers.getContractFactory("TrendToken", signer);
 
-    // These would typically come from the Agent's Planner module
-    // For manual testing, we provide defaults or use process.env
-    const name = process.env.TOKEN_NAME || "Test Trend Token";
-    const symbol = process.env.TOKEN_SYMBOL || "TTT";
-    const topic = process.env.TREND_TOPIC || "Blockchain Automation";
-    const region = process.env.TREND_REGION || "World";
-
-    console.log(`Token Name: ${name}`);
-    console.log(`Token Symbol: ${symbol}`);
-    console.log(`Trend Topic: ${topic}`);
-    console.log(`Trend Region: ${region}`);
-
-    // Get the deployer account
-    const [deployer] = await hre.ethers.getSigners();
-    const balance = await hre.ethers.provider.getBalance(deployer.address);
-
-    console.log(`Deploying with account: ${deployer.address}`);
-    console.log(`Account balance: ${hre.ethers.formatEther(balance)} ETH`);
-
-    // Deploy the contract
-    const TrendToken = await hre.ethers.getContractFactory("TrendToken");
-    const token = await TrendToken.deploy(name, symbol, topic, region);
-
+    // Deploy contract with new tokenURI argument
+    const token = await TrendToken.deploy(name, symbol, topic, region, tokenURI);
     await token.waitForDeployment();
 
     const address = await token.getAddress();
     console.log(`✅ TrendToken deployed to: ${address}`);
-
-    // Optional: Wait for block confirmations and verify
-    if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {
-        console.log("Waiting for block confirmations...");
-        // Wait for 5 blocks for reliability
-        await token.deploymentTransaction().wait(5);
-
-        console.log("Verifying on Block Explorer...");
-        try {
-            await hre.run("verify:verify", {
-                address: address,
-                constructorArguments: [name, symbol, topic, region],
-            });
-            console.log("✅ Contract verified successfully!");
-        } catch (error) {
-            console.error("Verification failed:", error.message);
-        }
-    }
+    return { token, address };
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
+module.exports = deployToken;
+
+// If run directly (not required as module), execute main logic
+if (require.main === module) {
+    (async () => {
+        const [deployer] = await hre.ethers.getSigners();
+        const name = process.env.TOKEN_NAME || "Test Token";
+        const symbol = process.env.TOKEN_SYMBOL || "TEST";
+        const topic = process.env.TREND_TOPIC || "Testing";
+        const region = process.env.TREND_REGION || "Local";
+        const uri = "ipfs://QmPlaceholder";
+
+        console.log("--- Deploying TrendToken (Manual) ---");
+        await deployToken(deployer, name, symbol, topic, region, uri);
+    })().catch((error) => {
         console.error(error);
         process.exit(1);
     });
+}

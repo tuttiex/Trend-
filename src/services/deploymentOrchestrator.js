@@ -1,6 +1,9 @@
 const hre = require("hardhat");
 const LiquidityManager = require('./liquidityManager');
-const TweetApiCom = require('./tweetApiCom');
+const TweetApiCom = require('../services/tweetApiCom'); // Class Capitalized
+const imageGenerator = require('./imageGenerator');
+const ipfsUploader = require('./ipfsUploader');
+const tokenRegistryService = require('./tokenRegistryService');
 const logger = require('../utils/logger');
 
 class DeploymentOrchestrator {
@@ -11,96 +14,114 @@ class DeploymentOrchestrator {
     }
 
     /**
-     * Executes the full deployment pipeline for a trending topic.
+     * Executes the full deployment pipeline with Virtuals-style image handling.
      * @param {Object} plan - The deployment plan from the Planner/ContentModerator
-     * @param {string} plan.topic - "Cole Palmer"
-     * @param {string} plan.symbol - "CLPL"
-     * @param {string} plan.region - "Nigeria"
-     * @param {string} plan.initialLiquidityETH - "0.01"
-     * @param {string} plan.initialLiquidityTokens - "300000"
      */
     async executeDeployment(plan) {
-        logger.info(`🚀 STARTING DEPLOYMENT ORCHESTRATION for ${plan.topic} ($${plan.symbol})`);
+        logger.info(`🚀 STARTING VIRTUALS-STYLE DEPLOYMENT for ${plan.topic} ($${plan.symbol})`);
+
+        // Initialize liquidity manager for the current network
+        await this.liquidityManager.init();
+
+        let tokenAddress = plan.existingToken;
+        let metadataCid = plan.metadataCid;
+        let txHash;
+        let poolAddress;
 
         try {
-            // 1. Deploy Token
-            logger.info("Step 1: Deploying Token Contract...");
-            const TrendToken = await hre.ethers.getContractFactory("TrendToken", this.signer);
-            const tokenName = `${plan.topic} Token`;
+            if (!tokenAddress) {
+                // 1. Generate & Upload Image Metadata (Parallel or sequential)
+                try {
+                    logger.info("🎨 Orchestrator: Generating Virtuals-style Logo...");
+                    const imageBuffer = await imageGenerator.generateTokenLogo(plan.topic, plan.symbol, plan.region);
 
-            const token = await TrendToken.deploy(
-                tokenName,
-                plan.symbol,
-                plan.topic,
-                plan.region
-            );
-            await token.waitForDeployment();
-            const tokenAddress = await token.getAddress();
-            logger.info(`✅ Token Deployed at: ${tokenAddress}`);
+                    if (imageBuffer) {
+                        const imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);
+                        const gatewayBase = "https://gateway.pinata.cloud/ipfs/";
 
-            // 2. Create & Initialize Pool
+                        const metadata = {
+                            name: `${plan.topic} Token`,
+                            symbol: plan.symbol,
+                            description: `Deployed by OpenClaw Agent. Identity registered on-chain via MetadataRegistry. Trend: ${plan.topic} in ${plan.region}.`,
+                            image: `${gatewayBase}${imageCid}?filename=${plan.symbol}.png`,
+                            external_url: `https://basescan.org/token/`,
+                            attributes: [
+                                { trait_type: "Region", value: plan.region },
+                                { trait_type: "Trend", value: plan.topic }
+                            ]
+                        };
+                        metadataCid = await ipfsUploader.uploadMetadata(metadata);
+                    }
+                } catch (imgError) {
+                    logger.error(`⚠️ Image Gen/Upload Failed: ${imgError.message}. Proceeding without metadata.`);
+                }
+
+                // 2. Deploy Standard Token (Old Contract Style)
+                logger.info(`Orchestrator: Deploying standard token ${plan.symbol} for trend "${plan.topic}"...`);
+                const TrendToken = await hre.ethers.getContractFactory("TrendToken", this.signer);
+                const tokenName = `${plan.topic} Token`;
+
+                const token = await TrendToken.deploy(
+                    tokenName,
+                    plan.symbol,
+                    plan.topic,
+                    plan.region,
+                    {
+                        maxPriorityFeePerGas: hre.ethers.parseUnits("0.1", "gwei"), // Mainnet friendly
+                        maxFeePerGas: hre.ethers.parseUnits("2", "gwei")
+                    }
+                );
+                await token.waitForDeployment();
+                tokenAddress = await token.getAddress();
+                logger.info(`✅ Token Deployed at: ${tokenAddress}`);
+
+                // 3. Register Metadata On-Chain (Virtuals-style)
+                if (metadataCid) {
+                    try {
+                        await tokenRegistryService.registerTokenMetadata(tokenAddress, metadataCid, this.signer);
+                    } catch (regError) {
+                        logger.error(`⚠️ Metadata Registration Failed: ${regError.message}`);
+                    }
+                }
+            } else {
+                logger.info(`Orchestrator: Resuming deployment for existing token: ${tokenAddress}`);
+            }
+
+            // 4. Create & Initialize Pool
             logger.info("Step 2: Creating Uniswap V3 Pool...");
-            // Default fee 3000 (0.3%)
-            const poolAddress = await this.liquidityManager.getOrCreatePool(tokenAddress, 3000);
+            poolAddress = await this.liquidityManager.getOrCreatePool(tokenAddress, 3000);
 
-            // 3. Prepare Liquidity Amounts
-            // Calculate 20% of 1B supply if not specified (200,000,000)
-            // Or use the plan input.
-            const amountTokens = plan.initialLiquidityTokens || "200000000";
+            // 5. Prepare Liquidity Amounts
+            const amountTokens = plan.initialLiquidityTokens || "100000000";
             const amountETH = plan.initialLiquidityETH || "0.0004";
 
-            // 4. Calculate Initial Price (ETH per Token)
-            // Price = ETH / Tokens
-            // e.g. 0.01 / 200,000,000 = 5e-11 ETH per Token
-            // 1B Market Cap = 0.05 ETH (~$150) -> Fair Launch
+            // 6. Calculate Initial Price
             const initialPrice = (parseFloat(amountETH) / parseFloat(amountTokens)).toFixed(18);
             logger.info(`Calculated Initial Price: ${initialPrice} ETH per Token`);
 
-            // 5. Initialize Pool
+            // 7. Initialize Pool
             await this.liquidityManager.initializePool(tokenAddress, poolAddress, initialPrice);
 
-            // 6. Add Liquidity
+            // 8. Add Liquidity
             logger.info("Step 3: Adding Initial Liquidity...");
-            const txHash = await this.liquidityManager.addLiquidity(
+            txHash = await this.liquidityManager.addLiquidity(
                 tokenAddress,
                 amountTokens,
                 amountETH
             );
             logger.info(`✅ Liquidity Added. Tx: ${txHash}`);
 
-            // 4. Verify/Post (Optional: Verify on Basescan programmatically via API? Skip for now.)
-
-            // 5. Announce on X
+            // 9. Announce on X
             logger.info("Step 4: Preparing Announcement for X...");
-
-            // Human-like delay: wait 30-120 seconds before posting to avoid anti-bot flags
-            const tweetDelay = Math.floor(Math.random() * (120 - 30 + 1) + 30);
-            logger.info(`Waiting ${tweetDelay}s before posting to X for better human-mimicry...`);
+            const tweetDelay = Math.floor(Math.random() * (60 - 10 + 1) + 10);
+            logger.info(`Waiting ${tweetDelay}s before posting to X...`);
             await new Promise(resolve => setTimeout(resolve, tweetDelay * 1000));
 
             let tweetText = plan.tweetContent;
-
-            // Fallback templates for variety (Anti-Spam)
-            const fallbackTemplates = [
-                `🚀 New Trend Detected in {{REGION}}: {{TREND}}!\n\nDeployed ${{ SYMBOL }} on Base.\nContract: {{CONTRACT}}\n\n#Base #Crypto #{{SYMBOL}} #{{REGION}}`,
-                `🔥 JUST IN: {{TREND}} is sweeping {{REGION}}! \n\nWe launched ${{ SYMBOL }} on Base to capture the signal. \nAddress: {{CONTRACT}}\n\n#BaseEcosystem #{{SYMBOL}} #{{REGION}}`,
-                `📈 Social Signal Alert! {{TREND}} is viral in {{REGION}} right now.\n\nCaptured via ${{ SYMBOL }} on Base.\nCA: {{CONTRACT}}\n\n#Base #MemeCoin #{{SYMBOL}} #{{REGION}}`,
-                `🎯 The data is clear: {{TREND}} is the top move in {{REGION}}.\n\nGet in early on ${{ SYMBOL }} (Base).\nContract: {{CONTRACT}}\n\n#Trending #{{SYMBOL}} #{{REGION}}`
-            ];
-
-            // If AI didn't provide a tweet or it's malformed, pick a random fallback
             if (!tweetText || !tweetText.includes('{{CONTRACT}}')) {
-                logger.warn("Pipeline: AI did not provide a valid tweet. Using randomized fallback.");
-                tweetText = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)];
+                tweetText = `🚀 New Trend Detected: {{TREND}}!\n\nDeployed {{SYMBOL}} on Base.\nCA: {{CONTRACT}}\n\n#Base #{{SYMBOL}} #{{REGION}}`;
             }
 
-            // --- CACHE BUSTER (Anti-403 Logic) ---
-            // Add random emojis to ensure every tweet is unique even if the template repeats
-            const emojis = ['🚀', '🔥', '📈', '💎', '🟢', '📣', '🚨', '📢', '🎯', '✨', '⚡'];
-            const randomEmojis = Array(3).fill(0).map(() => emojis[Math.floor(Math.random() * emojis.length)]).join(' ');
-            tweetText = `${randomEmojis}\n\n${tweetText}\n\n${randomEmojis}`;
-
-            // Replace placeholders (Safety: ensure region is present)
             const regionTag = plan.region || "World";
             tweetText = tweetText
                 .replace(/{{TREND}}/g, plan.topic)
@@ -108,28 +129,32 @@ class DeploymentOrchestrator {
                 .replace(/{{CONTRACT}}/g, tokenAddress)
                 .replace(/{{REGION}}/g, regionTag);
 
-            logger.info(`Generated Tweet: \n${tweetText}`);
-
             try {
                 await this.twitter.postTweet(tweetText);
-                logger.info("✅ Tweet posted successfully (Orchestrator).");
+                logger.info("✅ Tweet posted successfully.");
             } catch (tweetError) {
-                logger.warn(`Tweet failed, but deployment succeeded: ${tweetError.message}`);
+                logger.warn(`Tweet failed: ${tweetError.message}`);
             }
 
             return {
                 success: true,
                 tokenAddress,
+                metadataCid,
+                imageCid: plan.imageCid || imageCid,
                 poolAddress,
                 liquidityTx: txHash
             };
 
         } catch (error) {
             logger.error(`❌ Deployment Orchestration Failed: ${error.message}`);
-            // TODO: Implement rollback or cleanup logic if possible (burn tokens?)
+            error.tokenAddress = tokenAddress;
+            error.metadataCid = metadataCid;
+            error.poolAddress = poolAddress;
+            error.txHash = txHash;
             throw error;
         }
     }
 }
 
 module.exports = DeploymentOrchestrator;
+

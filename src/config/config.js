@@ -44,6 +44,10 @@ module.exports = {
         proxy: process.env.TWITTER_PROXY,        // Required for login (http://user:pass@host:port)
         totpSecret: process.env.TWITTER_2FA_SECRET // Required for 2FA login
     },
+    ipfs: {
+        pinataApiKey: process.env.PINATA_API_KEY,
+        pinataSecretKey: process.env.PINATA_SECRET_KEY
+    },
     database: {
         url: process.env.DATABASE_URL
     },

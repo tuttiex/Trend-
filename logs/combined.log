@@ -1623,3 +1623,625 @@
 {"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-14 09:19:55"}
 {"level":"info","message":"Posting tweet via TweetAPI.com: \"Test tweet from dev environment 1771057195697\"","service":"trend-agent","timestamp":"2026-02-14 09:19:55"}
 {"data":{"action":"create_tweet","id":"2022586598198808677","metadata":{"author_username":"trendsagent_","created_at":"Sat Feb 14 08:19:57 +0000 2026","text":"Test tweet from dev environment 1771057195697","tweet_id":"2022586598198808677","url":"https://twitter.com/trendsagent_/status/2022586598198808677"},"success":true,"timestamp":"2026-02-14T08:19:57.755Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-14 09:19:57"}
+{"level":"info","message":"🎨 Generating logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 20:48:04"}
+{"level":"error","message":"Image Generation Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generateContent: [404 Not Found] models/imagen-3.0-generate-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.","service":"trend-agent","timestamp":"2026-02-17 20:48:06"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 20:49:00"}
+{"level":"error","message":"Image Generation Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.","service":"trend-agent","timestamp":"2026-02-17 20:49:01"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 20:50:06"}
+{"level":"error","message":"Image Generation Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent: [404 Not Found] models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.","service":"trend-agent","timestamp":"2026-02-17 20:50:07"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 20:50:36"}
+{"level":"error","message":"Image Generation Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent: [404 Not Found] models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.","service":"trend-agent","timestamp":"2026-02-17 20:50:37"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 20:51:46"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-17 20:52:07"}
+{"level":"info","message":"IPFS: Uploading image TestImage_SpaceX...","service":"trend-agent","timestamp":"2026-02-17 20:53:47"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmPmC7J8TwvZJbaJ9UXGYme5yXQQ7PqJ3wRDD4QMaTGgbq","service":"trend-agent","timestamp":"2026-02-17 20:53:54"}
+{"level":"info","message":"IPFS: Uploading metadata for Test Token...","service":"trend-agent","timestamp":"2026-02-17 20:53:54"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmRcBhTNQWUCH2DfV1ppaUMipcCGjE8zFjNgmN77DAVJiG","service":"trend-agent","timestamp":"2026-02-17 20:53:55"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($STAR)","service":"trend-agent","timestamp":"2026-02-17 21:41:50"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-17 21:41:50"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 21:41:50"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-17 21:42:05"}
+{"level":"info","message":"IPFS: Uploading image STAR...","service":"trend-agent","timestamp":"2026-02-17 21:42:05"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmTG75irknS7peSY2QJh6NKrLCxVT1AXMNKYzbYy1QHUG1","service":"trend-agent","timestamp":"2026-02-17 21:42:10"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-17 21:42:10"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmeaCEpuHPqQ5Zfi1ZvLHMi8T8iL1BJtPAnGqDBZZzncE9","service":"trend-agent","timestamp":"2026-02-17 21:42:11"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmeaCEpuHPqQ5Zfi1ZvLHMi8T8iL1BJtPAnGqDBZZzncE9","service":"trend-agent","timestamp":"2026-02-17 21:42:11"}
+{"level":"info","message":"Orchestrator: Deploying token STAR for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-17 21:42:11"}
+{"level":"info","message":"✅ Token Deployed at: 0xd991e79190F58B262c08bCa301c3d9594D9cF9D3","service":"trend-agent","timestamp":"2026-02-17 21:42:18"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-17 21:42:18"}
+{"level":"info","message":"Checking pool for token: 0xd991e79190F58B262c08bCa301c3d9594D9cF9D3 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-17 21:42:18"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-17 21:42:19"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-17 21:42:20"}
+{"level":"info","message":"✅ Pool created at: 0x80edF145FA4E108bd4A1445cFA2feb821fE3C696","service":"trend-agent","timestamp":"2026-02-17 21:42:27"}
+{"level":"info","message":"Calculated Initial Price: 0.000000001000000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-17 21:42:27"}
+{"level":"info","message":"Initializing pool at 0x80edF145FA4E108bd4A1445cFA2feb821fE3C696 with price: 0.000000001000000000 ETH","service":"trend-agent","timestamp":"2026-02-17 21:42:27"}
+{"level":"info","message":"Calculated sqrtPriceX96: 2505414483750479227146068685750272","service":"trend-agent","timestamp":"2026-02-17 21:42:27"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-17 21:42:27"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-17 21:42:28"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-17 21:42:32"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-17 21:42:34"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-17 21:42:34"}
+{"level":"info","message":"Adding Liquidity: 1000000 Tokens + 0.001 ETH","service":"trend-agent","timestamp":"2026-02-17 21:42:34"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-17 21:42:35"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-17 21:42:40"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-17 21:42:52"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0xe41222d68df96deac056abdd51041540952a800c2c87280f2fb001a030d4a862","service":"trend-agent","timestamp":"2026-02-17 21:42:52"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-17 21:42:52"}
+{"level":"info","message":"Waiting 71s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-17 21:42:52"}
+{"level":"error","message":"❌ Deployment Orchestration Failed: SYMBOL is not defined","service":"trend-agent","timestamp":"2026-02-17 21:44:03"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($STAR)","service":"trend-agent","timestamp":"2026-02-17 21:50:06"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-17 21:50:06"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 21:50:06"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-17 21:50:20"}
+{"level":"info","message":"IPFS: Uploading image STAR...","service":"trend-agent","timestamp":"2026-02-17 21:50:20"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmYvw7hnB15AajXeUUeDTjyuUc6REnkMojz3QbMUJCJnuR","service":"trend-agent","timestamp":"2026-02-17 21:50:24"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-17 21:50:24"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmSKY6siH5WjjEBviU7o2HtdDzUMRhChYwKCrsssLHHUfK","service":"trend-agent","timestamp":"2026-02-17 21:50:25"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmSKY6siH5WjjEBviU7o2HtdDzUMRhChYwKCrsssLHHUfK","service":"trend-agent","timestamp":"2026-02-17 21:50:25"}
+{"level":"info","message":"Orchestrator: Deploying token STAR for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-17 21:50:25"}
+{"level":"info","message":"✅ Token Deployed at: 0x82e0D6E625EA0A1cC70B9c4C6Ce8454Fce48cC3b","service":"trend-agent","timestamp":"2026-02-17 21:50:38"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-17 21:50:38"}
+{"level":"info","message":"Checking pool for token: 0x82e0D6E625EA0A1cC70B9c4C6Ce8454Fce48cC3b / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-17 21:50:38"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-17 21:50:39"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-17 21:50:40"}
+{"level":"info","message":"✅ Pool created at: 0x3b8901f16B2EAbE25905c7F351D2d964516183A8","service":"trend-agent","timestamp":"2026-02-17 21:50:47"}
+{"level":"info","message":"Calculated Initial Price: 0.000000001000000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-17 21:50:47"}
+{"level":"info","message":"Initializing pool at 0x3b8901f16B2EAbE25905c7F351D2d964516183A8 with price: 0.000000001000000000 ETH","service":"trend-agent","timestamp":"2026-02-17 21:50:47"}
+{"level":"info","message":"Calculated sqrtPriceX96: 2505414483750479227146068685750272","service":"trend-agent","timestamp":"2026-02-17 21:50:47"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-17 21:50:47"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-17 21:50:48"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-17 21:50:53"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-17 21:50:56"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-17 21:50:56"}
+{"level":"info","message":"Adding Liquidity: 1000000 Tokens + 0.001 ETH","service":"trend-agent","timestamp":"2026-02-17 21:50:56"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-17 21:50:56"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-17 21:51:00"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-17 21:51:05"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0xe0e99a3b2abf79353566548f47f814edbc918ba6e7344c9e73b6dc90f7f8f5f6","service":"trend-agent","timestamp":"2026-02-17 21:51:05"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-17 21:51:05"}
+{"level":"info","message":"Waiting 118s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-17 21:51:05"}
+{"level":"info","message":"Generated Tweet: \n📢 💎 📣\n\nLaunch Test: SpaceX Starship token live at 0x82e0D6E625EA0A1cC70B9c4C6Ce8454Fce48cC3b! #BaseSepolia\n\n📢 💎 📣","service":"trend-agent","timestamp":"2026-02-17 21:53:03"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-17 21:53:03"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"📢 💎 📣\n\nLaunch Test: SpaceX Starship token live at 0x82e0D6E625EA0A1cC70B9c4C6Ce8454Fce48cC3b! #BaseSepolia\n\n📢 💎 📣\"","service":"trend-agent","timestamp":"2026-02-17 21:53:03"}
+{"data":{"message":"Authorization: You have reached your daily limit for sending Tweets and messages. Please try again later. (344)","statusCode":400},"level":"error","message":"TweetAPI.com Posting Error:","service":"trend-agent","status":400,"timestamp":"2026-02-17 21:53:09"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($STAR)","service":"trend-agent","timestamp":"2026-02-17 22:12:11"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-17 22:12:11"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-17 22:12:11"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-17 22:12:23"}
+{"level":"info","message":"IPFS: Uploading image STAR...","service":"trend-agent","timestamp":"2026-02-17 22:12:23"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmXTu4pD9rNgSY5ZQjtLpX2x7WHFMAGmH5cqJRXyFE7MfT","service":"trend-agent","timestamp":"2026-02-17 22:12:26"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-17 22:12:26"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmSUyyPtybPUZp2VoZC1mgvTKjrSj8VzaPP7HzxWBp4YNp","service":"trend-agent","timestamp":"2026-02-17 22:12:27"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmSUyyPtybPUZp2VoZC1mgvTKjrSj8VzaPP7HzxWBp4YNp","service":"trend-agent","timestamp":"2026-02-17 22:12:27"}
+{"level":"info","message":"🔗 View in Brower: https://gateway.pinata.cloud/ipfs/QmSUyyPtybPUZp2VoZC1mgvTKjrSj8VzaPP7HzxWBp4YNp","service":"trend-agent","timestamp":"2026-02-17 22:12:27"}
+{"level":"info","message":"Orchestrator: Deploying token STAR for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-17 22:12:27"}
+{"level":"info","message":"✅ Token Deployed at: 0x57Ce3aBd5dF225031c92C264d3055ED0be5Ea9A6","service":"trend-agent","timestamp":"2026-02-17 22:12:38"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-17 22:12:38"}
+{"level":"info","message":"Checking pool for token: 0x57Ce3aBd5dF225031c92C264d3055ED0be5Ea9A6 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-17 22:12:38"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-17 22:12:39"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-17 22:12:39"}
+{"level":"info","message":"✅ Pool created at: 0x51F6bE841bf9A93ab6b0869C6cb4AD3e3b8D07f1","service":"trend-agent","timestamp":"2026-02-17 22:12:46"}
+{"level":"info","message":"Calculated Initial Price: 0.000000001000000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-17 22:12:46"}
+{"level":"info","message":"Initializing pool at 0x51F6bE841bf9A93ab6b0869C6cb4AD3e3b8D07f1 with price: 0.000000001000000000 ETH","service":"trend-agent","timestamp":"2026-02-17 22:12:46"}
+{"level":"info","message":"Calculated sqrtPriceX96: 2505414483750479227146068685750272","service":"trend-agent","timestamp":"2026-02-17 22:12:46"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-17 22:12:46"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-17 22:12:48"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-17 22:12:52"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-17 22:12:54"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-17 22:12:54"}
+{"level":"info","message":"Adding Liquidity: 1000000 Tokens + 0.001 ETH","service":"trend-agent","timestamp":"2026-02-17 22:12:54"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-17 22:12:55"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-17 22:12:58"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-17 22:13:02"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0x68d51a5ba44371116acf44aa0ead3964cf2384a1dda904eeb9a1dcc86a1661a5","service":"trend-agent","timestamp":"2026-02-17 22:13:02"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-17 22:13:02"}
+{"level":"info","message":"Waiting 73s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-17 22:13:02"}
+{"level":"info","message":"Generated Tweet: \n🚨 🟢 🔥\n\nLaunch Test: SpaceX Starship token live at 0x57Ce3aBd5dF225031c92C264d3055ED0be5Ea9A6! #BaseSepolia\n\n🚨 🟢 🔥","service":"trend-agent","timestamp":"2026-02-17 22:14:15"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-17 22:14:15"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"🚨 🟢 🔥\n\nLaunch Test: SpaceX Starship token live at 0x57Ce3aBd5dF225031c92C264d3055ED0be5Ea9A6! #BaseSepolia\n\n🚨 🟢 🔥\"","service":"trend-agent","timestamp":"2026-02-17 22:14:15"}
+{"data":{"action":"create_tweet","id":"2023868631252353146","metadata":{"author_username":"trendsagent_","created_at":"Tue Feb 17 21:14:18 +0000 2026","text":"🚨 🟢 🔥\n\nLaunch Test: SpaceX Starship token live at 0x57Ce3aBd5dF225031c92C264d3055ED0be5Ea9A6! #BaseSepolia\n\n🚨 🟢 🔥","tweet_id":"2023868631252353146","url":"https://twitter.com/trendsagent_/status/2023868631252353146"},"success":true,"timestamp":"2026-02-17T21:14:18.246Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-17 22:14:17"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($STAR)","service":"trend-agent","timestamp":"2026-02-18 00:43:45"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 00:43:45"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 00:43:45"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 00:43:57"}
+{"level":"info","message":"IPFS: Uploading image STAR...","service":"trend-agent","timestamp":"2026-02-18 00:43:57"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmV9fsNXjpmCn6XihZQzwSxQnF63p1hrbdcoZAPEX3ZxBp","service":"trend-agent","timestamp":"2026-02-18 00:44:00"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 00:44:00"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: Qmeu59azz43ZbBQwEJyrHcJFgA9qiPFVFbjEf81wPtz9tF","service":"trend-agent","timestamp":"2026-02-18 00:44:01"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://Qmeu59azz43ZbBQwEJyrHcJFgA9qiPFVFbjEf81wPtz9tF","service":"trend-agent","timestamp":"2026-02-18 00:44:01"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://Qmeu59azz43ZbBQwEJyrHcJFgA9qiPFVFbjEf81wPtz9tF","service":"trend-agent","timestamp":"2026-02-18 00:44:01"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/Qmeu59azz43ZbBQwEJyrHcJFgA9qiPFVFbjEf81wPtz9tF","service":"trend-agent","timestamp":"2026-02-18 00:44:01"}
+{"level":"info","message":"Orchestrator: Deploying token STAR for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 00:44:01"}
+{"level":"info","message":"✅ Token Deployed at: 0x1521A3Af640e86c953992a8F8B38ce9b3E209524","service":"trend-agent","timestamp":"2026-02-18 00:46:42"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 00:46:42"}
+{"level":"info","message":"Checking pool for token: 0x1521A3Af640e86c953992a8F8B38ce9b3E209524 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 00:46:42"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 00:46:42"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 00:46:42"}
+{"level":"info","message":"✅ Pool created at: 0x5923DfC08750329055c4b3f1A3e1b1a83ca38a0f","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"Calculated Initial Price: 0.000000001000000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"Initializing pool at 0x5923DfC08750329055c4b3f1A3e1b1a83ca38a0f with price: 0.000000001000000000 ETH","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"Calculated sqrtPriceX96: 2505414483750479468691456","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 00:51:06"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 00:55:06"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 00:55:09"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 00:55:09"}
+{"level":"info","message":"Adding Liquidity: 1000000 Tokens + 0.001 ETH","service":"trend-agent","timestamp":"2026-02-18 00:55:09"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-18 00:55:09"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($STAR)","service":"trend-agent","timestamp":"2026-02-18 01:24:46"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 01:24:46"}
+{"level":"info","message":"🎨 Generating SVG logo for STAR (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 01:24:46"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 01:25:14"}
+{"level":"info","message":"IPFS: Uploading image STAR...","service":"trend-agent","timestamp":"2026-02-18 01:25:14"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmWngu6bpCjXthL4L3r4m8trKqcZPj5NruXy1SRGg9MiEm","service":"trend-agent","timestamp":"2026-02-18 01:25:17"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 01:25:17"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmeARaehVT8nFu2Z6kudXFRsWbubRUioCSLwnXiwfP7XeR","service":"trend-agent","timestamp":"2026-02-18 01:25:18"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmeARaehVT8nFu2Z6kudXFRsWbubRUioCSLwnXiwfP7XeR","service":"trend-agent","timestamp":"2026-02-18 01:25:18"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmeARaehVT8nFu2Z6kudXFRsWbubRUioCSLwnXiwfP7XeR","service":"trend-agent","timestamp":"2026-02-18 01:25:18"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmeARaehVT8nFu2Z6kudXFRsWbubRUioCSLwnXiwfP7XeR","service":"trend-agent","timestamp":"2026-02-18 01:25:18"}
+{"level":"info","message":"Orchestrator: Deploying token STAR for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 01:25:18"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 01:56:16"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 01:57:00"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771376223393 for region: United States","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Found trend \"SpaceX Starship\" with confidence High","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Moderating topic: \"SpaceX Starship\"","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Trend \"SpaceX Starship\" approved. Symbol: SPCX","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"SafetyManager: Current balance: 0.045692220913046148 ETH","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($SPCX)","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"🎨 Generating SVG logo for SPCX (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 01:57:03"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 01:57:19"}
+{"level":"info","message":"IPFS: Uploading image SPCX...","service":"trend-agent","timestamp":"2026-02-18 01:57:19"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmZ5orL1cuQKG1YxjLGSFTyvETuBHQXvN39NPiNJz44HTK","service":"trend-agent","timestamp":"2026-02-18 01:57:22"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 01:57:22"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmbDTkhgibkLNPHJcxcVUaPfJye4JPoMFCoMBX6LMm7D19","service":"trend-agent","timestamp":"2026-02-18 01:57:23"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmbDTkhgibkLNPHJcxcVUaPfJye4JPoMFCoMBX6LMm7D19","service":"trend-agent","timestamp":"2026-02-18 01:57:23"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmbDTkhgibkLNPHJcxcVUaPfJye4JPoMFCoMBX6LMm7D19","service":"trend-agent","timestamp":"2026-02-18 01:57:23"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmbDTkhgibkLNPHJcxcVUaPfJye4JPoMFCoMBX6LMm7D19","service":"trend-agent","timestamp":"2026-02-18 01:57:23"}
+{"level":"info","message":"Orchestrator: Deploying token SPCX for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 01:57:23"}
+{"level":"error","message":"❌ Deployment Orchestration Failed: replacement transaction underpriced","service":"trend-agent","timestamp":"2026-02-18 01:57:26"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 02:03:19"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771376601789 for region: United States","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Found trend \"SpaceX Starship\" with confidence High","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Moderating topic: \"SpaceX Starship\"","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Trend \"SpaceX Starship\" approved. Symbol: SPCX","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 02:03:21"}
+{"level":"info","message":"SafetyManager: Current balance: 0.045692220913046148 ETH","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($SPCX)","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"🎨 Generating SVG logo for SPCX (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 02:03:22"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 02:03:40"}
+{"level":"info","message":"IPFS: Uploading image SPCX...","service":"trend-agent","timestamp":"2026-02-18 02:03:40"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmUSfV3jm4mnurkQ11qgM5X2BNQVPyC8B6XbLTpn3937GQ","service":"trend-agent","timestamp":"2026-02-18 02:03:42"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 02:03:42"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmYepmhSZe5ZUgzd8aPxbU5CmWzjAWzFLadjtQzrpD7jQz","service":"trend-agent","timestamp":"2026-02-18 02:03:43"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmYepmhSZe5ZUgzd8aPxbU5CmWzjAWzFLadjtQzrpD7jQz","service":"trend-agent","timestamp":"2026-02-18 02:03:43"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmYepmhSZe5ZUgzd8aPxbU5CmWzjAWzFLadjtQzrpD7jQz","service":"trend-agent","timestamp":"2026-02-18 02:03:43"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmYepmhSZe5ZUgzd8aPxbU5CmWzjAWzFLadjtQzrpD7jQz","service":"trend-agent","timestamp":"2026-02-18 02:03:43"}
+{"level":"info","message":"Orchestrator: Deploying token SPCX for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 02:03:43"}
+{"level":"error","message":"❌ Deployment Orchestration Failed: replacement transaction underpriced","service":"trend-agent","timestamp":"2026-02-18 02:03:46"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 11:36:02"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 11:36:43"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771411005727 for region: United States","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Found trend \"SpaceX Starship\" with confidence High","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Moderating topic: \"SpaceX Starship\"","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Trend \"SpaceX Starship\" approved. Symbol: SPCX","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 11:36:45"}
+{"level":"info","message":"SafetyManager: Current balance: 0.043592156344568282 ETH","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($SPCX)","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"🎨 Generating SVG logo for SPCX (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 11:36:46"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 11:37:57"}
+{"level":"info","message":"IPFS: Uploading image SPCX...","service":"trend-agent","timestamp":"2026-02-18 11:37:57"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmdkLRaRUMbYLCQBA5GMaGy13bVDWRMax5ML36JnME7eAV","service":"trend-agent","timestamp":"2026-02-18 11:37:59"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 11:37:59"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: Qmet7jWZik258pCvuG5EM1iHjzVzb33iYZyArPvMsrPCr2","service":"trend-agent","timestamp":"2026-02-18 11:38:00"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://Qmet7jWZik258pCvuG5EM1iHjzVzb33iYZyArPvMsrPCr2","service":"trend-agent","timestamp":"2026-02-18 11:38:00"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://Qmet7jWZik258pCvuG5EM1iHjzVzb33iYZyArPvMsrPCr2","service":"trend-agent","timestamp":"2026-02-18 11:38:00"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/Qmet7jWZik258pCvuG5EM1iHjzVzb33iYZyArPvMsrPCr2","service":"trend-agent","timestamp":"2026-02-18 11:38:00"}
+{"level":"info","message":"Orchestrator: Deploying token SPCX for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 11:38:00"}
+{"level":"info","message":"✅ Token Deployed at: 0xD6eE9E59850Dd06E6d63e7677f7fd9Bf199b72e2","service":"trend-agent","timestamp":"2026-02-18 11:38:09"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 11:38:09"}
+{"level":"info","message":"Checking pool for token: 0xD6eE9E59850Dd06E6d63e7677f7fd9Bf199b72e2 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 11:38:09"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 11:38:10"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 11:38:10"}
+{"level":"info","message":"✅ Pool created at: 0x0AE7fd0A02fD840Cf06f11427E7A93aCE8189A6A","service":"trend-agent","timestamp":"2026-02-18 11:38:16"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 11:38:16"}
+{"level":"info","message":"Initializing pool at 0x0AE7fd0A02fD840Cf06f11427E7A93aCE8189A6A with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-18 11:38:16"}
+{"level":"info","message":"Calculated sqrtPriceX96: 39614081257132168796771975168000000","service":"trend-agent","timestamp":"2026-02-18 11:38:16"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 11:38:16"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 11:38:17"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 11:38:21"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 11:38:23"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 11:38:23"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-18 11:38:23"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-18 11:38:23"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-18 11:38:27"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-18 11:38:31"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0x2de54990445fa21642561e4cf7e46107f934248dbfd5d5a35f0fafa56ec17892","service":"trend-agent","timestamp":"2026-02-18 11:38:31"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-18 11:38:31"}
+{"level":"info","message":"Waiting 63s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-18 11:38:31"}
+{"level":"warn","message":"Pipeline: AI did not provide a valid tweet. Using randomized fallback.","service":"trend-agent","timestamp":"2026-02-18 11:39:34"}
+{"level":"info","message":"Generated Tweet: \n📢 ✨ 🟢\n\n🚀 New Trend Detected in United States: SpaceX Starship!\n\nDeployed SPCX on Base.\nContract: 0xD6eE9E59850Dd06E6d63e7677f7fd9Bf199b72e2\n\n#Base #Crypto #SPCX #United States\n\n📢 ✨ 🟢","service":"trend-agent","timestamp":"2026-02-18 11:39:34"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-18 11:39:34"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"📢 ✨ 🟢\n\n🚀 New Trend Detected in United States: SpaceX Starship!\n\nDeployed SPCX on Base.\nContract: 0xD6eE9E59850Dd06E6d63e7677f7fd9Bf199b72e2\n\n#Base #Crypto #SPCX #United States\n\n📢 ✨ 🟢\"","service":"trend-agent","timestamp":"2026-02-18 11:39:34"}
+{"data":{"message":"Authorization: This request looks like it might be automated. To protect our users from spam and other malicious activity, we can't complete this action right now. Please try again later. (226)","statusCode":400},"level":"error","message":"TweetAPI.com Posting Error:","service":"trend-agent","status":400,"timestamp":"2026-02-18 11:39:36"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 11:41:42"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771411304706 for region: United States","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Found trend \"SpaceX Starship\" with confidence High","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Moderating topic: \"SpaceX Starship\"","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Trend \"SpaceX Starship\" approved. Symbol: SPCX","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 11:41:44"}
+{"level":"info","message":"SafetyManager: Current balance: 0.041648172472346449 ETH","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for SpaceX Starship ($SPCX)","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"🎨 Generating SVG logo for SPCX (SpaceX Starship)...","service":"trend-agent","timestamp":"2026-02-18 11:41:45"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 11:42:18"}
+{"level":"info","message":"IPFS: Uploading image SPCX...","service":"trend-agent","timestamp":"2026-02-18 11:42:18"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmTMgr4eNcXZbEV1pXGiBLJ6JfEfxD8qnEbCuoWyrRkTLT","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"IPFS: Uploading metadata for SpaceX Starship Token...","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmamgBEbEvbWQePeu37dX5463R962ctQHibCMR9xSo4Jk5","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmamgBEbEvbWQePeu37dX5463R962ctQHibCMR9xSo4Jk5","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmamgBEbEvbWQePeu37dX5463R962ctQHibCMR9xSo4Jk5","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmamgBEbEvbWQePeu37dX5463R962ctQHibCMR9xSo4Jk5","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"Orchestrator: Deploying token SPCX for trend \"SpaceX Starship\"...","service":"trend-agent","timestamp":"2026-02-18 11:42:21"}
+{"level":"info","message":"✅ Token Deployed at: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 11:42:26"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 11:42:26"}
+{"level":"info","message":"Checking pool for token: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 11:42:26"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 11:42:26"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 11:42:27"}
+{"level":"info","message":"✅ Pool created at: 0xC7006dAeD1b1bB36ad71fEf31F896c3171dCccd1","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"Initializing pool at 0xC7006dAeD1b1bB36ad71fEf31F896c3171dCccd1 with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"Calculated sqrtPriceX96: 158456325028528668016640","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 11:42:33"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 11:42:37"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 11:42:39"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 11:42:39"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-18 11:42:39"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-18 11:42:39"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-18 11:42:43"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-18 11:42:46"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0xac3ca0b0c3d23569957593de54b3f068193e9443808e4def26769a3143e918d8","service":"trend-agent","timestamp":"2026-02-18 11:42:46"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-18 11:42:46"}
+{"level":"info","message":"Waiting 49s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-18 11:42:46"}
+{"level":"warn","message":"Pipeline: AI did not provide a valid tweet. Using randomized fallback.","service":"trend-agent","timestamp":"2026-02-18 11:43:35"}
+{"level":"info","message":"Generated Tweet: \n🔥 🔥 🎯\n\n🎯 The data is clear: SpaceX Starship is the top move in United States.\n\nGet in early on SPCX (Base).\nContract: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a\n\n#Trending #SPCX #United States\n\n🔥 🔥 🎯","service":"trend-agent","timestamp":"2026-02-18 11:43:35"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-18 11:43:35"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"🔥 🔥 🎯\n\n🎯 The data is clear: SpaceX Starship is the top move in United States.\n\nGet in early on SPCX (Base).\nContract: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a\n\n#Trending #SPCX #United States\n\n🔥 🔥 🎯\"","service":"trend-agent","timestamp":"2026-02-18 11:43:35"}
+{"data":{"action":"create_tweet","id":"2024072302896328870","metadata":{"author_username":"trendsagent_","created_at":"Wed Feb 18 10:43:37 +0000 2026","text":"🔥 🔥 🎯\n\n🎯 The data is clear: SpaceX Starship is the top move in United States.\n\nGet in early on SPCX (Base).\nContract: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a\n\n#Trending #SPCX #United States\n\n🔥 🔥 🎯","tweet_id":"2024072302896328870","url":"https://twitter.com/trendsagent_/status/2024072302896328870"},"success":true,"timestamp":"2026-02-18T10:43:37.394Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"✅ Tweet posted successfully (Orchestrator).","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"Pipeline: Execution successful. Token: 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"Pipeline: Stage 6 - State Update","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"StateManager: Saved deployment 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"Pipeline: Stage 7 - Updating Token List Registry","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"TokenList: Fetching tokens from DB...","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"TokenList: Standard list generated with 1 tokens.","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"IPFS: Uploading metadata for OpenClaw AI Trends...","service":"trend-agent","timestamp":"2026-02-18 11:43:37"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmPAJArGXNAzBEDGNQdN3p9ep56EH3xXXQp1VSnHGKjTgo","service":"trend-agent","timestamp":"2026-02-18 11:43:39"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 11:43:57"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 12:00:06"}
+{"level":"info","message":"--- Manual Pipeline Execution Starting for Nigeria ---","service":"trend-agent","timestamp":"2026-02-18 12:00:07"}
+{"level":"info","message":"Agent active with address: 0x6b05AD5558AF4279794c7F0cD8FBc6d6ABa0e432","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"level":"info","message":"Executing pipeline for Nigeria...","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771412409221 for region: Nigeria","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"level":"info","message":"Attempting API fetch for Nigeria...","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-18 12:00:09"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"headers":{"cf-cache-status":"DYNAMIC","cf-ray":"9cfd04eb9a096551-LHR","connection":"keep-alive","content-length":"74","content-type":"application/json","date":"Wed, 18 Feb 2026 11:00:10 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=6A8veUZ5GAJqof0ybbM3%2Bw%2Fe5BdLWp2iHRvMuzb8JV6huHMAuWGov7uwwCJyKk2TiTcpcYZxQ7NDwx4El%2FRpmrkHM9wMkcpnlMTEfriqrzo%3D\"}]}","server":"cloudflare","x-trace-id":"e38a44e8-d408-4e04-a8ae-197249d57040"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":402,"timestamp":"2026-02-18 12:00:10"}
+{"level":"warn","message":"⚠️ TwitterAPI.io failed: Request failed with status code 402. Falling back to Scraper.","service":"trend-agent","timestamp":"2026-02-18 12:00:10"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-18 12:00:10"}
+{"level":"info","message":"Scraped 46 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"✅ Successfully scraped 46 trends for Nigeria","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Found trend \"simi\" with confidence 0.6","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Moderating topic: \"simi\"","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Trend \"simi\" approved. Symbol: SIMI","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"SafetyManager: Current balance: 0.008762295109141804 ETH","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for simi ($SIMI)","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"🎨 Generating SVG logo for SIMI (simi)...","service":"trend-agent","timestamp":"2026-02-18 12:00:11"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 12:00:53"}
+{"level":"info","message":"IPFS: Uploading image SIMI...","service":"trend-agent","timestamp":"2026-02-18 12:00:53"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmZa2yQhNZfY1GcG7G6TTRKaXUtvm5RLn3D8WwHHrkSRkJ","service":"trend-agent","timestamp":"2026-02-18 12:00:55"}
+{"level":"info","message":"IPFS: Uploading metadata for simi Token...","service":"trend-agent","timestamp":"2026-02-18 12:00:55"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmRXn3EnPsKaHwbP1g57QxvzkD17VwrFxUSU4fARDy7QRe","service":"trend-agent","timestamp":"2026-02-18 12:00:56"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmRXn3EnPsKaHwbP1g57QxvzkD17VwrFxUSU4fARDy7QRe","service":"trend-agent","timestamp":"2026-02-18 12:00:56"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmRXn3EnPsKaHwbP1g57QxvzkD17VwrFxUSU4fARDy7QRe","service":"trend-agent","timestamp":"2026-02-18 12:00:56"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmRXn3EnPsKaHwbP1g57QxvzkD17VwrFxUSU4fARDy7QRe","service":"trend-agent","timestamp":"2026-02-18 12:00:56"}
+{"level":"info","message":"Orchestrator: Deploying token SIMI for trend \"simi\"...","service":"trend-agent","timestamp":"2026-02-18 12:00:56"}
+{"level":"info","message":"✅ Token Deployed at: 0xa355c0A8E2bbECce78a55E7EFd710d9BBb7987A8","service":"trend-agent","timestamp":"2026-02-18 12:00:59"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 12:00:59"}
+{"level":"info","message":"Checking pool for token: 0xa355c0A8E2bbECce78a55E7EFd710d9BBb7987A8 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 12:00:59"}
+{"level":"error","message":"Failed to get pool address: execution reverted","service":"trend-agent","timestamp":"2026-02-18 12:00:59"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 12:02:54"}
+{"level":"info","message":"--- Manual Pipeline Execution Starting for Nigeria ---","service":"trend-agent","timestamp":"2026-02-18 12:02:55"}
+{"level":"info","message":"Agent active with address: 0x6b05AD5558AF4279794c7F0cD8FBc6d6ABa0e432","service":"trend-agent","timestamp":"2026-02-18 12:02:56"}
+{"level":"info","message":"Executing pipeline for Nigeria...","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771412577009 for region: Nigeria","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Attempting API fetch for Nigeria...","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"headers":{"cf-cache-status":"DYNAMIC","cf-ray":"9cfd09010ee9bd82-LHR","connection":"keep-alive","content-length":"74","content-type":"application/json","date":"Wed, 18 Feb 2026 11:02:57 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=a2j%2BTD6BANX521Q5R6OCS9%2FPblGgNOA8K2d6pVXZvr9YzvDXIm3USRuBIE8AC9xUBSPV6bfvEZxVo20zgoJ%2FTy0nFpj1uEpi%2BIssaFxFdE8%3D\"}]}","server":"cloudflare","x-trace-id":"460085d7-2b27-4e34-aacb-f5462965e6f3"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":402,"timestamp":"2026-02-18 12:02:57"}
+{"level":"warn","message":"⚠️ TwitterAPI.io failed: Request failed with status code 402. Falling back to Scraper.","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-18 12:02:57"}
+{"level":"info","message":"Scraped 48 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"✅ Successfully scraped 48 trends for Nigeria","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Found trend \"simi\" with confidence 0.6","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Moderating topic: \"simi\"","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Trend \"simi\" approved. Symbol: SIMI","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"SafetyManager: Current balance: 0.007232666337153011 ETH","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for simi ($SIMI)","service":"trend-agent","timestamp":"2026-02-18 12:02:58"}
+{"level":"info","message":"LiquidityManager: Detected network 8453. Using appropriate Uniswap addresses.","service":"trend-agent","timestamp":"2026-02-18 12:02:59"}
+{"level":"info","message":"🎨 Orchestrator: Generating AI Logo...","service":"trend-agent","timestamp":"2026-02-18 12:02:59"}
+{"level":"info","message":"🎨 Generating SVG logo for SIMI (simi)...","service":"trend-agent","timestamp":"2026-02-18 12:02:59"}
+{"level":"info","message":"🎨 SVG generated successfully!","service":"trend-agent","timestamp":"2026-02-18 12:03:33"}
+{"level":"info","message":"IPFS: Uploading image SIMI...","service":"trend-agent","timestamp":"2026-02-18 12:03:33"}
+{"level":"info","message":"IPFS: Image uploaded. CID: QmdnDDrQbPVRqcJdQpUmgB1yuTHDYqawReQcWprW7AcaKG","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"IPFS: Uploading metadata for simi Token...","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmNZVyjApjuAveriR71yQvje42sbkykEAnmaApPrPNoJPE","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"✅ Orchestrator: Metadata pinned at ipfs://QmNZVyjApjuAveriR71yQvje42sbkykEAnmaApPrPNoJPE","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"🔗 Metadata Link (Standard): ipfs://QmNZVyjApjuAveriR71yQvje42sbkykEAnmaApPrPNoJPE","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"🔗 Metadata Link (HTTPS Gateway): https://gateway.pinata.cloud/ipfs/QmNZVyjApjuAveriR71yQvje42sbkykEAnmaApPrPNoJPE","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"Orchestrator: Deploying token SIMI for trend \"simi\"...","service":"trend-agent","timestamp":"2026-02-18 12:03:35"}
+{"level":"info","message":"✅ Token Deployed at: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 12:03:38"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 12:03:38"}
+{"level":"info","message":"Checking pool for token: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 12:03:38"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 12:03:38"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 12:03:39"}
+{"level":"info","message":"✅ Pool created at: 0x47fe158d2DB65EAA8e76a6686d12e25DB5FAEa51","service":"trend-agent","timestamp":"2026-02-18 12:03:43"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 12:03:43"}
+{"level":"info","message":"Initializing pool at 0x47fe158d2DB65EAA8e76a6686d12e25DB5FAEa51 with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-18 12:03:43"}
+{"level":"info","message":"Calculated sqrtPriceX96: 39614081257132168796771975168000000","service":"trend-agent","timestamp":"2026-02-18 12:03:43"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 12:03:43"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 12:03:44"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 12:03:45"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 12:03:48"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 12:03:48"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-18 12:03:48"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-18 12:03:48"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-18 12:03:50"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-18 12:03:52"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0xae1142d6278999546fefe34e57256817b0a74e0a57712d199d34a5cbfe4a0539","service":"trend-agent","timestamp":"2026-02-18 12:03:52"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-18 12:03:52"}
+{"level":"info","message":"Waiting 106s before posting to X for better human-mimicry...","service":"trend-agent","timestamp":"2026-02-18 12:03:52"}
+{"level":"warn","message":"Pipeline: AI did not provide a valid tweet. Using randomized fallback.","service":"trend-agent","timestamp":"2026-02-18 12:05:38"}
+{"level":"info","message":"Generated Tweet: \n⚡ 🚀 ⚡\n\n📈 Social Signal Alert! simi is viral in Nigeria right now.\n\nCaptured via SIMI on Base.\nCA: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04\n\n#Base #MemeCoin #SIMI #Nigeria\n\n⚡ 🚀 ⚡","service":"trend-agent","timestamp":"2026-02-18 12:05:38"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-18 12:05:38"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"⚡ 🚀 ⚡\n\n📈 Social Signal Alert! simi is viral in Nigeria right now.\n\nCaptured via SIMI on Base.\nCA: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04\n\n#Base #MemeCoin #SIMI #Nigeria\n\n⚡ 🚀 ⚡\"","service":"trend-agent","timestamp":"2026-02-18 12:05:38"}
+{"data":{"action":"create_tweet","id":"2024077851440394532","metadata":{"author_username":"trendsagent_","created_at":"Wed Feb 18 11:05:39 +0000 2026","text":"⚡ 🚀 ⚡\n\n📈 Social Signal Alert! simi is viral in Nigeria right now.\n\nCaptured via SIMI on Base.\nCA: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04\n\n#Base #MemeCoin #SIMI #Nigeria\n\n⚡ 🚀 ⚡","tweet_id":"2024077851440394532","url":"https://twitter.com/trendsagent_/status/2024077851440394532"},"success":true,"timestamp":"2026-02-18T11:05:40.288Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"✅ Tweet posted successfully (Orchestrator).","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"Pipeline: Execution successful. Token: 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"Pipeline: Stage 6 - State Update","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"StateManager: Saved deployment 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"Pipeline: Stage 7 - Updating Token List Registry","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"TokenList: Fetching tokens from DB...","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"TokenList: Standard list generated with 2 tokens.","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"IPFS: Uploading metadata for OpenClaw AI Trends...","service":"trend-agent","timestamp":"2026-02-18 12:05:40"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmceL4HazRLxqH2Mi9mcNVZwpqHwVo3SjgJBy1wcVevw7L","service":"trend-agent","timestamp":"2026-02-18 12:05:43"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 12:24:05"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 12:33:42"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 12:33:44"}
+{"level":"info","message":"StateManager: Saved deployment 0x0000000000000000000000000000000000000001","service":"trend-agent","timestamp":"2026-02-18 12:33:44"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771414424619 for region: TestRegion_1771414424606","service":"trend-agent","timestamp":"2026-02-18 12:33:44"}
+{"level":"warn","message":"🛑 DAILY GUARD: TestRegion_1771414424606 has already deployed a token today. Skipping cycle.","service":"trend-agent","timestamp":"2026-02-18 12:33:44"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 12:34:39"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"StateManager: Saved deployment 0x0000000000000000000000000000000000000001","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771414481425 for region: TestRegion_1771414481408","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Found trend \"IdempotencyTest_1771414481408\" with confidence 0.99","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Trend \"IdempotencyTest_1771414481408\" approved. Symbol: IDEM","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Found partial deployment for IdempotencyTest_1771414481408. Resuming from 0x0000000000000000000000000000000000000001...","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"SafetyManager: Current balance: 0.039704104361420891 ETH","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"🚀 STARTING DEPLOYMENT ORCHESTRATION for IdempotencyTest_1771414481408 ($IDEM)","service":"trend-agent","timestamp":"2026-02-18 12:34:41"}
+{"level":"info","message":"LiquidityManager: Detected network 84532. Using appropriate Uniswap addresses.","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"Orchestrator: Resuming deployment for existing token: 0x0000000000000000000000000000000000000001","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"Checking pool for token: 0x0000000000000000000000000000000000000001 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 12:34:42"}
+{"level":"info","message":"✅ Pool created at: 0x9F39c6632F931e8Ae8884a6926d355a563C5A341","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"Initializing pool at 0x9F39c6632F931e8Ae8884a6926d355a563C5A341 with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"Calculated sqrtPriceX96: 158456325028528668016640","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 12:34:49"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 12:34:53"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"error","message":"❌ Deployment Orchestration Failed: could not decode result data (value=\"0x\", info={ \"method\": \"decimals\", \"signature\": \"decimals()\" }, code=BAD_DATA, version=6.16.0)","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"error","message":"Pipeline: Onchain execution failed: could not decode result data (value=\"0x\", info={ \"method\": \"decimals\", \"signature\": \"decimals()\" }, code=BAD_DATA, version=6.16.0)","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"error","message":"Pipeline: Execution encountered an error: could not decode result data (value=\"0x\", info={ \"method\": \"decimals\", \"signature\": \"decimals()\" }, code=BAD_DATA, version=6.16.0)","service":"trend-agent","timestamp":"2026-02-18 12:34:55"}
+{"level":"info","message":"TokenList: Fetching tokens from DB...","service":"trend-agent","timestamp":"2026-02-18 13:33:57"}
+{"level":"info","message":"TokenList: Standard list generated with 4 tokens.","service":"trend-agent","timestamp":"2026-02-18 13:33:57"}
+{"level":"info","message":"IPFS: Uploading metadata for OpenClaw AI Trends...","service":"trend-agent","timestamp":"2026-02-18 13:33:57"}
+{"level":"info","message":"IPFS: Metadata uploaded. CID: QmZPxpURqWcAwAWavRyEcSYBZt5NzGnGXTg6Ykunr2sRp9","service":"trend-agent","timestamp":"2026-02-18 13:33:59"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 16:49:56"}
+{"level":"info","message":"Starting Idempotency Verification (Post-Reversion)","service":"trend-agent","timestamp":"2026-02-18 16:50:06"}
+{"level":"info","message":"Phase 1: Creating 'Discovery' record for REVERT_TEST_1771429811486","service":"trend-agent","timestamp":"2026-02-18 16:50:11"}
+{"level":"info","message":"StateManager: Saved deployment 0x1234567890123456789012345678901234567890","service":"trend-agent","timestamp":"2026-02-18 16:50:11"}
+{"level":"info","message":"Phase 2: Running pipeline for the same trend (Resumption Check)","service":"trend-agent","timestamp":"2026-02-18 16:50:11"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771429811829 for region: Nigeria","service":"trend-agent","timestamp":"2026-02-18 16:50:11"}
+{"level":"warn","message":"🛑 DAILY GUARD: Nigeria already has a successful token launch today. Skipping cycle.","service":"trend-agent","timestamp":"2026-02-18 16:50:12"}
+{"level":"info","message":"Idempotency Verification Complete.","service":"trend-agent","timestamp":"2026-02-18 16:50:12"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 17:17:58"}
+{"level":"info","message":"Attempting API fetch for Nigeria...","service":"trend-agent","timestamp":"2026-02-18 17:18:08"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-18 17:18:08"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"headers":{"cf-cache-status":"DYNAMIC","cf-ray":"9cfed6bc6d41ef07-LHR","connection":"keep-alive","content-length":"74","content-type":"application/json","date":"Wed, 18 Feb 2026 16:18:10 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=cmUtweqQiuOOWqJxYrch9WiEPHV%2BIsw4SFVVI88rc%2BqhFo3gLSJbWjffsXIXA0pBdUBNmyDA0UQLICaMy0CMTK5ylf66G7nJIJIKo78s\"}]}","server":"cloudflare","x-trace-id":"781327ef-e572-4473-8b64-3d346c0ad069"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":402,"timestamp":"2026-02-18 17:18:10"}
+{"level":"warn","message":"⚠️ TwitterAPI.io failed: Request failed with status code 402. Falling back to Scraper.","service":"trend-agent","timestamp":"2026-02-18 17:18:10"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-18 17:18:10"}
+{"level":"info","message":"Scraped 49 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-18 17:18:12"}
+{"level":"info","message":"✅ Successfully scraped 49 trends for Nigeria","service":"trend-agent","timestamp":"2026-02-18 17:18:12"}
+{"level":"info","message":"Moderating topic: \"simi\"","service":"trend-agent","timestamp":"2026-02-18 17:18:12"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 17:19:10"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-18 17:20:14"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771431621375 for region: Nigeria","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Found trend \"Virtuals Test 1771431621373\" with confidence High","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Recording discovery of trend \"Virtuals Test 1771431621373\" for idempotency.","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Moderating topic: \"Virtuals Test 1771431621373\"","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Trend \"Virtuals Test 1771431621373\" approved. Symbol: VRTL","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"SafetyManager: Current balance: 0.005284652131774335 ETH","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"🚀 STARTING VIRTUALS-STYLE DEPLOYMENT for Virtuals Test 1771431621373 ($VRTL)","service":"trend-agent","timestamp":"2026-02-18 17:20:21"}
+{"level":"info","message":"LiquidityManager: Detected network 8453. Using appropriate Uniswap addresses.","service":"trend-agent","timestamp":"2026-02-18 17:20:22"}
+{"level":"info","message":"🎨 Orchestrator: Generating Virtuals-style Logo...","service":"trend-agent","timestamp":"2026-02-18 17:20:22"}
+{"level":"info","message":"🎨 Generating Logo for VRTL (Virtuals Test 1771431621373 in Nigeria)...","service":"trend-agent","timestamp":"2026-02-18 17:20:22"}
+{"level":"error","message":"❌ Image Generation Failed: this.model.generateImages is not a function","service":"trend-agent","timestamp":"2026-02-18 17:20:22"}
+{"level":"info","message":"Orchestrator: Deploying standard token VRTL for trend \"Virtuals Test 1771431621373\"...","service":"trend-agent","timestamp":"2026-02-18 17:20:22"}
+{"level":"info","message":"✅ Token Deployed at: 0x3230A8119Dfda2405025e54016884e9D3a7Ac89C","service":"trend-agent","timestamp":"2026-02-18 17:20:25"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-18 17:20:25"}
+{"level":"info","message":"Checking pool for token: 0x3230A8119Dfda2405025e54016884e9D3a7Ac89C / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-18 17:20:25"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-18 17:20:25"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-18 17:20:26"}
+{"level":"info","message":"✅ Pool created at: 0xdE4d48fCFAC213e4D1E297e7261b108E0d5CE02c","service":"trend-agent","timestamp":"2026-02-18 17:20:30"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-18 17:20:30"}
+{"level":"info","message":"Initializing pool at 0xdE4d48fCFAC213e4D1E297e7261b108E0d5CE02c with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-18 17:20:30"}
+{"level":"info","message":"Calculated sqrtPriceX96: 158456325028528668016640","service":"trend-agent","timestamp":"2026-02-18 17:20:30"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-18 17:20:30"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-18 17:20:31"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-18 17:20:33"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-18 17:20:35"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-18 17:20:35"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-18 17:20:35"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-18 17:20:44"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-18 17:20:46"}
+{"level":"info","message":"✅ Liquidity Added! Position Minted.","service":"trend-agent","timestamp":"2026-02-18 17:20:49"}
+{"level":"info","message":"✅ Liquidity Added. Tx: 0x046cf84afd0a62ba746bc3c4e6ce72993f19b8c62019393761134bf86e77b832","service":"trend-agent","timestamp":"2026-02-18 17:20:49"}
+{"level":"info","message":"Step 4: Preparing Announcement for X...","service":"trend-agent","timestamp":"2026-02-18 17:20:49"}
+{"level":"info","message":"Waiting 15s before posting to X...","service":"trend-agent","timestamp":"2026-02-18 17:20:49"}
+{"level":"info","message":"Formatted Proxy for TweetAPI: 31.59.20.176:6754@gcoudqji:h23xgms7oj6r","service":"trend-agent","timestamp":"2026-02-18 17:21:04"}
+{"level":"info","message":"Posting tweet via TweetAPI.com: \"🚀 New Trend Detected: Virtuals Test 1771431621373!\n\nDeployed VRTL on Base.\nCA: 0x3230A8119Dfda2405025e54016884e9D3a7Ac89C\n\n#Base #VRTL #Nigeria\"","service":"trend-agent","timestamp":"2026-02-18 17:21:04"}
+{"data":{"action":"create_tweet","id":"2024157232066129963","metadata":{"author_username":"trendsagent_","created_at":"Wed Feb 18 16:21:05 +0000 2026","text":"🚀 New Trend Detected: Virtuals Test 1771431621373!\n\nDeployed VRTL on Base.\nCA: 0x3230A8119Dfda2405025e54016884e9D3a7Ac89C\n\n#Base #VRTL #Nigeria","tweet_id":"2024157232066129963","url":"https://twitter.com/trendsagent_/status/2024157232066129963"},"success":true,"timestamp":"2026-02-18T16:21:06.101Z"},"level":"info","message":"Tweet posted successfully via TweetAPI.com!","service":"trend-agent","timestamp":"2026-02-18 17:21:06"}
+{"level":"error","message":"IpfsUploader: Pinata keys are missing from .env","service":"trend-agent","timestamp":"2026-02-18 17:28:44"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:28:51"}
+{"level":"error","message":"❌ Token List Generation Failed: this.stateManager.getAllDeployments is not a function","service":"trend-agent","timestamp":"2026-02-18 17:28:51"}
+{"level":"error","message":"IpfsUploader: Pinata keys are missing from .env","service":"trend-agent","timestamp":"2026-02-18 17:29:31"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:29:38"}
+{"level":"error","message":"❌ Failed to fetch metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04: could not decode result data (value=\"0x\", info={ \"method\": \"getTokenMetadata\", \"signature\": \"getTokenMetadata(address)\" }, code=BAD_DATA, version=6.16.0)","service":"trend-agent","timestamp":"2026-02-18 17:29:42"}
+{"level":"error","message":"❌ Failed to fetch metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a: could not decode result data (value=\"0x\", info={ \"method\": \"getTokenMetadata\", \"signature\": \"getTokenMetadata(address)\" }, code=BAD_DATA, version=6.16.0)","service":"trend-agent","timestamp":"2026-02-18 17:29:43"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 17:29:43"}
+{"level":"error","message":"❌ IPFS Metadata Upload Failed: Cannot read properties of undefined (reading 'pinJSONToIPFS')","service":"trend-agent","timestamp":"2026-02-18 17:29:43"}
+{"level":"error","message":"❌ Token List Generation Failed: Cannot read properties of undefined (reading 'pinJSONToIPFS')","service":"trend-agent","timestamp":"2026-02-18 17:29:43"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:31:27"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 17:31:30"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 17:31:30"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 17:31:30"}
+{"level":"info","message":"✅ Metadata uploaded. CID: QmX942ZxF67kkJV9d6mL5YccWjUgSgob7gYMK4wzPcJyVx","service":"trend-agent","timestamp":"2026-02-18 17:31:33"}
+{"level":"info","message":"✅ Token List published to IPFS: https://gateway.pinata.cloud/ipfs/QmX942ZxF67kkJV9d6mL5YccWjUgSgob7gYMK4wzPcJyVx","service":"trend-agent","timestamp":"2026-02-18 17:31:33"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:43:07"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 17:43:10"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 17:43:10"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 17:43:10"}
+{"level":"info","message":"✅ Metadata uploaded. CID: QmSTBZXsEEnj4qQkv7vGQCP4xyppeK88J8Zqjkn2Vv48Lc","service":"trend-agent","timestamp":"2026-02-18 17:43:13"}
+{"level":"info","message":"✅ Token List published to IPFS: https://gateway.pinata.cloud/ipfs/QmSTBZXsEEnj4qQkv7vGQCP4xyppeK88J8Zqjkn2Vv48Lc","service":"trend-agent","timestamp":"2026-02-18 17:43:13"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:44:36"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 17:44:36"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 17:44:38"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 17:44:38"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 17:44:38"}
+{"level":"error","message":"❌ Token List Failed: Invalid Token List Schema: /tokens must NOT have fewer than 1 items","service":"trend-agent","timestamp":"2026-02-18 17:44:38"}
+{"level":"info","message":"📜 Registering metadata CID QmX942ZxF67kkJV9d6mL5YccWjUgSgob7gYMK4wzPcJyVx for token 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04...","service":"trend-agent","timestamp":"2026-02-18 17:45:15"}
+{"level":"info","message":"✅ Token Metadata registered on-chain. Tx: 0x7a331070ddccac9449102af3126a94b01525b693be00d92312eb18a46da62dd5","service":"trend-agent","timestamp":"2026-02-18 17:45:18"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:45:39"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 17:45:39"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 17:45:41"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 17:45:41"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 17:45:41"}
+{"level":"error","message":"❌ Token List Failed: Invalid Token List Schema: /tokens must NOT have fewer than 1 items","service":"trend-agent","timestamp":"2026-02-18 17:45:41"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 17:46:08"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 17:46:08"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 17:46:11"}
+{"level":"info","message":"✅ Validation Passed!","service":"trend-agent","timestamp":"2026-02-18 17:46:11"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 17:46:11"}
+{"level":"info","message":"✅ Metadata uploaded. CID: QmUzc8Gu3NQHBHHi2m78wU7tqy9VPCEB6iB9zFzPzf6ETN","service":"trend-agent","timestamp":"2026-02-18 17:46:13"}
+{"level":"info","message":"✅ Token List published to IPFS: https://gateway.pinata.cloud/ipfs/QmUzc8Gu3NQHBHHi2m78wU7tqy9VPCEB6iB9zFzPzf6ETN","service":"trend-agent","timestamp":"2026-02-18 17:46:13"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 19:32:08"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 19:32:16"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 19:32:16"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04","service":"trend-agent","timestamp":"2026-02-18 19:32:18"}
+{"level":"warn","message":"TokenRegistryService: No metadata for 0x1EA0372B607152801a52EE4AB5aEb6d3da6eD30a","service":"trend-agent","timestamp":"2026-02-18 19:32:18"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 19:32:18"}
+{"level":"error","message":"❌ Token List Failed: Invalid Token List Schema: /tokens must NOT have fewer than 1 items","service":"trend-agent","timestamp":"2026-02-18 19:32:18"}
+{"level":"info","message":"📜 Registering metadata CID QmX942ZxF67kkJV9d6mL5YccWjUgSgob7gYMK4wzPcJyVx for token 0xC9223CbF287EB6Baf7aCF7e9ABC20A14800f6c04...","service":"trend-agent","timestamp":"2026-02-18 19:32:43"}
+{"level":"info","message":"✅ Token Metadata registered on-chain. Tx: 0x73b4ab3b825755eb106b7cb692d25e0755c13ee84f9ee80f045c3dac04e1eec6","service":"trend-agent","timestamp":"2026-02-18 19:32:53"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 19:33:11"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 19:33:11"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 19:33:27"}
+{"level":"info","message":"✅ Validation Passed!","service":"trend-agent","timestamp":"2026-02-18 19:33:27"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 19:33:27"}
+{"level":"info","message":"✅ Metadata uploaded. CID: QmP8cLiP6p6mQy9gW5ZsmqoAXhAEiyq4c7NzP4feELvS4A","service":"trend-agent","timestamp":"2026-02-18 19:33:35"}
+{"level":"info","message":"✅ Token List published to IPFS: https://gateway.pinata.cloud/ipfs/QmP8cLiP6p6mQy9gW5ZsmqoAXhAEiyq4c7NzP4feELvS4A","service":"trend-agent","timestamp":"2026-02-18 19:33:35"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 19:39:51"}
+{"level":"info","message":"📊 Generating Uniswap Token List from On-Chain Registry...","service":"trend-agent","timestamp":"2026-02-18 19:40:01"}
+{"level":"info","message":"StateManager: Connected to SQLite.","service":"trend-agent","timestamp":"2026-02-18 19:40:01"}
+{"level":"info","message":"🛡️ Validating Token List against official Uniswap schema...","service":"trend-agent","timestamp":"2026-02-18 19:40:12"}
+{"level":"info","message":"✅ Validation Passed!","service":"trend-agent","timestamp":"2026-02-18 19:40:12"}
+{"level":"info","message":"☁️ Uploading metadata JSON to IPFS...","service":"trend-agent","timestamp":"2026-02-18 19:40:12"}
+{"level":"info","message":"✅ Metadata uploaded. CID: QmUop5sfzYazDAq5ZyhWPkz4vifCLQN3hoWD4xHaQJTbch","service":"trend-agent","timestamp":"2026-02-18 19:40:18"}
+{"level":"info","message":"✅ Token List published to IPFS: https://gateway.pinata.cloud/ipfs/QmUop5sfzYazDAq5ZyhWPkz4vifCLQN3hoWD4xHaQJTbch","service":"trend-agent","timestamp":"2026-02-18 19:40:18"}
+{"level":"warn","message":"⚠️ Webhook Service: WEBHOOK_URL not configured. Skipping notification.","service":"trend-agent","timestamp":"2026-02-18 20:03:23"}
+{"level":"info","message":"🔗 Webhook Service: Sending notification to https://your-website.com/api/webhook...","service":"trend-agent","timestamp":"2026-02-18 20:04:45"}
+{"level":"error","message":"❌ Webhook Service: Notification failed. Status: N/A. Error: timeout of 5000ms exceeded","service":"trend-agent","timestamp":"2026-02-18 20:04:51"}

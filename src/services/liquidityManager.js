@@ -22,20 +22,36 @@ const BASE_MAINNET = {
     WETH: '0x4200000000000000000000000000000000000006'
 };
 
-// Config: Use Sepolia by default unless PRODUCTION=true
-const IS_PROD = process.env.NODE_ENV === 'production';
-const CONFIG = IS_PROD ? BASE_MAINNET : BASE_SEPOLIA;
-
-const FACTORY_ADDRESS = process.env.UNISWAP_FACTORY || CONFIG.factory;
-const PM_ADDRESS = process.env.UNISWAP_PM || CONFIG.positionManager;
-const WETH_ADDRESS = process.env.WETH_ADDRESS || CONFIG.WETH;
+const FACTORIES = {
+    84532: BASE_SEPOLIA,
+    8453: BASE_MAINNET
+};
 
 class LiquidityManager {
     constructor(provider, signer) {
         this.provider = provider;
         this.signer = signer;
-        this.factoryContract = new ethers.Contract(FACTORY_ADDRESS, IUniswapV3Factory.abi, signer);
-        this.pmContract = new ethers.Contract(PM_ADDRESS, INonfungiblePositionManager.abi, signer);
+        // Default to Sepolia if not found
+        this.config = BASE_SEPOLIA;
+    }
+
+    async init() {
+        const { chainId } = await this.provider.getNetwork();
+        const networkId = Number(chainId);
+        if (FACTORIES[networkId]) {
+            this.config = FACTORIES[networkId];
+            logger.info(`LiquidityManager: Detected network ${networkId}. Using appropriate Uniswap addresses.`);
+        } else {
+            logger.warn(`LiquidityManager: Unknown network ${networkId}. Defaulting to Base Sepolia.`);
+        }
+
+        const factoryAddr = process.env.UNISWAP_FACTORY || this.config.factory;
+        const pmAddr = process.env.UNISWAP_PM || this.config.positionManager;
+        this.wethAddr = process.env.WETH_ADDRESS || this.config.WETH;
+
+        this.factoryContract = new ethers.Contract(factoryAddr, IUniswapV3Factory.abi, this.signer);
+        this.pmContract = new ethers.Contract(pmAddr, INonfungiblePositionManager.abi, this.signer);
+        return this;
     }
 
     /**
@@ -48,9 +64,9 @@ class LiquidityManager {
         logger.info(`Checking pool for token: ${tokenAddress} / WETH (Fee: ${fee})`);
 
         // Token0 must be less than Token1 address for Uniswap logic
-        const [token0, token1] = tokenAddress.toLowerCase() < WETH_ADDRESS.toLowerCase()
-            ? [tokenAddress, WETH_ADDRESS]
-            : [WETH_ADDRESS, tokenAddress];
+        const [token0, token1] = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase()
+            ? [tokenAddress, this.wethAddr]
+            : [this.wethAddr, tokenAddress];
 
         let poolAddress;
         try {
@@ -134,7 +150,7 @@ class LiquidityManager {
         // Price (Token per ETH) = 1 / initialPrice
         // sqrtPriceX96 = sqrt(1/price) * 2^96
 
-        const isToken0 = tokenAddress.toLowerCase() < WETH_ADDRESS.toLowerCase();
+        const isToken0 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase();
         const price = parseFloat(initialPrice);
         let sqrtPrice;
 
@@ -232,6 +248,24 @@ class LiquidityManager {
     async addLiquidity(tokenAddress, amountToken, amountETH, fee = 3000) {
         logger.info(`Adding Liquidity: ${amountToken} Tokens + ${amountETH} ETH`);
 
+        const token0 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? tokenAddress : this.wethAddr;
+        const token1 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? this.wethAddr : tokenAddress;
+
+        // 0. Check if pool already has REAL liquidity (to prevent double-add on resumption)
+        try {
+            const poolAddress = await this.factoryContract.getPool(token0, token1, fee);
+            if (poolAddress !== ethers.ZeroAddress) {
+                const poolContract = new ethers.Contract(poolAddress, ['function liquidity() external view returns (uint128)'], this.provider);
+                const currentLiquidity = await poolContract.liquidity();
+                if (currentLiquidity > 0n) {
+                    logger.warn(`⚠️ ON-CHAIN GUARD: Pool at ${poolAddress} already has liquidity (${currentLiquidity.toString()}). Skipping addition.`);
+                    return "ALREADY_EXISTING_LIQUIDITY";
+                }
+            }
+        } catch (liquidityError) {
+            logger.warn(`Could not verify existing liquidity (ignoring): ${liquidityError.message}`);
+        }
+
         const tokenContract = new ethers.Contract(tokenAddress, [
             "function approve(address spender, uint256 amount) external returns (bool)",
             "function allowance(address owner, address spender) external view returns (uint256)",
@@ -244,13 +278,11 @@ class LiquidityManager {
         const amountETHWei = ethers.parseEther(amountETH);
 
         logger.info("Approving PositionManager to spend tokens...");
-        const txApprove = await tokenContract.approve(PM_ADDRESS, amountTokenWei);
+        const txApprove = await tokenContract.approve(this.config.positionManager, amountTokenWei);
         await txApprove.wait();
 
         // 2. Sort tokens
-        const token0 = tokenAddress.toLowerCase() < WETH_ADDRESS.toLowerCase() ? tokenAddress : WETH_ADDRESS;
-        const token1 = tokenAddress.toLowerCase() < WETH_ADDRESS.toLowerCase() ? WETH_ADDRESS : tokenAddress;
-
+        // (token0 and token1 are already defined above)
         const amount0Desired = token0 === tokenAddress ? amountTokenWei : amountETHWei;
         const amount1Desired = token1 === tokenAddress ? amountTokenWei : amountETHWei;
 
