@@ -58,18 +58,29 @@ class OpenClawScheduler {
                     NODE_ENV: network === 'base' ? 'production' : process.env.NODE_ENV
                 };
 
-                exec(command, { env }, (error, stdout, stderr) => {
+                const options = {
+                    env,
+                    // FIX: Increase buffer from default 1MB to 50MB.
+                    // Hardhat outputs a LOT of text (compilation, logs, etc.) which was
+                    // silently killing the process when it exceeded 1MB.
+                    maxBuffer: 50 * 1024 * 1024,
+                    // Safety timeout: kill the process if it runs for more than 10 minutes
+                    timeout: 10 * 60 * 1000
+                };
+
+                exec(command, options, (error, stdout, stderr) => {
                     if (error) {
                         logger.error(`OpenClawScheduler: Error executing pipeline: ${error.message}`);
-                        // Log stderr for debugging
-                        if (stderr) logger.error(`stderr: ${stderr}`);
+                        // Log full stderr output for debugging
+                        if (stderr) logger.error(`stderr: ${stderr.slice(-3000)}`);
+                        if (stdout) logger.error(`stdout (last 3000 chars): ${stdout.slice(-3000)}`);
                         reject(error);
                         return;
                     }
                     if (stderr) {
-                        logger.warn(`OpenClawScheduler: Pipeline stderr: ${stderr}`);
+                        logger.warn(`OpenClawScheduler: Pipeline stderr: ${stderr.slice(-2000)}`);
                     }
-                    logger.info(`OpenClawScheduler: Pipeline stdout: ${stdout}`);
+                    logger.info(`OpenClawScheduler: Pipeline stdout: ${stdout.slice(-5000)}`);
                     resolve();
                 });
             });
