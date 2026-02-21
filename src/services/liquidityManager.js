@@ -312,17 +312,36 @@ class LiquidityManager {
 
         logger.info("Minting Liquidity Position...");
 
-        try {
-            // If paying ETH, value matches amountETHWei if ETH is token0 or token1 (manager handles wrap if routed correctly, or standard mintWithETH pattern)
-            // Standard NPM: mint() is payable. It refunds unused ETH.
-            // If strictly WETH is approved, we might need to wrap first, but sending value usually works for WETH pairs on standard router/PM setups.
-            const tx = await this.pmContract.mint(params, { value: amountETHWei });
-            const receipt = await tx.wait();
-            logger.info("✅ Liquidity Added! Position Minted.");
-            return receipt.hash;
-        } catch (error) {
-            logger.error(`Failed to add liquidity: ${error.message}`);
-            throw error;
+        const MAX_MINT_RETRIES = 3;
+        for (let attempt = 1; attempt <= MAX_MINT_RETRIES; attempt++) {
+            try {
+                const feeData = await this.provider.getFeeData();
+                const baseGasPrice = feeData.gasPrice || ethers.parseUnits('0.1', 'gwei');
+                // Start at 100% of current gas, boost by 50% on each retry
+                const multiplier = BigInt(100 + (attempt - 1) * 50);
+                const gasPrice = (baseGasPrice * multiplier) / 100n;
+
+                logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} | gasPrice: ${ethers.formatUnits(gasPrice, 'gwei')} gwei`);
+
+                const tx = await this.pmContract.mint(params, { value: amountETHWei, gasPrice });
+                const receipt = await tx.wait();
+                logger.info("✅ Liquidity Added! Position Minted.");
+                return receipt.hash;
+
+            } catch (error) {
+                const isGasError = error.message && (
+                    error.message.includes('replacement transaction underpriced') ||
+                    error.message.includes('transaction underpriced') ||
+                    error.message.includes('maxFeePerGas')
+                );
+                if (isGasError && attempt < MAX_MINT_RETRIES) {
+                    logger.warn(`⚠️ Gas rejected on attempt ${attempt}. Retrying with higher gas...`);
+                    await new Promise(r => setTimeout(r, 3000));
+                    continue;
+                }
+                logger.error(`Failed to mint liquidity after ${attempt} attempt(s): ${error.message}`);
+                throw error;
+            }
         }
     }
 }
