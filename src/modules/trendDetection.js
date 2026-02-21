@@ -26,18 +26,34 @@ class TrendDetector {
         try {
             logger.info(`Attempting API fetch for ${regionName}...`);
             const apiResponse = await twitterApiIo.getTrends(woeid);
-            // Format: API usually returns [{ name: '...', tweet_volume: ... }, ...]
-            if (apiResponse && apiResponse.length > 0) {
-                rawTrends = apiResponse.map((t, index) => ({
+
+            // API returns: { status: "success", trends: [{ trend: { name, rank } }] }
+            // Handle both old flat array format AND new nested object format
+            let trendArray = [];
+            if (Array.isArray(apiResponse) && apiResponse.length > 0) {
+                // Old format: flat array [{ name, tweet_volume }]
+                trendArray = apiResponse;
+                rawTrends = trendArray.map((t, index) => ({
                     name: t.name,
                     volume: t.tweet_volume || 0,
-                    rank: index + 1 // Preserve the API's own ranking
+                    rank: index + 1
                 }));
+            } else if (apiResponse && apiResponse.trends && apiResponse.trends.length > 0) {
+                // New format: { trends: [{ trend: { name, rank } }] }
+                rawTrends = apiResponse.trends.map((item, index) => ({
+                    name: item.trend?.name || item.name,
+                    volume: item.trend?.tweet_volume || item.tweet_volume || 0,
+                    rank: item.trend?.rank || index + 1
+                }));
+            }
+
+            if (rawTrends.length > 0) {
                 logger.info(`✅ Successfully got ${rawTrends.length} trends from TwitterAPI.io for ${regionName}`);
             }
         } catch (e) {
             logger.warn(`⚠️ TwitterAPI.io failed: ${e.message}. Falling back to Scraper.`);
         }
+
 
         // 2. Fallback to Web Scraper if API failed or returned nothing
         if (rawTrends.length === 0) {
