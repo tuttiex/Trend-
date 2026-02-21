@@ -281,6 +281,13 @@ class LiquidityManager {
         const txApprove = await tokenContract.approve(this.config.positionManager, amountTokenWei);
         await txApprove.wait();
 
+        // Fetch fresh nonce from the network after approve confirms.
+        // Hardhat's internal nonce counter can go stale between transactions,
+        // causing "nonce too low" errors. This guarantees we use the correct next nonce.
+        const freshNonce = await this.signer.getNonce('pending');
+        logger.info(`Nonce refreshed from network: ${freshNonce}`);
+
+
         // 2. Sort tokens
         // (token0 and token1 are already defined above)
         const amount0Desired = token0 === tokenAddress ? amountTokenWei : amountETHWei;
@@ -323,7 +330,7 @@ class LiquidityManager {
 
                 logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} | gasPrice: ${ethers.formatUnits(gasPrice, 'gwei')} gwei`);
 
-                const tx = await this.pmContract.mint(params, { value: amountETHWei, gasPrice });
+                const tx = await this.pmContract.mint(params, { value: amountETHWei, gasPrice, nonce: freshNonce });
                 const receipt = await tx.wait();
                 logger.info("✅ Liquidity Added! Position Minted.");
                 return receipt.hash;
