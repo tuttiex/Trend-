@@ -16,7 +16,7 @@ class ImageGenerator {
 
         // Fallback: SiliconFlow FLUX.1-schnell
         this.siliconFlowKey = process.env.SILICONFLOW_API_KEY;
-        this.siliconFlowEndpoint = 'https://api.siliconflow.cn/v1/images/generations';
+        this.siliconFlowEndpoint = 'https://api.siliconflow.com/v1/images/generations';
         this.siliconFlowModel = 'black-forest-labs/FLUX.1-schnell';
 
         if (!this.geminiKey) logger.warn('ImageGenerator: GEMINI_API_KEY is missing — will use SiliconFlow only.');
