@@ -1,18 +1,31 @@
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const logger = require('./logger');
+require('dotenv').config();
 
 class ContentModerator {
     constructor() {
         // Layer 1: Blocklist (Hardcoded terms)
         this.blocklist = [
-            // Profanity (Generic placeholders)
+            // Profanity
             'fuck', 'shit', 'piss', 'cunt', 'asshole', 'badword',
-            // Sensitive/Political (Example list)
+            // Sensitive/Political
             'war', 'death', 'kill', 'suicide', 'bomb', 'terrorism',
             'nazi', 'racist', 'hate', 'slur',
             'election', 'democrat', 'republican', 'trump', 'biden', 'putin',
             // Scam/Deceptive
             'scam', 'rug', 'honeypot', 'ponzi', 'hack', 'steal'
         ];
+
+        // Layer 3: Gemini LLM moderation
+        // Uses gemini-2.0-flash-lite — cheapest model, ideal for simple classification.
+        // Only 2 calls/day in production (one per region), well within free tier.
+        if (process.env.GEMINI_API_KEY) {
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+            this.llmModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+        } else {
+            logger.warn('ContentModerator: GEMINI_API_KEY not set — LLM layer disabled, using blocklist only.');
+            this.llmModel = null;
+        }
     }
 
     /**
@@ -69,12 +82,64 @@ class ContentModerator {
     }
 
     /**
-     * Placeholder for LLM-based sensitivity check.
+     * Real Gemini LLM sensitivity check.
+     * Asks Gemini to classify the topic as safe or unsafe for crypto token deployment.
+     *
+     * Fail-safe design: any API error or unexpected response blocks the topic.
+     * This ensures a network blip can't accidentally let a harmful trend through.
+     *
+     * @param {string} topic
+     * @returns {Promise<boolean>} true = sensitive (block), false = safe (allow)
      */
     async checkLLMSensitivity(topic) {
-        // Simulation: Reject topics with "sensitive" sounding words for testing
-        const sensitiveSim = ['crime', 'hospital', 'tragedy', 'attack'];
-        return sensitiveSim.some(term => topic.toLowerCase().includes(term));
+        // If Gemini is not configured, skip LLM check (blocklist still runs)
+        if (!this.llmModel) {
+            logger.warn('ContentModerator: LLM check skipped (no API key).');
+            return false;
+        }
+
+        const prompt = `You are a content moderation assistant for an autonomous crypto token deployment agent.
+Your job is to decide if a trending Twitter/X topic is safe to tokenize.
+
+A topic is UNSAFE if it relates to: genocide, mass violence, war crimes, terrorism, ethnic cleansing,
+human tragedy, death of specific people, natural disasters, hate crimes, abuse, suicide, or any deeply
+offensive or politically explosive content that would be inappropriate to profit from.
+
+A topic is SAFE if it relates to: sports, entertainment, celebrity culture, technology, business,
+finance, gaming, movies, music, general pop culture, or neutral news events.
+
+When in doubt, mark as UNSAFE.
+
+Respond with ONLY a valid JSON object, no markdown, no extra text:
+{"safe": true, "reason": "one sentence reason"}
+or
+{"safe": false, "reason": "one sentence reason"}
+
+Topic to evaluate: "${topic}"`;
+
+        try {
+            logger.info(`ContentModerator: Sending "${topic}" to Gemini for LLM sensitivity check...`);
+            const result = await this.llmModel.generateContent(prompt);
+            let text = result.response.text().replace(/```json|```/g, '').trim();
+
+            const parsed = JSON.parse(text);
+
+            if (typeof parsed.safe !== 'boolean') {
+                throw new Error('Unexpected response format from Gemini');
+            }
+
+            const verdict = parsed.safe ? 'SAFE' : 'UNSAFE';
+            logger.info(`ContentModerator: Gemini verdict for "${topic}": ${verdict} — ${parsed.reason}`);
+
+            // Return true if sensitive (i.e. NOT safe)
+            return !parsed.safe;
+
+        } catch (err) {
+            // FAIL SAFE: if Gemini errors or returns garbled JSON, block the topic.
+            // A network blip should never let a harmful trend slip through.
+            logger.error(`ContentModerator: LLM check failed for "${topic}": ${err.message}. Blocking topic as a safety precaution.`);
+            return true; // treated as sensitive = blocked
+        }
     }
 
     /**

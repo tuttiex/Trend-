@@ -27,6 +27,7 @@ class DeploymentOrchestrator {
         let metadataCid = plan.metadataCid;
         let txHash;
         let poolAddress;
+        let imageCid; // declared here so it's accessible on the resume path AND if image generation returns null
 
         try {
             if (!tokenAddress) {
@@ -36,7 +37,7 @@ class DeploymentOrchestrator {
                     const imageBuffer = await imageGenerator.generateTokenLogo(plan.topic, plan.symbol, plan.region);
 
                     if (imageBuffer) {
-                        const imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);
+                        imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);
                         const gatewayBase = "https://gateway.pinata.cloud/ipfs/";
 
                         const metadata = {
