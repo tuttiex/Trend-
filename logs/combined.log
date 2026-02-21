@@ -2245,3 +2245,70 @@
 {"level":"warn","message":"⚠️ Webhook Service: WEBHOOK_URL not configured. Skipping notification.","service":"trend-agent","timestamp":"2026-02-18 20:03:23"}
 {"level":"info","message":"🔗 Webhook Service: Sending notification to https://your-website.com/api/webhook...","service":"trend-agent","timestamp":"2026-02-18 20:04:45"}
 {"level":"error","message":"❌ Webhook Service: Notification failed. Status: N/A. Error: timeout of 5000ms exceeded","service":"trend-agent","timestamp":"2026-02-18 20:04:51"}
+{"level":"info","message":"TrendDetector initialized with Smart Ranking & API Fallback","service":"trend-agent","timestamp":"2026-02-20 21:06:48"}
+{"level":"info","message":"--- Manual Pipeline Execution Starting for Nigeria ---","service":"trend-agent","timestamp":"2026-02-20 21:06:50"}
+{"level":"info","message":"Agent active with address: 0x6b05AD5558AF4279794c7F0cD8FBc6d6ABa0e432","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"level":"info","message":"Executing pipeline for Nigeria...","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"level":"info","message":"Pipeline: Starting execution exec_1771618011904 for region: Nigeria","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"level":"info","message":"Pipeline: Stage 1 - Trend Detection","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"level":"info","message":"Attempting API fetch for Nigeria...","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-20 21:06:51"}
+{"data":{"error":"Unauthorized","message":"Credits is not enough.Please recharge"},"headers":{"cf-cache-status":"DYNAMIC","cf-ray":"9d10a0b7bd21f8b3-LHR","connection":"keep-alive","content-length":"74","content-type":"application/json","date":"Fri, 20 Feb 2026 20:07:01 GMT","nel":"{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}","report-to":"{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=MnNXcOKESgfN90ulD6BrHhDd%2FGPPcd26RHjeyvWZPtni8FzYwIinbs1yLng3qBEgc%2BEAVL7%2Br6iFBXmwxaUuCDklggmll5pmdpeeJ2mrppQ%3D\"}]}","server":"cloudflare","x-trace-id":"6ff64b8e-8679-4489-bae1-88fca78d5051"},"level":"error","message":"TwitterAPI.io API Error:","service":"trend-agent","status":402,"timestamp":"2026-02-20 21:07:01"}
+{"level":"warn","message":"⚠️ TwitterAPI.io failed: Request failed with status code 402. Falling back to Scraper.","service":"trend-agent","timestamp":"2026-02-20 21:07:01"}
+{"level":"info","message":"Scraping trends from https://getdaytrends.com/nigeria/...","service":"trend-agent","timestamp":"2026-02-20 21:07:01"}
+{"level":"info","message":"Scraped 45 trends for nigeria.","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"✅ Successfully scraped 45 trends for Nigeria","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Found trend \"Mirabel\" with confidence 0.6","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Recording discovery of trend \"Mirabel\" for idempotency.","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"StateManager: Saved deployment null","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Stage 2 - Content Moderation","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Moderating topic: \"Mirabel\"","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Trend \"Mirabel\" approved. Symbol: MRBL","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Stage 3 - Planning","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"Pipeline: Stage 4 - Validation","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"SafetyManager: Performing pre-deployment safety checks...","service":"trend-agent","timestamp":"2026-02-20 21:07:11"}
+{"level":"info","message":"SafetyManager: Current balance: 0.004750375764393534 ETH","service":"trend-agent","timestamp":"2026-02-20 21:07:12"}
+{"level":"warn","message":"SafetyManager: LOW BALANCE ALERT! Balance is below 0.05 ETH","service":"trend-agent","timestamp":"2026-02-20 21:07:12"}
+{"level":"info","message":"SafetyManager: All safe. Proceeding.","service":"trend-agent","timestamp":"2026-02-20 21:07:12"}
+{"level":"info","message":"Pipeline: Stage 5 - Onchain Execution","service":"trend-agent","timestamp":"2026-02-20 21:07:12"}
+{"level":"info","message":"🚀 STARTING VIRTUALS-STYLE DEPLOYMENT for Mirabel ($MRBL)","service":"trend-agent","timestamp":"2026-02-20 21:07:12"}
+{"level":"info","message":"LiquidityManager: Detected network 8453. Using appropriate Uniswap addresses.","service":"trend-agent","timestamp":"2026-02-20 21:07:13"}
+{"level":"info","message":"🎨 Orchestrator: Generating Virtuals-style Logo...","service":"trend-agent","timestamp":"2026-02-20 21:07:13"}
+{"level":"info","message":"🎨 Generating Logo for MRBL (Mirabel in Nigeria)...","service":"trend-agent","timestamp":"2026-02-20 21:07:13"}
+{"level":"error","message":"❌ Image Generation Failed: this.model.generateImages is not a function","service":"trend-agent","timestamp":"2026-02-20 21:07:13"}
+{"level":"info","message":"Orchestrator: Deploying standard token MRBL for trend \"Mirabel\"...","service":"trend-agent","timestamp":"2026-02-20 21:07:13"}
+{"level":"info","message":"✅ Token Deployed at: 0xB22E4Bef03237b4fb9cA9F253F8d5BCCcb7Ae7E9","service":"trend-agent","timestamp":"2026-02-20 21:07:15"}
+{"level":"info","message":"Step 2: Creating Uniswap V3 Pool...","service":"trend-agent","timestamp":"2026-02-20 21:07:15"}
+{"level":"info","message":"Checking pool for token: 0xB22E4Bef03237b4fb9cA9F253F8d5BCCcb7Ae7E9 / WETH (Fee: 3000)","service":"trend-agent","timestamp":"2026-02-20 21:07:15"}
+{"level":"info","message":"Pool does not exist. Creating new pool...","service":"trend-agent","timestamp":"2026-02-20 21:07:15"}
+{"level":"info","message":"Attempt 1/3 to create pool...","service":"trend-agent","timestamp":"2026-02-20 21:07:16"}
+{"level":"info","message":"✅ Pool created at: 0x3b99beA423215F97b55d82086a1Aef420F72684E","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"Calculated Initial Price: 0.000000000004000000 ETH per Token","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"Initializing pool at 0x3b99beA423215F97b55d82086a1Aef420F72684E with price: 0.000000000004000000 ETH","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"Calculated sqrtPriceX96: 39614081257132168796771975168000000","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"Checking pool state (Attempt 1/3)...","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"Initializing pool with price...","service":"trend-agent","timestamp":"2026-02-20 21:07:21"}
+{"level":"info","message":"✅ Pool Initialized with Price. Waiting for propagation...","service":"trend-agent","timestamp":"2026-02-20 21:07:24"}
+{"level":"info","message":"✅ Pool Initialization verified on-chain.","service":"trend-agent","timestamp":"2026-02-20 21:07:26"}
+{"level":"info","message":"Step 3: Adding Initial Liquidity...","service":"trend-agent","timestamp":"2026-02-20 21:07:26"}
+{"level":"info","message":"Adding Liquidity: 100000000 Tokens + 0.0004 ETH","service":"trend-agent","timestamp":"2026-02-20 21:07:26"}
+{"level":"info","message":"Approving PositionManager to spend tokens...","service":"trend-agent","timestamp":"2026-02-20 21:07:31"}
+{"level":"info","message":"Minting Liquidity Position...","service":"trend-agent","timestamp":"2026-02-20 21:07:33"}
+{"level":"error","message":"Failed to add liquidity: replacement transaction underpriced","service":"trend-agent","timestamp":"2026-02-20 21:07:35"}
+{"level":"error","message":"❌ Deployment Orchestration Failed: replacement transaction underpriced","service":"trend-agent","timestamp":"2026-02-20 21:07:35"}
+{"level":"error","message":"Pipeline: Onchain execution failed: replacement transaction underpriced","service":"trend-agent","timestamp":"2026-02-20 21:07:35"}
+{"level":"info","message":"StateManager: Updated deployment for topic \"Mirabel\"","service":"trend-agent","timestamp":"2026-02-20 21:07:35"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-20 22:48:44"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-20 22:49:17"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-20 23:33:57"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-20 23:34:39"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424977","service":"trend-agent","timestamp":"2026-02-20 23:40:04"}
+{"level":"info","message":"Fetching trends from twitterapi.io (Standalone) for WOEID: 23424908","service":"trend-agent","timestamp":"2026-02-20 23:41:34"}
+{"level":"info","message":"🎨 Generating Logo for XBOX (Xbox in United States)...","service":"trend-agent","timestamp":"2026-02-21 12:25:09"}
+{"level":"error","message":"❌ Image Generation Failed: Request failed with status code 404","service":"trend-agent","timestamp":"2026-02-21 12:25:10"}
+{"level":"info","message":"🎨 Generating Logo for XBOX (Xbox in United States)...","service":"trend-agent","timestamp":"2026-02-21 12:26:33"}
+{"level":"error","message":"❌ Image Generation Failed: models/imagen-3.0-generate-001 is not found for API version v1beta, or is not supported for predict. Call ListModels to see the list of available models and their supported methods.","service":"trend-agent","timestamp":"2026-02-21 12:26:35"}
+{"level":"info","message":"🎨 Generating Logo for XBOX (Xbox in United States)...","service":"trend-agent","timestamp":"2026-02-21 12:28:07"}
+{"level":"error","message":"❌ Image Generation Failed: Imagen API is only accessible to billed users at this time.","service":"trend-agent","timestamp":"2026-02-21 12:28:10"}
+{"level":"info","message":"🎨 Generating Logo for XBOX (Xbox in United States)...","service":"trend-agent","timestamp":"2026-02-21 13:10:47"}
+{"level":"error","message":"❌ Image Generation Failed: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-flash-preview-image\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-flash-preview-image\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.5-flash-preview-image\nPlease retry in 10.196296027s.","service":"trend-agent","timestamp":"2026-02-21 13:10:48"}
