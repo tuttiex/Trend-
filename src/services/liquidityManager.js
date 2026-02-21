@@ -1,6 +1,5 @@
 const { ethers } = require("ethers");
-const { Token, Percent } = require("@uniswap/sdk-core");
-const { Pool, Position, nearestUsableTick } = require("@uniswap/v3-sdk");
+const { nearestUsableTick } = require("@uniswap/v3-sdk");
 const IUniswapV3Factory = require("@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json");
 const INonfungiblePositionManager = require("@uniswap/v3-periphery/artifacts/contracts/interfaces/INonfungiblePositionManager.sol/INonfungiblePositionManager.json");
 const logger = require('../utils/logger');
@@ -10,11 +9,11 @@ require('dotenv').config();
 const BASE_SEPOLIA = {
     factory: '0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24',
     positionManager: '0x27F971cb582BF9E50F397e4d29a5C7A34f11faA2',
-    swapRouter: '0x94cC0AaC535CCDB3C01d6787D6413C739ae12bc4', // SwapRouter02 typically
+    swapRouter: '0x94cC0AaC535CCDB3C01d6787D6413C739ae12bc4',
     WETH: '0x4200000000000000000000000000000000000006'
 };
 
-// Base Mainnet Addresses (For Production Switch)
+// Base Mainnet Addresses (For Production)
 const BASE_MAINNET = {
     factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
     positionManager: '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1',
@@ -27,12 +26,25 @@ const FACTORIES = {
     8453: BASE_MAINNET
 };
 
+// FIX #6: Maps every valid Uniswap V3 fee tier to its required tick spacing.
+// The original code hardcoded 60, which is only correct for fee=3000 (0.3%).
+// fee=500 (0.05%) → spacing 10 | fee=3000 (0.3%) → spacing 60 | fee=10000 (1%) → spacing 200
+const FEE_TO_TICK_SPACING = { 500: 10, 3000: 60, 10000: 200 };
+
+// FIX #4: Maximum time to wait for a transaction to be mined before throwing.
+// Prevents tx.wait() from hanging indefinitely on congested networks, which
+// was silently defeating the retry logic (the loop never retried).
+const TX_TIMEOUT_MS = 120_000; // 2 minutes
+
+// Slippage tolerance: set to 0n to never revert on price movement (original behaviour).
+// Change to e.g. 100n for 1% protection if desired.
+const SLIPPAGE_BPS = 0n;
+
 class LiquidityManager {
     constructor(provider, signer) {
         this.provider = provider;
         this.signer = signer;
-        // Default to Sepolia if not found
-        this.config = BASE_SEPOLIA;
+        this.config = BASE_SEPOLIA; // default until init() detects network
     }
 
     async init() {
@@ -49,21 +61,99 @@ class LiquidityManager {
         const pmAddr = process.env.UNISWAP_PM || this.config.positionManager;
         this.wethAddr = process.env.WETH_ADDRESS || this.config.WETH;
 
+        // GROUP B FIX #2: Store the *resolved* position manager address so that
+        // token approvals in addLiquidity() always target the same contract that
+        // pmContract points to. Previously, approve() used this.config.positionManager
+        // (the hardcoded default), which diverges from pmContract when UNISWAP_PM
+        // env var is set — causing "insufficient allowance" reverts on every mint.
+        this._pmAddr = pmAddr;
+
         this.factoryContract = new ethers.Contract(factoryAddr, IUniswapV3Factory.abi, this.signer);
         this.pmContract = new ethers.Contract(pmAddr, INonfungiblePositionManager.abi, this.signer);
         return this;
     }
 
+    // ─── Private Helpers ──────────────────────────────────────────────────────
+
     /**
-     * Creates a pool for the given token and WETH if it doesn't exist.
-     * @param {string} tokenAddress 
-     * @param {number} fee e.g. 3000 for 0.3%, 10000 for 1%
+     * FIX #7: Throws a clear error if init() was never called.
+     * Previously, skipping init() produced a cryptic "cannot read property of undefined".
+     */
+    _requireInit() {
+        if (!this.factoryContract || !this.pmContract) {
+            throw new Error('LiquidityManager not initialized. Call await init() before using this instance.');
+        }
+    }
+
+    /**
+     * FIX #4: Wraps tx.wait() in a Promise.race against a timeout.
+     * Without this, a stuck transaction blocks the retry loop forever.
+     * @param {ethers.TransactionResponse} tx
+     * @param {number} timeoutMs
+     */
+    async _waitWithTimeout(tx, timeoutMs = TX_TIMEOUT_MS) {
+        return Promise.race([
+            tx.wait(),
+            new Promise((_, reject) =>
+                setTimeout(
+                    () => reject(new Error(`Transaction timed out after ${timeoutMs / 1000}s. Hash: ${tx.hash}`)),
+                    timeoutMs
+                )
+            )
+        ]);
+    }
+
+    /**
+     * FIX #3 (part 1): Integer square root via Newton's method — fully BigInt-safe.
+     * The original code used Math.sqrt() with Number(2n**96n), which silently loses
+     * precision because 2^96 exceeds JavaScript's 53-bit float mantissa.
+     * @param {bigint} value
+     * @returns {bigint}
+     */
+    _bigIntSqrt(value) {
+        if (value < 0n) throw new Error('Cannot compute sqrt of a negative BigInt');
+        if (value < 2n) return value;
+        let x = value;
+        let y = (x + 1n) / 2n;
+        while (y < x) {
+            x = y;
+            y = (x + value / x) / 2n;
+        }
+        return x;
+    }
+
+    /**
+     * FIX #3 (part 2): Converts a decimal price string (e.g. "0.000000004") to
+     * a scaled BigInt with 18 decimal places, avoiding float parsing entirely.
+     * @param {string} decStr - Decimal string (e.g. from toFixed(18))
+     * @param {bigint} decimals - Number of decimal places to scale to
+     * @returns {bigint}
+     */
+    _parseDecimalToBigInt(decStr, decimals = 18n) {
+        const [intStr = '0', fracStr = ''] = decStr.split('.');
+        const padded = fracStr.padEnd(Number(decimals), '0').slice(0, Number(decimals));
+        return BigInt(intStr) * (10n ** decimals) + BigInt(padded || '0');
+    }
+
+    // ─── Public Methods ───────────────────────────────────────────────────────
+
+    /**
+     * Creates a Uniswap V3 pool for the given token and WETH if it doesn't exist.
+     * @param {string} tokenAddress
+     * @param {number} fee - Fee tier: 500 | 3000 | 10000
      * @returns {Promise<string>} poolAddress
      */
     async getOrCreatePool(tokenAddress, fee = 3000) {
+        this._requireInit(); // FIX #7
+
+        // FIX #6: Validate fee tier before any on-chain call
+        if (!FEE_TO_TICK_SPACING[fee]) {
+            throw new Error(`Unsupported fee tier: ${fee}. Valid values are: 500, 3000, 10000.`);
+        }
+
         logger.info(`Checking pool for token: ${tokenAddress} / WETH (Fee: ${fee})`);
 
-        // Token0 must be less than Token1 address for Uniswap logic
+        // Token0 must be < Token1 address for correct Uniswap pool ordering
         const [token0, token1] = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase()
             ? [tokenAddress, this.wethAddr]
             : [this.wethAddr, tokenAddress];
@@ -73,7 +163,6 @@ class LiquidityManager {
             poolAddress = await this.factoryContract.getPool(token0, token1, fee);
         } catch (error) {
             logger.error(`Failed to get pool address: ${error.message}`);
-            // Retry logic or simpler fallback?
             throw error;
         }
 
@@ -83,45 +172,59 @@ class LiquidityManager {
             const MAX_RETRIES = 3;
             for (let i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    // Check again just in case (consistency)
+                    // Re-check before creating in case of concurrent execution
                     const existingPool = await this.factoryContract.getPool(token0, token1, fee);
                     if (existingPool !== ethers.ZeroAddress) {
-                        logger.info(`Pool found (after retry check) at: ${existingPool}`);
+                        logger.info(`Pool found (race condition check) at: ${existingPool}`);
                         return existingPool;
                     }
 
                     logger.info(`Attempt ${i + 1}/${MAX_RETRIES} to create pool...`);
                     const tx = await this.factoryContract.createPool(token0, token1, fee);
-                    await tx.wait();
+                    await this._waitWithTimeout(tx); // FIX #4: timeout-wrapped
 
-                    // Fetch the address again with retries
-                    for (let j = 0; j < 10; j++) {
-                        await new Promise(r => setTimeout(r, 2000));
-                        const newPoolAddress = await this.factoryContract.getPool(token0, token1, fee);
-                        if (newPoolAddress !== ethers.ZeroAddress) {
-                            logger.info(`✅ Pool created at: ${newPoolAddress}`);
-                            return newPoolAddress;
-                        }
-                        logger.warn(`Waiting for pool address indexing... (Attempt ${j + 1}/10)`);
+                    // FIX #8: After tx.wait() confirms, the pool address is available
+                    // immediately from the factory — no need for a 10-iteration polling loop.
+                    // A 3-step fallback handles the rare RPC indexing lag.
+                    logger.info(`Pool creation tx confirmed. Fetching pool address...`);
+                    let newPoolAddress = await this.factoryContract.getPool(token0, token1, fee);
+                    if (newPoolAddress !== ethers.ZeroAddress) {
+                        logger.info(`✅ Pool created at: ${newPoolAddress}`);
+                        return newPoolAddress;
                     }
 
-                    throw new Error("Pool created but address could not be fetched (indexing timeout).");
+                    for (let j = 0; j < 3; j++) {
+                        await new Promise(r => setTimeout(r, 2000));
+                        newPoolAddress = await this.factoryContract.getPool(token0, token1, fee);
+                        if (newPoolAddress !== ethers.ZeroAddress) {
+                            logger.info(`✅ Pool address confirmed (fallback ${j + 1}/3): ${newPoolAddress}`);
+                            return newPoolAddress;
+                        }
+                        logger.warn(`Pool not yet indexed by RPC... (${j + 1}/3)`);
+                    }
+
+                    throw new Error("Pool created but address could not be fetched (RPC indexing timeout).");
 
                 } catch (error) {
-                    logger.warn(`Failed to create pool (Attempt ${i + 1}): ${error.message}`);
+                    logger.warn(`Failed to create pool (Attempt ${i + 1}/${MAX_RETRIES}): ${error.message}`);
 
-                    // If error is "pool already exists" (Uniswap specific) or we can find it now, return it
                     if (i === MAX_RETRIES - 1) {
-                        // Last ditch effort to check if it exists
+                        // Last-ditch check — another instance may have created it
                         const finalCheck = await this.factoryContract.getPool(token0, token1, fee);
                         if (finalCheck !== ethers.ZeroAddress) return finalCheck;
                         throw error;
                     }
 
-                    // Simple backoff
                     await new Promise(r => setTimeout(r, 2000));
                 }
             }
+
+            // GROUP B FIX #1: Defensive throw — if the retry loop exits without
+            // a return or throw (e.g. a future logic change), this ensures the
+            // function never silently returns undefined.
+            // Previously: poolAddress = undefined was passed to initializePool
+            // and addLiquidity, and saved as null to the DB without any error.
+            throw new Error('getOrCreatePool: all retry attempts exhausted. Pool could not be created or confirmed.');
         } else {
             logger.info(`Pool already exists at: ${poolAddress}`);
             return poolAddress;
@@ -129,48 +232,48 @@ class LiquidityManager {
     }
 
     /**
-     * Initializes the pool with a starting price.
-     * @param {string} tokenAddress 
+     * Initializes the pool with a starting sqrtPriceX96.
+     * @param {string} tokenAddress
      * @param {string} poolAddress
-     * @param {string} initialPrice (e.g., "0.00001" ETH per Token)
+     * @param {string} initialPrice - Price as a decimal string (e.g. "0.000000000004")
      */
     async initializePool(tokenAddress, poolAddress, initialPrice) {
+        this._requireInit(); // FIX #7
+
         logger.info(`Initializing pool at ${poolAddress} with price: ${initialPrice} ETH`);
 
-        // Calculate sqrtPriceX96 based on price ratio
-        // Price = token1 / token0
-
-        // Example: If Token < WETH
-        // token0 = Token, token1 = WETH
-        // Price (ETH per Token) = token1 amount / token0 amount = initialPrice
-        // sqrtPriceX96 = sqrt(price) * 2^96
-
-        // If WETH < Token
-        // token0 = WETH, token1 = Token
-        // Price (Token per ETH) = 1 / initialPrice
-        // sqrtPriceX96 = sqrt(1/price) * 2^96
-
         const isToken0 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase();
-        const price = parseFloat(initialPrice);
-        let sqrtPrice;
 
+        // FIX #3: BigInt-safe sqrtPriceX96 calculation.
+        // The original code used: Math.sqrt(price) * Number(2n**96n)
+        // This loses precision because 2^96 ≈ 7.9×10^28 exceeds JS float's 53-bit mantissa.
+        //
+        // Correct formula: sqrtPriceX96 = floor( sqrt(price) × 2^96 )
+        //   = floor( sqrt(price × 2^192) )          [move 2^96 inside the sqrt]
+        //   = floor( sqrt(priceNumerator × 2^192 / priceDenominator) )
+        //
+        // We represent price as priceScaled / 10^18 (fixed-point with 18 decimals),
+        // so the calculation becomes: floor( sqrt(priceScaled × 2^192 / 10^18) )
+        const Q96 = 2n ** 96n;
+        const PRECISION = 10n ** 18n;
+
+        // Convert the decimal price string (output of toFixed(18)) to a scaled BigInt
+        const priceScaled = this._parseDecimalToBigInt(initialPrice);
+
+        let sqrtPriceX96;
         if (isToken0) {
-            // Token is token0. We want price in terms of token1 (ETH).
-            // Price = amount1/amount0 = ETH/Token
-            sqrtPrice = Math.sqrt(price);
+            // token is token0, WETH is token1
+            // price (WETH/token) = priceScaled / PRECISION
+            // sqrtPriceX96 = sqrt(priceScaled × Q96² / PRECISION)
+            sqrtPriceX96 = this._bigIntSqrt((priceScaled * Q96 * Q96) / PRECISION);
         } else {
-            // WETH is token0. We want price in terms of token1 (Token).
-            // Price (Token/ETH) = 1 / (ETH/Token)
-            sqrtPrice = Math.sqrt(1 / price);
+            // WETH is token0, token is token1
+            // price (token/WETH) = PRECISION / priceScaled  (inverted)
+            // sqrtPriceX96 = sqrt(PRECISION × Q96² / priceScaled)
+            sqrtPriceX96 = this._bigIntSqrt((PRECISION * Q96 * Q96) / priceScaled);
         }
 
-        const q96 = 2n ** 96n;
-        // Logic: sqrtPriceX96 = floor(sqrtPrice * 2^96)
-        // Using BigInt directly might overflow/precision loss with float math, but for initial setup it's usually acceptable approximation.
-        // For production, exact BigNumber implementation is safer.
-        const sqrtPriceX96 = BigInt(Math.floor(sqrtPrice * Number(q96)));
-
-        logger.info(`Calculated sqrtPriceX96: ${sqrtPriceX96.toString()}`);
+        logger.info(`Calculated sqrtPriceX96: ${sqrtPriceX96.toString()} (BigInt-safe)`);
 
         const poolContract = new ethers.Contract(poolAddress, [
             'function initialize(uint160 sqrtPriceX96) external',
@@ -180,7 +283,6 @@ class LiquidityManager {
         const MAX_RETRIES = 3;
         for (let i = 0; i < MAX_RETRIES; i++) {
             try {
-                // Wait a bit for indexing if this is a retry or fresh creation
                 if (i > 0) await new Promise(r => setTimeout(r, 5000));
 
                 logger.info(`Checking pool state (Attempt ${i + 1}/${MAX_RETRIES})...`);
@@ -194,26 +296,24 @@ class LiquidityManager {
                         isInitialized = true;
                     }
                 } catch (e) {
-                    // BAD_DATA means node hasn't indexed relevant code yet/doesn't see it
                     logger.warn(`Slot0 check failed (likely indexing lag): ${e.code || e.message}`);
                 }
 
                 if (isInitialized) return;
 
-                // Initialize
-                logger.info(`Initializing pool with price...`);
+                logger.info(`Initializing pool with sqrtPriceX96...`);
                 const tx = await poolContract.initialize(sqrtPriceX96);
-                await tx.wait();
-                logger.info("✅ Pool Initialized with Price. Waiting for propagation...");
+                await this._waitWithTimeout(tx); // FIX #4: timeout-wrapped
+                logger.info("✅ Pool initialized. Waiting for on-chain propagation...");
 
-                // Wait for propagation (ensure slot0 returns valid price)
+                // Confirm slot0 now reflects the new price
                 const WAIT_STEPS = 10;
                 for (let j = 0; j < WAIT_STEPS; j++) {
                     await new Promise(r => setTimeout(r, 2000));
                     try {
                         const s0 = await poolContract.slot0();
                         if (s0.sqrtPriceX96 > 0n) {
-                            logger.info("✅ Pool Initialization verified on-chain.");
+                            logger.info("✅ Pool initialization verified on-chain.");
                             return;
                         }
                     } catch (e) {
@@ -221,17 +321,17 @@ class LiquidityManager {
                     }
                 }
 
-                throw new Error("Pool initialization transaction confirmed, but state not propagated (timeout).");
+                throw new Error("Pool initialization tx confirmed but state not propagated (timeout).");
 
             } catch (error) {
-                logger.warn(`Pool init failed (Attempt ${i + 1}): ${error.message}`);
+                logger.warn(`Pool init attempt ${i + 1} failed: ${error.message}`);
 
-                // Double check concurrent init
                 if (i === MAX_RETRIES - 1) {
+                    // Final check — another call may have initialized concurrently
                     try {
                         const slot0 = await poolContract.slot0();
                         if (slot0.sqrtPriceX96 > 0n) return;
-                    } catch (e) { /* ignore */ }
+                    } catch (e) { /* ignore — throw original below */ }
                     throw error;
                 }
             }
@@ -239,23 +339,60 @@ class LiquidityManager {
     }
 
     /**
-     * Adds initial liquidity to the pool (Full Range).
-     * @param {string} tokenAddress 
-     * @param {string} amountToken (e.g. "300000")
-     * @param {string} amountETH (e.g. "0.01")
-     * @param {number} fee 
+     * Adds initial full-range liquidity to the pool.
+     * @param {string} tokenAddress
+     * @param {string} amountToken - Token amount as a string (e.g. "100000000")
+     * @param {string} amountETH   - ETH amount as a string (e.g. "0.0004")
+     * @param {number} fee         - Fee tier: 500 | 3000 | 10000
      */
     async addLiquidity(tokenAddress, amountToken, amountETH, fee = 3000) {
-        logger.info(`Adding Liquidity: ${amountToken} Tokens + ${amountETH} ETH`);
+        this._requireInit(); // FIX #7
+
+        // FIX #6: Resolve tick spacing from fee tier (was hardcoded to 60 for 0.3% only)
+        const tickSpacing = FEE_TO_TICK_SPACING[fee];
+        if (!tickSpacing) {
+            throw new Error(`Unsupported fee tier: ${fee}. Valid values are: 500, 3000, 10000.`);
+        }
+
+        logger.info(`Adding Liquidity: ${amountToken} Tokens + ${amountETH} ETH (fee: ${fee})`);
 
         const token0 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? tokenAddress : this.wethAddr;
         const token1 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? this.wethAddr : tokenAddress;
 
-        // 0. Check if pool already has REAL liquidity (to prevent double-add on resumption)
+        // FIX #5: Pre-flight check — verify pool is initialized BEFORE spending gas on approve.
+        // If pool.slot0().sqrtPriceX96 == 0, the mint will revert on-chain with a confusing error.
+        // This gives a clear, early diagnostic and saves the wasted approve gas.
+        try {
+            const poolCheckAddr = await this.factoryContract.getPool(token0, token1, fee);
+            if (poolCheckAddr !== ethers.ZeroAddress) {
+                const checkContract = new ethers.Contract(poolCheckAddr, [
+                    'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)'
+                ], this.provider);
+                const slot0 = await checkContract.slot0();
+                if (slot0.sqrtPriceX96 === 0n) {
+                    throw new Error(
+                        `Pool at ${poolCheckAddr} exists but has not been initialized. ` +
+                        `Call initializePool() before addLiquidity().`
+                    );
+                }
+                logger.info(`Pre-flight check passed. Pool sqrtPrice: ${slot0.sqrtPriceX96.toString()}`);
+            }
+        } catch (preCheckErr) {
+            // Re-throw the "not initialized" error — it's actionable and should not be swallowed
+            if (preCheckErr.message.includes('not been initialized')) throw preCheckErr;
+            // Other errors (e.g. RPC blip) are non-fatal — log and continue
+            logger.warn(`Pre-flight slot0 check failed (non-fatal): ${preCheckErr.message}`);
+        }
+
+        // 0. Guard: skip if pool already has liquidity (prevents double-add on script resumption)
         try {
             const poolAddress = await this.factoryContract.getPool(token0, token1, fee);
             if (poolAddress !== ethers.ZeroAddress) {
-                const poolContract = new ethers.Contract(poolAddress, ['function liquidity() external view returns (uint128)'], this.provider);
+                const poolContract = new ethers.Contract(
+                    poolAddress,
+                    ['function liquidity() external view returns (uint128)'],
+                    this.provider
+                );
                 const currentLiquidity = await poolContract.liquidity();
                 if (currentLiquidity > 0n) {
                     logger.warn(`⚠️ ON-CHAIN GUARD: Pool at ${poolAddress} already has liquidity (${currentLiquidity.toString()}). Skipping addition.`);
@@ -272,34 +409,30 @@ class LiquidityManager {
             "function decimals() external view returns (uint8)"
         ], this.signer);
 
-        // 1. Approve Position Manager
+        // 1. Approve Position Manager to spend tokens
         const decimals = await tokenContract.decimals();
         const amountTokenWei = ethers.parseUnits(amountToken, decimals);
         const amountETHWei = ethers.parseEther(amountETH);
 
         logger.info("Approving PositionManager to spend tokens...");
-        const txApprove = await tokenContract.approve(this.config.positionManager, amountTokenWei);
-        await txApprove.wait();
+        // GROUP B FIX #2: Use this._pmAddr (set during init()) instead of
+        // this.config.positionManager. If UNISWAP_PM env var overrides the address,
+        // pmContract already points to the override — approval must target the same address.
+        const txApprove = await tokenContract.approve(this._pmAddr, amountTokenWei);
+        await this._waitWithTimeout(txApprove); // FIX #4: timeout-wrapped
 
-        // Fetch fresh nonce from the network after approve confirms.
-        // Hardhat's internal nonce counter can go stale between transactions,
-        // causing "nonce too low" errors. This guarantees we use the correct next nonce.
-        const freshNonce = await this.signer.getNonce('pending');
-        logger.info(`Nonce refreshed from network: ${freshNonce}`);
-
-
-        // 2. Sort tokens
-        // (token0 and token1 are already defined above)
+        // 2. Sort token amounts by pool ordering
         const amount0Desired = token0 === tokenAddress ? amountTokenWei : amountETHWei;
         const amount1Desired = token1 === tokenAddress ? amountTokenWei : amountETHWei;
 
-        // 3. Define Full Range (Tick Min to Tick Max)
-        // Uniswap V3 "Full Range" is tick -887220 to 887220 (must be divisible by tickSpacing)
-        // For fee 3000 (0.3%), tickSpacing is 60.
-        const tickSpacing = 60;
-        const minTick = -887272; // Approximate min usable
-        const maxTick = 887272; // Approximate max usable
+        // Slippage mins: both set to 0 — mint succeeds regardless of price movement.
+        // To enable slippage protection, set SLIPPAGE_BPS above to e.g. 100n (1%).
+        const amount0Min = SLIPPAGE_BPS === 0n ? 0n : (amount0Desired * (10000n - SLIPPAGE_BPS)) / 10000n;
+        const amount1Min = SLIPPAGE_BPS === 0n ? 0n : (amount1Desired * (10000n - SLIPPAGE_BPS)) / 10000n;
 
+        // 3. Define full-range ticks using the correct spacing for this fee tier (FIX #6)
+        const minTick = -887272;
+        const maxTick = 887272;
         const tickLower = nearestUsableTick(minTick, tickSpacing);
         const tickUpper = nearestUsableTick(maxTick, tickSpacing);
 
@@ -311,8 +444,8 @@ class LiquidityManager {
             tickUpper: tickUpper,
             amount0Desired: amount0Desired,
             amount1Desired: amount1Desired,
-            amount0Min: 0, // In production, calculate slippage properly
-            amount1Min: 0,
+            amount0Min: amount0Min,
+            amount1Min: amount1Min,
             recipient: await this.signer.getAddress(),
             deadline: Math.floor(Date.now() / 1000) + 60 * 10
         };
@@ -322,16 +455,22 @@ class LiquidityManager {
         const MAX_MINT_RETRIES = 3;
         for (let attempt = 1; attempt <= MAX_MINT_RETRIES; attempt++) {
             try {
+                // FIX #2: Fetch fresh nonce inside the loop on EVERY attempt.
+                // Original fetched nonce once before the loop — if attempt 1 mines (even
+                // if it reverts), the nonce is consumed. Reusing it causes "nonce too low".
+                const freshNonce = await this.signer.getNonce('pending');
+                logger.info(`Nonce fetched for attempt ${attempt}: ${freshNonce}`);
+
                 const feeData = await this.provider.getFeeData();
                 const baseGasPrice = feeData.gasPrice || ethers.parseUnits('0.1', 'gwei');
-                // Start at 100% of current gas, boost by 50% on each retry
+                // Increase gas by 50% on each retry to help replacement transactions get picked up
                 const multiplier = BigInt(100 + (attempt - 1) * 50);
                 const gasPrice = (baseGasPrice * multiplier) / 100n;
 
-                logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} | gasPrice: ${ethers.formatUnits(gasPrice, 'gwei')} gwei`);
+                logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} | gasPrice: ${ethers.formatUnits(gasPrice, 'gwei')} gwei | nonce: ${freshNonce}`);
 
                 const tx = await this.pmContract.mint(params, { value: amountETHWei, gasPrice, nonce: freshNonce });
-                const receipt = await tx.wait();
+                const receipt = await this._waitWithTimeout(tx); // FIX #4: timeout-wrapped
                 logger.info("✅ Liquidity Added! Position Minted.");
                 return receipt.hash;
 
