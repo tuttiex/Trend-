@@ -312,17 +312,42 @@ class LiquidityManager {
 
         logger.info("Minting Liquidity Position...");
 
-        try {
-            // If paying ETH, value matches amountETHWei if ETH is token0 or token1 (manager handles wrap if routed correctly, or standard mintWithETH pattern)
-            // Standard NPM: mint() is payable. It refunds unused ETH.
-            // If strictly WETH is approved, we might need to wrap first, but sending value usually works for WETH pairs on standard router/PM setups.
-            const tx = await this.pmContract.mint(params, { value: amountETHWei });
-            const receipt = await tx.wait();
-            logger.info("✅ Liquidity Added! Position Minted.");
-            return receipt.hash;
-        } catch (error) {
-            logger.error(`Failed to add liquidity: ${error.message}`);
-            throw error;
+        const MAX_MINT_RETRIES = 3;
+        for (let attempt = 1; attempt <= MAX_MINT_RETRIES; attempt++) {
+            try {
+                // Fetch current network gas price and add a 20% tip to start.
+                // On each retry, boost by 50% to overcome 'replacement transaction underpriced'.
+                const feeData = await this.provider.getFeeData();
+                const baseGasPrice = feeData.gasPrice || ethers.parseUnits('0.1', 'gwei');
+                const multiplier = BigInt(100 + (attempt - 1) * 50); // 100%, 150%, 200%
+                const boostedGasPrice = (baseGasPrice * multiplier) / 100n;
+
+                logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} with gasPrice: ${ethers.formatUnits(boostedGasPrice, 'gwei')} gwei`);
+
+                const tx = await this.pmContract.mint(params, {
+                    value: amountETHWei,
+                    gasPrice: boostedGasPrice
+                });
+                const receipt = await tx.wait();
+                logger.info("✅ Liquidity Added! Position Minted.");
+                return receipt.hash;
+
+            } catch (error) {
+                const isGasError = error.message && (
+                    error.message.includes('replacement transaction underpriced') ||
+                    error.message.includes('transaction underpriced') ||
+                    error.message.includes('maxFeePerGas')
+                );
+
+                if (isGasError && attempt < MAX_MINT_RETRIES) {
+                    logger.warn(`⚠️ Gas too low on attempt ${attempt}. Retrying with higher gas price...`);
+                    await new Promise(r => setTimeout(r, 3000)); // wait 3s before retry
+                    continue;
+                }
+
+                logger.error(`Failed to add liquidity after ${attempt} attempt(s): ${error.message}`);
+                throw error;
+            }
         }
     }
 }
