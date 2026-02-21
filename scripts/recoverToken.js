@@ -31,15 +31,15 @@ const TOKEN = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function main() {
-    logger.info(`\n🔧 Starting full recovery for ${TOKEN.topic} ($${TOKEN.symbol})`);
+    console.log(`\n🔧 Starting full recovery for ${TOKEN.topic} ($${TOKEN.symbol})`);
     const [signer] = await hre.ethers.getSigners();
-    logger.info(`Using wallet: ${await signer.getAddress()}`);
+    console.log(`Using wallet: ${await signer.getAddress()}`);
 
     let liquidityTx = null;
     let imageCid = null;
 
     // ── STEP 1: Add Liquidity ─────────────────────────────────────────────────
-    logger.info("\n📦 Step 1: Adding liquidity to the empty pool...");
+    console.log("\n📦 Step 1: Adding liquidity to the empty pool...");
     try {
         const liquidityManager = new LiquidityManager(hre.ethers.provider, signer);
         await liquidityManager.init();
@@ -56,12 +56,12 @@ async function main() {
             logger.info(`✅ Liquidity added! Tx: ${liquidityTx}`);
         }
     } catch (err) {
-        logger.error(`❌ Liquidity failed: ${err.message}`);
-        logger.warn("Continuing with remaining steps anyway...");
+        console.error(`❌ Liquidity failed: ${err.message}`);
+        console.log("Continuing with remaining steps anyway...");
     }
 
     // ── STEP 2: Generate Logo ─────────────────────────────────────────────────
-    logger.info("\n🎨 Step 2: Generating logo...");
+    console.log("\n🎨 Step 2: Generating logo...");
     try {
         const imageBuffer = await imageGenerator.generateTokenLogo(TOKEN.topic, TOKEN.symbol, TOKEN.region);
         if (imageBuffer) {
@@ -73,7 +73,7 @@ async function main() {
     }
 
     // ── STEP 3: Push to Website ───────────────────────────────────────────────
-    logger.info("\n📡 Step 3: Pushing to website...");
+    console.log("\n📡 Step 3: Pushing to website...");
     try {
         const success = await webhookService.notify({
             topic: TOKEN.topic,
@@ -84,23 +84,25 @@ async function main() {
             poolAddress: TOKEN.poolAddress,
             liquidityTx: liquidityTx || ""
         });
-        logger.info(success ? "✅ Pushed to website!" : "❌ Webhook push failed.");
+        console.log(success ? "✅ Pushed to website!" : "❌ Webhook push failed.");
     } catch (err) {
         logger.error(`❌ Webhook error: ${err.message}`);
     }
 
     // ── STEP 4: Post Tweet ────────────────────────────────────────────────────
-    logger.info("\n🐦 Step 4: Posting tweet...");
+    console.log("\n🐦 Step 4: Posting tweet...");
     try {
         const twitter = new TweetApiCom();
         const tweetText = `🚀 $${TOKEN.symbol} is LIVE on Base! 🎮\n\nThe ${TOKEN.topic} trend just got tokenized by the AI agent.\n\n🔗 Trade: https://app.uniswap.org/explore/tokens/base/${TOKEN.tokenAddress}\n\n#Base #DeFi #${TOKEN.symbol} #AI`;
         await twitter.postTweet(tweetText);
-        logger.info("✅ Tweet posted!");
+        console.log("✅ Tweet posted!");
     } catch (err) {
-        logger.error(`❌ Tweet failed: ${err.message}`);
+        console.error(`❌ Tweet failed: ${err.message}`);
     }
 
-    logger.info("\n🎉 Recovery complete!");
+    console.log("\n🎉 Recovery complete!");
+    // Wait 2s for Winston's async file writes to flush before process exits
+    await new Promise(r => setTimeout(r, 2000));
 }
 
 main().catch(e => {
