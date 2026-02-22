@@ -21,6 +21,7 @@ class StateManager {
                     token_uri TEXT,
                     logo_uri TEXT,
                     pool_address TEXT,
+                    metadata_cid TEXT,
                     tx_hash TEXT,
                     trend_topic TEXT,
                     region TEXT,
