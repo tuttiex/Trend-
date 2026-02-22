@@ -40,7 +40,7 @@ class WebhookService {
                 timeout: 5000,
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Source': 'OpenClaw-Agent'
+                    'X-Source': process.env.WEBHOOK_SECRET
                 }
             });
 
