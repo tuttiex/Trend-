@@ -6,7 +6,11 @@ require('dotenv').config();
 class StateManager {
     constructor() {
         const dbPath = process.env.DATABASE_URL.replace('./', '');
-        this.db = new sqlite3.Database(path.join(process.cwd(), dbPath));
+        this.db = new sqlite3.Database(path.join(process.cwd(), dbPath), (err) => {
+            if (err) {
+                logger.error(`StateManager initialization failed: ${err.message}`);
+            }
+        });
     }
 
     async connect() {

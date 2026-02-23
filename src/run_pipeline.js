@@ -13,13 +13,16 @@ async function main() {
 
     try {
         // 1. Initialize State Manager
+        logger.info(`[DEBUG] Step 1: Initializing StateManager...`);
         const stateManager = new StateManager();
 
         // 2. Initialize Signer
+        logger.info(`[DEBUG] Step 2: Awaiting Hardhat signers...`);
         const [deployer] = await hre.ethers.getSigners();
-        logger.info(`Agent active with address: ${deployer.address}`);
+        logger.info(`[DEBUG] Agent active with address: ${deployer.address}`);
 
         // 3. Initialize Pipeline
+        logger.info(`[DEBUG] Step 3: Initializing Pipeline...`);
         const pipeline = new Pipeline(deployer, stateManager);
 
         // 4. Execute
