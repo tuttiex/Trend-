@@ -51,6 +51,7 @@ class Pipeline {
 
         let selectedTrend = null;
         let moderationResult = null;
+        let existing = null;
 
         // Loop through the top 5 trends and ask Gemini to moderate them one by one
         logger.info(`Pipeline: Evaluating top ${trendData.topTrends.length} trends...`);
@@ -58,7 +59,7 @@ class Pipeline {
             logger.info(`Pipeline: Checking candidate trend: "${candidate.name}"`);
 
             // Check if already deployed
-            let existing = null;
+            existing = null;
             if (this.stateManager) {
                 existing = await this.stateManager.getDeploymentByTopic(candidate.name, region);
                 if (existing && existing.tx_hash && existing.pool_address) {
