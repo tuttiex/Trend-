@@ -166,7 +166,7 @@ class Pipeline {
                 const webhookService = require('./services/webhookService');
                 await webhookService.notify({
                     topic: trend.topic,
-                    symbol: moderation.symbol,
+                    symbol: moderationResult.symbol,
                     tokenAddress: result.tokenAddress,
                     metadataCid: result.metadataCid,
                     imageCid: result.imageCid,
