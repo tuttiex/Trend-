@@ -97,13 +97,13 @@ class TrendDetector {
         });
 
         const primaryTrend = filteredTrends[0];
-        const top3 = filteredTrends.slice(0, 3).map(t => ({ name: t.name, volume: t.volume }));
+        const top5 = filteredTrends.slice(0, 5).map(t => ({ name: t.name, volume: t.volume, rank: t.rank }));
 
         return {
             region: regionName,
             topic: primaryTrend.name,
             volume: primaryTrend.volume,
-            topTrends: top3,
+            topTrends: top5,
             confidence: this.calculateConfidence(primaryTrend.volume),
             timestamp: new Date().toISOString()
         };

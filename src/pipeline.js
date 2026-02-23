@@ -43,42 +43,63 @@ class Pipeline {
     async _runStages(region, executionId) {
         // 1. Trend Detection
         logger.info('Pipeline: Stage 1 - Trend Detection');
-        const trend = await trendDetector.detectTrend(region);
-        if (!trend || !trend.topic) {
+        const trendData = await trendDetector.detectTrend(region);
+        if (!trendData || !trendData.topTrends || trendData.topTrends.length === 0) {
             logger.warn(`Pipeline: No trends found for ${region}`);
             return { status: 'skipped', reason: 'no_trends' };
         }
-        logger.info(`Pipeline: Found trend "${trend.topic}" with confidence ${trend.confidence}`);
 
-        let existing = null;
+        let selectedTrend = null;
+        let moderationResult = null;
+
+        // Loop through the top 5 trends and ask Gemini to moderate them one by one
+        logger.info(`Pipeline: Evaluating top ${trendData.topTrends.length} trends...`);
+        for (const candidate of trendData.topTrends) {
+            logger.info(`Pipeline: Checking candidate trend: "${candidate.name}"`);
+
+            // Check if already deployed
+            let existing = null;
+            if (this.stateManager) {
+                existing = await this.stateManager.getDeploymentByTopic(candidate.name, region);
+                if (existing && existing.tx_hash && existing.pool_address) {
+                    logger.info(`Pipeline: Candidate "${candidate.name}" already fully deployed today. Skipping to next.`);
+                    continue; // Try next trend
+                }
+            }
+
+            // AI Moderation
+            const moderation = await contentModerator.checkTopic(candidate.name);
+            if (!moderation.approved) {
+                logger.warn(`Pipeline: Candidate "${candidate.name}" rejected: ${moderation.reason}. Trying next...`);
+                continue; // Try next trend
+            }
+
+            // If we get here, it's not deployed and it's AI approved!
+            selectedTrend = candidate;
+            moderationResult = moderation;
+            logger.info(`Pipeline: ✅ Trend "${candidate.name}" APPROVED for deployment! Symbol: ${moderationResult.symbol}`);
+            break; // Stop looping, we found our winner
+        }
+
+        if (!selectedTrend) {
+            logger.warn(`Pipeline: All top trends were either deployed or rejected by AI. Skipping cycle.`);
+            return { status: 'skipped', reason: 'all_trends_exhausted' };
+        }
+
+        // We have a winner, lock it in the database for idempotency
         if (this.stateManager) {
-            existing = await this.stateManager.getDeploymentByTopic(trend.topic, region);
-            if (existing && existing.tx_hash && existing.pool_address) {
-                logger.info(`Pipeline: Trend "${trend.topic}" already fully deployed today at ${existing.token_address}. Skipping.`);
-                return { status: 'skipped', reason: 'already_deployed' };
-            }
-
-            if (!existing) {
-                logger.info(`Pipeline: Recording discovery of trend "${trend.topic}" for idempotency.`);
-                await this.stateManager.saveDeployment({
-                    executionId,
-                    topic: trend.topic,
-                    region: region,
-                    symbol: "PENDING",
-                    tokenAddress: null
-                });
-                existing = await this.stateManager.getDeploymentByTopic(trend.topic, region);
-            }
+            logger.info(`Pipeline: Recording discovery of trend "${selectedTrend.name}" for idempotency.`);
+            await this.stateManager.saveDeployment({
+                executionId,
+                topic: selectedTrend.name,
+                region: region,
+                symbol: "PENDING",
+                tokenAddress: null
+            });
         }
 
-        // 2. Content Moderation
-        logger.info('Pipeline: Stage 2 - Content Moderation');
-        const moderation = await contentModerator.checkTopic(trend.topic);
-        if (!moderation.approved) {
-            logger.warn(`Pipeline: Trend "${trend.topic}" rejected: ${moderation.reason}`);
-            throw new Error(`Moderation rejected: ${moderation.reason}`);
-        }
-        logger.info(`Pipeline: Trend "${trend.topic}" approved. Symbol: ${moderation.symbol}`);
+        // Expose winner as 'trend' for the rest of the pipeline
+        const trend = { topic: selectedTrend.name, volume: selectedTrend.volume, region: region };
 
         // 3. Planning
         logger.info('Pipeline: Stage 3 - Planning');
