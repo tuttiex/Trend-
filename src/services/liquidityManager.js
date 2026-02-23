@@ -475,13 +475,14 @@ class LiquidityManager {
                 return receipt.hash;
 
             } catch (error) {
-                const isGasError = error.message && (
+                const isRetryableError = error.message && (
                     error.message.includes('replacement transaction underpriced') ||
                     error.message.includes('transaction underpriced') ||
-                    error.message.includes('maxFeePerGas')
+                    error.message.includes('maxFeePerGas') ||
+                    error.message.includes('nonce too low')
                 );
-                if (isGasError && attempt < MAX_MINT_RETRIES) {
-                    logger.warn(`⚠️ Gas rejected on attempt ${attempt}. Retrying with higher gas...`);
+                if (isRetryableError && attempt < MAX_MINT_RETRIES) {
+                    logger.warn(`⚠️ Tx rejected on attempt ${attempt} (Gas/Nonce issue). Retrying...`);
                     await new Promise(r => setTimeout(r, 3000));
                     continue;
                 }
