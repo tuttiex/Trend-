@@ -105,7 +105,7 @@ class Pipeline {
         logger.info('Pipeline: Stage 3 - Planning');
         const plan = {
             topic: trend.topic,
-            symbol: moderation.symbol,
+            symbol: moderationResult.symbol,
             region: region,
             initialLiquidityETH: "0.0004",
             initialLiquidityTokens: "100000000"
