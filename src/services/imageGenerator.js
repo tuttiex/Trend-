@@ -78,7 +78,7 @@ class ImageGenerator {
                             'Authorization': `Bearer ${this.siliconFlowKey}`,
                             'Content-Type': 'application/json'
                         },
-                        timeout: 60000
+                        timeout: 120000
                     }
                 );
 
@@ -86,7 +86,7 @@ class ImageGenerator {
                 if (!imageUrl) throw new Error('No image URL in SiliconFlow response');
 
                 // Download the image from the returned URL
-                const imgResponse = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 30000 });
+                const imgResponse = await axios.get(imageUrl, { responseType: 'arraybuffer', timeout: 60000 });
                 const buffer = Buffer.from(imgResponse.data);
                 this._saveTempFile(buffer, symbol);
                 logger.info('✅ SiliconFlow FLUX image generated successfully!');
