@@ -135,7 +135,14 @@ Topic to evaluate: "${topic}"`;
             return !parsed.safe;
 
         } catch (err) {
-            // FAIL SAFE: if Gemini errors or returns garbled JSON, block the topic.
+            // FALLBACK FOR QUOTA ERRORS
+            const errorStr = err.message.toLowerCase();
+            if (errorStr.includes('quota') || errorStr.includes('429') || errorStr.includes('rate limit')) {
+                logger.warn(`ContentModerator: Gemini API quota exceeded or rate limited. Falling back to blocklist-only moderation for "${topic}".`);
+                return false; // Treat as safe from LLM's perspective, relying entirely on the prior blocklist check
+            }
+
+            // FAIL SAFE: For general API errors, block the topic.
             // A network blip should never let a harmful trend slip through.
             logger.error(`ContentModerator: LLM check failed for "${topic}": ${err.message}. Blocking topic as a safety precaution.`);
             return true; // treated as sensitive = blocked
