@@ -151,6 +151,7 @@ class Pipeline {
             try {
                 await this.stateManager.updateDeploymentByTopic(trend.topic, region, {
                     token_address: result.tokenAddress,
+                    token_symbol: moderationResult.symbol,
                     metadata_cid: result.metadataCid,
                     logo_uri: result.imageCid,
                     pool_address: result.poolAddress,
