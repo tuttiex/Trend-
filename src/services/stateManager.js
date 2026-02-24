@@ -93,7 +93,7 @@ class StateManager {
             SELECT COUNT(*) as count 
             FROM deployments 
             WHERE (region IN ${regionQuery})
-            AND pool_address IS NOT NULL
+            AND tx_hash IS NOT NULL
             AND timestamp >= date('now', 'start of day')
         `;
 
