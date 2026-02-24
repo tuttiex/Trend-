@@ -418,7 +418,7 @@ class LiquidityManager {
         // GROUP B FIX #2: Use this._pmAddr (set during init()) instead of
         // this.config.positionManager. If UNISWAP_PM env var overrides the address,
         // pmContract already points to the override — approval must target the same address.
-        const txApprove = await tokenContract.approve(this._pmAddr, amountTokenWei);
+        const txApprove = await tokenContract.approve(this._pmAddr, ethers.MaxUint256);
         await this._waitWithTimeout(txApprove); // FIX #4: timeout-wrapped
 
         // 2. Sort token amounts by pool ordering
@@ -469,7 +469,10 @@ class LiquidityManager {
 
                 logger.info(`Mint attempt ${attempt}/${MAX_MINT_RETRIES} | gasPrice: ${ethers.formatUnits(gasPrice, 'gwei')} gwei | nonce: ${freshNonce}`);
 
-                const tx = await this.pmContract.mint(params, { value: amountETHWei, gasPrice, nonce: freshNonce });
+                // Add 10,000 wei buffer (~$0.00000003) to msg.value to cover Uniswap's geometric rounding.
+                // This prevents the contract from silently rejecting the native ETH and trying to pull WETH instead.
+                const msgValueWithBuffer = amountETHWei + 10000n;
+                const tx = await this.pmContract.mint(params, { value: msgValueWithBuffer, gasPrice, nonce: freshNonce });
                 const receipt = await this._waitWithTimeout(tx); // FIX #4: timeout-wrapped
                 logger.info("✅ Liquidity Added! Position Minted.");
                 return receipt.hash;
