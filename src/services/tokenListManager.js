@@ -55,6 +55,11 @@ class TokenListManager {
                 }
             }
 
+            if (tokens.length === 0) {
+                logger.warn("⚠️ Token List Sync: No tokens with metadata found in database. Skipping generation.");
+                return null;
+            }
+
             const tokenList = {
                 name: "OpenClaw Trend Tokens",
                 timestamp: new Date().toISOString(),

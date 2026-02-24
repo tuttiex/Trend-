@@ -79,7 +79,15 @@ class DeploymentOrchestrator {
                 // 3. Register Metadata On-Chain (Virtuals-style)
                 if (metadataCid) {
                     try {
-                        await tokenRegistryService.registerTokenMetadata(tokenAddress, metadataCid, this.signer);
+                        logger.info(`Orchestrator: Registering metadata CID ${metadataCid} for token ${tokenAddress}...`);
+                        await tokenRegistryService.registerTokenMetadata(
+                            tokenAddress,
+                            metadataCid,
+                            this.signer,
+                            {
+                                maxPriorityFeePerGas: hre.ethers.parseUnits("0.2", "gwei")
+                            }
+                        );
                     } catch (regError) {
                         logger.error(`⚠️ Metadata Registration Failed: ${regError.message}`);
                     }
