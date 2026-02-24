@@ -15,6 +15,7 @@ async function main() {
         // 1. Initialize State Manager
         logger.info(`[DEBUG] Step 1: Initializing StateManager...`);
         const stateManager = new StateManager();
+        await stateManager.connect();
 
         // 2. Initialize Signer
         logger.info(`[DEBUG] Step 2: Awaiting Hardhat signers...`);
