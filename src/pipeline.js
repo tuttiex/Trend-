@@ -168,6 +168,7 @@ class Pipeline {
                 await webhookService.notify({
                     topic: trend.topic,
                     symbol: moderationResult.symbol,
+                    region: region,
                     tokenAddress: result.tokenAddress,
                     metadataCid: result.metadataCid,
                     imageCid: result.imageCid,

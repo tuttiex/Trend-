@@ -26,6 +26,7 @@ class WebhookService {
                 data: {
                     topic: data.topic,
                     symbol: data.symbol,
+                    region: data.region,
                     tokenAddress: data.tokenAddress,
                     metadataCid: data.metadataCid,
                     imageCid: data.imageCid,
@@ -35,6 +36,8 @@ class WebhookService {
                     // Add any other relevant fields for the trend$ website
                 }
             };
+
+            logger.info(`Webhook Payload: ${JSON.stringify(payload)}`);
 
             const response = await axios.post(this.url, payload, {
                 timeout: 5000,
