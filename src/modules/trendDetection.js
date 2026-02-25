@@ -22,57 +22,52 @@ class TrendDetector {
         let rawTrends = [];
         const woeid = this.getWOEID(regionName);
 
-        // 1. Try Professional API (TwitterAPI.io) First
+        // 1. Try Web Scraper (getdaytrends.com) First — free, no credits required
         try {
-            logger.info(`Attempting API fetch for ${regionName}...`);
-            const apiResponse = await twitterApiIo.getTrends(woeid);
+            let scraperRegion = 'world';
+            if (woeid === 23424908) scraperRegion = 'nigeria';
+            if (woeid === 23424977) scraperRegion = 'united-states';
 
-            // API returns: { status: "success", trends: [{ trend: { name, rank } }] }
-            // Handle both old flat array format AND new nested object format
-            let trendArray = [];
-            if (Array.isArray(apiResponse) && apiResponse.length > 0) {
-                // Old format: flat array [{ name, tweet_volume }]
-                trendArray = apiResponse;
-                rawTrends = trendArray.map((t, index) => ({
-                    name: t.name,
-                    volume: t.tweet_volume || 0,
-                    rank: index + 1
-                }));
-            } else if (apiResponse && apiResponse.trends && apiResponse.trends.length > 0) {
-                // New format: { trends: [{ trend: { name, rank } }] }
-                rawTrends = apiResponse.trends.map((item, index) => ({
-                    name: item.trend?.name || item.name,
-                    volume: item.trend?.tweet_volume || item.tweet_volume || 0,
-                    rank: item.trend?.rank || index + 1
-                }));
-            }
-
+            logger.info(`Scraping trends from getdaytrends.com for ${regionName}...`);
+            const scraped = await trendScraper.getTrends(scraperRegion);
+            rawTrends = scraped.map((t, index) => ({
+                name: t.name,
+                volume: t.tweet_volume || 0,
+                rank: index + 1
+            }));
             if (rawTrends.length > 0) {
-                logger.info(`✅ Successfully got ${rawTrends.length} trends from TwitterAPI.io for ${regionName}`);
+                logger.info(`✅ Successfully scraped ${rawTrends.length} trends for ${regionName}`);
             }
         } catch (e) {
-            logger.warn(`⚠️ TwitterAPI.io failed: ${e.message}. Falling back to Scraper.`);
+            logger.warn(`⚠️ Scraper failed: ${e.message}. Falling back to TwitterAPI.io.`);
         }
 
-
-        // 2. Fallback to Web Scraper if API failed or returned nothing
+        // 2. Fallback to Professional API (TwitterAPI.io) if scraper failed or returned nothing
         if (rawTrends.length === 0) {
             try {
-                let scraperRegion = 'world';
-                if (woeid === 23424908) scraperRegion = 'nigeria';
-                if (woeid === 23424977) scraperRegion = 'united-states';
+                logger.info(`Attempting API fetch for ${regionName}...`);
+                const apiResponse = await twitterApiIo.getTrends(woeid);
 
-                const scraped = await trendScraper.getTrends(scraperRegion);
-                rawTrends = scraped.map((t, index) => ({
-                    name: t.name,
-                    volume: t.tweet_volume || 0,
-                    rank: index + 1
-                }));
+                // Handle both old flat array format AND new nested object format
+                if (Array.isArray(apiResponse) && apiResponse.length > 0) {
+                    rawTrends = apiResponse.map((t, index) => ({
+                        name: t.name,
+                        volume: t.tweet_volume || 0,
+                        rank: index + 1
+                    }));
+                } else if (apiResponse && apiResponse.trends && apiResponse.trends.length > 0) {
+                    rawTrends = apiResponse.trends.map((item, index) => ({
+                        name: item.trend?.name || item.name,
+                        volume: item.trend?.tweet_volume || item.tweet_volume || 0,
+                        rank: item.trend?.rank || index + 1
+                    }));
+                }
+
                 if (rawTrends.length > 0) {
-                    logger.info(`✅ Successfully scraped ${rawTrends.length} trends for ${regionName}`);
+                    logger.info(`✅ Successfully got ${rawTrends.length} trends from TwitterAPI.io for ${regionName}`);
                 }
             } catch (e) {
-                logger.error(`❌ Both API and Scraper failed: ${e.message}`);
+                logger.error(`❌ Both Scraper and API failed: ${e.message}`);
                 throw new Error('All trend sources failed.');
             }
         }
