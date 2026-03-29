@@ -11,7 +11,7 @@ async function main() {
     try {
         // 1. Initialize State Manager
         const stateManager = new StateManager();
-        // await stateManager.connect(); // Optional check, pipeline handles it or we can do it here
+        await stateManager.connect(); 
 
         // 2. Initialize Signer (using hardhat's default for this environment)
         const [deployer] = await hre.ethers.getSigners();
