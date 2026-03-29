@@ -42,6 +42,16 @@ class StateManager {
                     confidence TEXT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )`);
+
+                this.db.run(`CREATE TABLE IF NOT EXISTS trend_snapshots (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    region TEXT,
+                    trend_name TEXT,
+                    volume INTEGER,
+                    confidence REAL,
+                    snapshot_json TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`, (err) => err ? reject(err) : resolve());
             });
             logger.info('StateManager: Connected to SQLite.');
         });
@@ -63,6 +73,27 @@ class StateManager {
         const query = `INSERT INTO trends (topic, region, volume, confidence) VALUES (?, ?, ?, ?)`;
         const values = [trend.topic, trend.region, trend.tweet_volume, trend.confidence];
         this.db.run(query, values);
+    }
+
+    async saveTrendSnapshot(data) {
+        const query = `INSERT INTO trend_snapshots (region, trend_name, volume, confidence, snapshot_json) VALUES (?, ?, ?, ?, ?)`;
+        const values = [
+            data.region,
+            data.topic || "Unknown",
+            data.volume || 0,
+            data.confidence || 0,
+            JSON.stringify(data.topTrends || [])
+        ];
+        return new Promise((resolve, reject) => {
+            this.db.run(query, values, function (err) {
+                if (err) {
+                    logger.error(`StateManager: Failed to save snapshot: ${err.message}`);
+                    return reject(err);
+                }
+                logger.info(`StateManager: Saved trend snapshot for ${data.region} (${data.topic})`);
+                resolve(this.lastID);
+            });
+        });
     }
 
     async hasDeployedToday(region) {

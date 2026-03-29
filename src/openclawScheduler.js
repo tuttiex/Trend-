@@ -1,9 +1,11 @@
 const cron = require('node-cron');
 const { exec } = require('child_process');
+const trendDetector = require('./modules/trendDetection');
 const logger = require('./utils/logger');
 
 class OpenClawScheduler {
-    constructor() {
+    constructor(stateManager) {
+        this.stateManager = stateManager;
         this.failureCount = 0;
         this.isPaused = false;
         this.MAX_FAILURES = 3;
@@ -29,6 +31,43 @@ class OpenClawScheduler {
         });
 
         logger.info('OpenClaw scheduler jobs scheduled.');
+
+        // --- NEW: Frequent Trend Monitoring (Testing: Every 40 Seconds) ---
+        this.startTrendMonitoring('Nigeria', 40 * 1000);
+        this.startTrendMonitoring('United States', 40 * 1000);
+    }
+
+    /**
+     * Periodically fetches trends for a region.
+     * Unlike the full cycle, this only monitors and logs trends.
+     */
+    startTrendMonitoring(region, intervalMs) {
+        logger.info(`Starting 15-minute trend monitoring for ${region} (OpenClaw)...`);
+        
+        // Initial run
+        this._checkTrends(region);
+
+        setInterval(async () => {
+            await this._checkTrends(region);
+        }, intervalMs);
+    }
+
+    async _checkTrends(region) {
+        try {
+            logger.info(`[Monitoring] Checking trends for ${region}...`);
+            const trendData = await trendDetector.detectTrend(region);
+            if (trendData && trendData.topTrends) {
+                const names = trendData.topTrends.map(t => t.name).join(', ');
+                logger.info(`[Monitoring] Top trends for ${region}: ${names}`);
+
+                // --- NEW: Persist to Database ---
+                if (this.stateManager) {
+                    await this.stateManager.saveTrendSnapshot(trendData);
+                }
+            }
+        } catch (error) {
+            logger.error(`[Monitoring] Error detecting trends for ${region}: ${error.message}`);
+        }
     }
 
     async triggerOpenClaw(region) {

@@ -20,11 +20,11 @@ async function main() {
         // 3. Initialize Pipeline
         const pipeline = new Pipeline(deployer, stateManager);
 
-        // 4. Initialize Scheduler (DISABLED: Using openclaw-scheduler process instead)
-        // const scheduler = new Scheduler(pipeline);
-        // scheduler.start();
+        // 4. Initialize Scheduler (Re-enabled for frequent Trend Monitoring)
+        const scheduler = new Scheduler(pipeline);
+        scheduler.start();
 
-        logger.info('Agent is now running (Scheduler disabled, using external manager).');
+        logger.info('Agent is now running with 15-minute trend monitoring active.');
     } catch (error) {
         logger.error(`Critical Failure during startup: ${error.message}`);
         process.exit(1);

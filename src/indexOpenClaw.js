@@ -17,7 +17,7 @@ async function main() {
         logger.info(`Agent active with address: ${deployer.address}`);
 
         // 3. Initialize OpenClaw Scheduler (triggers OpenClaw at scheduled times)
-        const scheduler = new OpenClawScheduler();
+        const scheduler = new OpenClawScheduler(stateManager);
 
         // 4. Start scheduler!
         scheduler.start();
