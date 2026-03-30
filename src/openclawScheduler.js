@@ -32,9 +32,9 @@ class OpenClawScheduler {
 
         logger.info('OpenClaw scheduler jobs scheduled.');
 
-        // --- NEW: Frequent Trend Monitoring (Testing: Every 40 Seconds) ---
-        this.startTrendMonitoring('Nigeria', 40 * 1000);
-        this.startTrendMonitoring('United States', 40 * 1000);
+        // --- NEW: Frequent Trend Monitoring (Every 15 Minutes) ---
+        this.startTrendMonitoring('Nigeria', 15 * 60 * 1000);
+        this.startTrendMonitoring('United States', 15 * 60 * 1000);
     }
 
     /**

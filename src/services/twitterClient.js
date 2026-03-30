@@ -31,8 +31,36 @@ class TwitterClient {
             logger.info('Tweet posted successfully!', response);
             return response;
         } catch (error) {
-            logger.error('Error posting tweet:', error);
             throw error;
+        }
+    }
+
+    async getTrends(woeid) {
+        if (!this.client) {
+            throw new Error('Twitter Client is not configured with valid credentials.');
+        }
+
+        try {
+            logger.info(`Fetching trends from X API v2 for WOEID: ${woeid}`);
+            // Attempting the v2 endpoint mentioned by the user
+            // We use the raw .get() since it might be a newer/beta endpoint
+            const response = await this.client.get(`trends/by/woeid/${woeid}`);
+            
+            // Expected v2 format usually has a 'data' wrapper
+            if (response && response.data) {
+                return response.data;
+            }
+            return response;
+        } catch (error) {
+            logger.warn(`X API v2 Trends failed: ${error.message}. Falling back to v1.1 Trends API...`);
+            try {
+                // Trends is a v1.1 endpoint
+                const trends = await this.client.v1.trendsByWoeid(woeid);
+                return trends;
+            } catch (v1Error) {
+                logger.error('Error fetching trends from official Twitter API (v2 & v1.1):', v1Error);
+                throw v1Error;
+            }
         }
     }
 }
