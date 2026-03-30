@@ -494,6 +494,75 @@ class LiquidityManager {
             }
         }
     }
+
+    /**
+     * Injects additional inflationary supply into the pool as paired liquidity (Option A).
+     * Calculates the required ETH to match the tokens at the current price and deepens the pool.
+     */
+    async injectSupplyToPool(tokenAddress, amountToken, fee = 3000) {
+        this._requireInit();
+        const tickSpacing = FEE_TO_TICK_SPACING[fee];
+        if (!tickSpacing) throw new Error(`Unsupported fee: ${fee}`);
+
+        const token0 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? tokenAddress : this.wethAddr;
+        const token1 = tokenAddress.toLowerCase() < this.wethAddr.toLowerCase() ? this.wethAddr : tokenAddress;
+        
+        const poolAddress = await this.factoryContract.getPool(token0, token1, fee);
+        if (poolAddress === ethers.ZeroAddress) throw new Error("Pool does not exist");
+
+        const poolContract = new ethers.Contract(poolAddress, ['function slot0() external view returns (uint160, int24, uint16, uint16, uint16, uint8, bool)'], this.provider);
+        const slot0 = await poolContract.slot0();
+        const currentTick = slot0[1];
+        const sqPrice = BigInt(slot0[0]);
+
+        const tokenContract = new ethers.Contract(tokenAddress, [
+            "function approve(address spender, uint256 amount) external returns (bool)",
+            "function decimals() external view returns (uint8)"
+        ], this.signer);
+        
+        const decimals = await tokenContract.decimals();
+        const amountTokenWei = ethers.parseUnits(amountToken.toString(), decimals);
+
+        await tokenContract.approve(this._pmAddr, ethers.MaxUint256);
+
+        const tickLower = nearestUsableTick(-887272, tickSpacing);
+        const tickUpper = nearestUsableTick(887272, tickSpacing);
+
+        const Q192 = 2n ** 192n;
+        let amount0Desired, amount1Desired;
+
+        if (tokenAddress === token0) {
+            // Token0 is TrendToken. We need WETH (Token1).
+            amount0Desired = amountTokenWei;
+            amount1Desired = (amountTokenWei * sqPrice * sqPrice) / Q192;
+        } else {
+            // Token1 is TrendToken. We need WETH (Token0).
+            amount1Desired = amountTokenWei;
+            amount0Desired = (amountTokenWei * Q192) / (sqPrice * sqPrice);
+        }
+
+        const params = {
+            token0: token0,
+            token1: token1,
+            fee: fee,
+            tickLower: tickLower,
+            tickUpper: tickUpper,
+            amount0Desired,
+            amount1Desired,
+            amount0Min: 0n,
+            amount1Min: 0n,
+            recipient: await this.signer.getAddress(),
+            deadline: Math.floor(Date.now() / 1000) + 60 * 10
+        };
+
+        const ethRequired = tokenAddress === token0 ? amount1Desired : amount0Desired;
+        const msgValueWithBuffer = ethRequired + 10000n; // Buffer for geometric rounding in V3
+
+        logger.info(`Injecting paired liquidity: ${amountToken} Tokens + ${ethers.formatEther(ethRequired)} ETH`);
+        const tx = await this.pmContract.mint(params, { value: msgValueWithBuffer });
+        const receipt = await this._waitWithTimeout(tx);
+        return receipt.hash;
+    }
 }
 
 module.exports = LiquidityManager;

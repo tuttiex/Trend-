@@ -96,46 +96,6 @@ class StateManager {
         });
     }
 
-    async hasDeployedToday(region) {
-        // Normalize region for comparison (handle US vs United States)
-        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
-        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
-
-        const query = `
-            SELECT COUNT(*) as count 
-            FROM deployments 
-            WHERE (region IN ${regionQuery})
-            AND timestamp >= date('now', 'start of day')
-        `;
-
-        return new Promise((resolve, reject) => {
-            this.db.get(query, [], (err, row) => {
-                if (err) return reject(err);
-                resolve(row.count > 0);
-            });
-        });
-    }
-
-    async hasCompletedDeploymentToday(region) {
-        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
-        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
-
-        const query = `
-            SELECT COUNT(*) as count 
-            FROM deployments 
-            WHERE (region IN ${regionQuery})
-            AND tx_hash IS NOT NULL
-            AND timestamp >= date('now', 'start of day')
-        `;
-
-        return new Promise((resolve, reject) => {
-            this.db.get(query, [], (err, row) => {
-                if (err) return reject(err);
-                resolve(row.count > 0);
-            });
-        });
-    }
-
     async getDeploymentByTopic(topic, region) {
         const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
         const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
@@ -205,6 +165,43 @@ class StateManager {
             this.db.all(query, [], (err, rows) => {
                 if (err) return reject(err);
                 resolve(rows);
+            });
+        });
+    }
+
+    async getAverageVolume(region) {
+        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
+        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
+        const query = `
+            SELECT AVG(volume) as avgVolume 
+            FROM trend_snapshots 
+            WHERE region IN ${regionQuery}
+            AND timestamp >= datetime('now', '-1 day')
+            AND volume > 0
+        `;
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [], (err, row) => {
+                if (err) return reject(err);
+                resolve(row && row.avgVolume ? row.avgVolume : 0);
+            });
+        });
+    }
+
+    async getLastSnapshotVolume(topic, region) {
+        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
+        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
+        const query = `
+            SELECT volume 
+            FROM trend_snapshots 
+            WHERE trend_name = ?
+            AND region IN ${regionQuery}
+            ORDER BY timestamp DESC
+            LIMIT 1
+        `;
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [topic], (err, row) => {
+                if (err) return reject(err);
+                resolve(row ? row.volume : null);
             });
         });
     }

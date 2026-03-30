@@ -62,11 +62,14 @@ class DeploymentOrchestrator {
                 const TrendToken = await hre.ethers.getContractFactory("TrendToken", this.signer);
                 const tokenName = `${plan.topic} Token`;
 
+                const initialSupplyWei = hre.ethers.parseUnits(plan.initialLiquidityTokens.toString(), 18);
+
                 const token = await TrendToken.deploy(
                     tokenName,
                     plan.symbol,
                     plan.topic,
                     plan.region,
+                    initialSupplyWei,
                     {
                         maxPriorityFeePerGas: hre.ethers.parseUnits("0.1", "gwei"), // Mainnet friendly
                         maxFeePerGas: hre.ethers.parseUnits("2", "gwei")
