@@ -48,7 +48,7 @@ class ContentModerator {
             return { approved: false, reason: 'Topic length out of bounds' };
         }
 
-        // Layer 3: LLM Context Analysis (Placeholder for OpenClaw/LLM call)
+        // Layer 3: LLM Context Analysis (Placeholder for Trends Agent/LLM call)
         // In a real scenario, we'd call an LLM to ask if the topic is sensitive or inappropriate.
         const isSensitive = await this.checkLLMSensitivity(topic);
         if (isSensitive) {

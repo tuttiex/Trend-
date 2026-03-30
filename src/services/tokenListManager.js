@@ -61,7 +61,7 @@ class TokenListManager {
             }
 
             const tokenList = {
-                name: "OpenClaw Trend Tokens",
+                name: "Trends Agent Tokens",
                 timestamp: new Date().toISOString(),
                 version: {
                     major: 1,

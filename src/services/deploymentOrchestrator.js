@@ -43,7 +43,7 @@ class DeploymentOrchestrator {
                         const metadata = {
                             name: `${plan.topic} Token`,
                             symbol: plan.symbol,
-                            description: `Deployed by OpenClaw Agent. Identity registered on-chain via MetadataRegistry. Trend: ${plan.topic} in ${plan.region}.`,
+                            description: `Deployed by Trends Agent. Identity registered on-chain via MetadataRegistry. Trend: ${plan.topic} in ${plan.region}.`,
                             image: `${gatewayBase}${imageCid}?filename=${plan.symbol}.png`,
                             external_url: `https://basescan.org/token/`,
                             attributes: [

@@ -1,5 +1,5 @@
 /**
- * Prompt templates for the OpenClaw AI Planner.
+ * Prompt templates for the Trends Agent.
  */
 module.exports = {
   PLANNER_SYSTEM_PROMPT: `You are an autonomous AI Agent on the Base Blockchain.
