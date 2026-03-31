@@ -54,8 +54,8 @@ class TwitterClient {
         } catch (error) {
             logger.warn(`X API v2 Trends failed: ${error.message}. Falling back to v1.1 Trends API...`);
             try {
-                // Trends is a v1.1 endpoint
-                const trends = await this.client.v1.trendsByWoeid(woeid);
+                // Trends is a v1.1 endpoint. The correct method name is trendsByPlace
+                const trends = await this.client.v1.trendsByPlace(woeid);
                 return trends;
             } catch (v1Error) {
                 logger.error('Error fetching trends from official Twitter API (v2 & v1.1):', v1Error);

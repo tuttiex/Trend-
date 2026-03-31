@@ -37,18 +37,29 @@ class TwitterApiIo {
         try {
             logger.info(`Fetching trends from twitterapi.io (Standalone) for WOEID: ${woeid}`);
             const response = await axios.request(options);
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                logger.error('TwitterAPI.io API Error:', {
-                    status: error.response.status,
-                    data: error.response.data,
-                    headers: error.response.headers
-                });
-            } else {
-                logger.error('TwitterAPI.io Network/Setup Error:', error.message);
+            
+            // Standardize output for Fusion Brain
+            const apiData = response.data;
+            let results = [];
+
+            if (Array.isArray(apiData) && apiData.length > 0) {
+                results = apiData.map((t, index) => ({
+                    name: t.name,
+                    volume: t.tweet_volume || 0,
+                    rank: index + 1
+                }));
+            } else if (apiData && apiData.trends && apiData.trends.length > 0) {
+                results = apiData.trends.map((item, index) => ({
+                    name: item.trend?.name || item.name,
+                    volume: item.trend?.tweet_volume || item.tweet_volume || 0,
+                    rank: item.trend?.rank || index + 1
+                }));
             }
-            throw error;
+
+            return results;
+        } catch (error) {
+            logger.error('TwitterAPI.io Error:', error.message);
+            return [];
         }
     }
 

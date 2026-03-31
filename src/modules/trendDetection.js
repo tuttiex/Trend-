@@ -16,126 +16,169 @@ const BLACKLIST = [
 
 class TrendDetector {
     constructor() {
-        logger.info('TrendDetector initialized with Smart Ranking & API Fallback');
+        this.weights = {
+            'OFFICIAL_API': 1.2,
+            'NATIVE_SCRAPER': 1.0,
+            'TWITTER_API_IO': 0.8,
+            'TRENDS24': 0.7,
+            'GETDAYTRENDS': 0.6
+        };
+        logger.info('TrendDetector: Fused Brain initialized.');
     }
 
     async detectTrend(regionName) {
-        let rawTrends = [];
         const woeid = this.getWOEID(regionName);
+        const isUS = regionName.toLowerCase() === 'united states' || regionName.toLowerCase() === 'us';
 
-        // 1. Try OFFICIAL Twitter API First
-        try {
-            logger.info(`Attempting OFFICIAL Twitter API fetch for ${regionName}...`);
-            const apiResponse = await twitterClient.getTrends(woeid);
+        // TIER 1: APIs (Parallel)
+        logger.info(`[TIER 1] Attempting API Parallel Fetch for ${regionName}...`);
+        const apiResults = await Promise.allSettled([
+            this.tryOfficialAPI(woeid),
+            this.tryTwitterApiIo(woeid)
+        ]);
+
+        let allSourceData = [];
+        apiResults.forEach((res, i) => {
+            if (res.status === 'fulfilled' && res.value.length > 0) {
+                const sourceName = i === 0 ? 'OFFICIAL_API' : 'TWITTER_API_IO';
+                allSourceData.push({ source: sourceName, trends: res.value });
+            }
+        });
+
+        // If TIER 1 gave us at least 10 unique trends, we might stop here (efficiency)
+        // However, user requested "compare and pick" for scrapers if APIs fail.
+        if (allSourceData.length === 0) {
+            logger.warn(`[TIER 1] Both APIs failed for ${regionName}. Initiating TIER 2 Scraper Gauntlet...`);
             
-            // v1.1 trendsByWoeid returns an array with one object [{ trends: [...] }]
-            // v2 might return { trends: [...] } or { data: { trends: [...] } }
-            let trendsList = null;
-            if (Array.isArray(apiResponse) && apiResponse[0]?.trends) {
-                trendsList = apiResponse[0].trends;
-            } else if (apiResponse?.trends) {
-                trendsList = apiResponse.trends;
-            } else if (apiResponse?.data?.trends) {
-                trendsList = apiResponse.data.trends;
-            }
+            // TIER 2: Scrapers (Parallel)
+            const scraperResults = await Promise.allSettled([
+                this.tryNativeScraper(regionName, isUS),
+                trendScraper.scrapeTrends24(regionName),
+                trendScraper.scrapeGetDayTrends(regionName)
+            ]);
 
-            if (trendsList && Array.isArray(trendsList)) {
-                rawTrends = trendsList.map((t, index) => ({
-                    name: t.name || t.trend_name,
-                    volume: t.tweet_volume || t.volume || 0,
-                    rank: index + 1
-                }));
-            }
-
-            if (rawTrends.length > 0) {
-                logger.info(`✅ Successfully got ${rawTrends.length} trends from OFFICIAL Twitter API for ${regionName}`);
-            }
-        } catch (e) {
-            logger.warn(`⚠️ Official API failed: ${e.message}. Falling back to TwitterAPI.io.`);
+            scraperResults.forEach((res, i) => {
+                if (res.status === 'fulfilled' && res.value.length > 0) {
+                    const sourceNames = ['NATIVE_SCRAPER', 'TRENDS24', 'GETDAYTRENDS'];
+                    allSourceData.push({ source: sourceNames[i], trends: res.value });
+                }
+            });
         }
 
-        // 2. Fallback to Professional API (TwitterAPI.io)
-        if (rawTrends.length === 0) {
-            try {
-                logger.info(`Attempting TwitterAPI.io fetch for ${regionName}...`);
-                const apiResponse = await twitterApiIo.getTrends(woeid);
-
-                // Handle both old flat array format AND new nested object format
-                if (Array.isArray(apiResponse) && apiResponse.length > 0) {
-                    rawTrends = apiResponse.map((t, index) => ({
-                        name: t.name,
-                        volume: t.tweet_volume || 0,
-                        rank: index + 1
-                    }));
-                } else if (apiResponse && apiResponse.trends && apiResponse.trends.length > 0) {
-                    rawTrends = apiResponse.trends.map((item, index) => ({
-                        name: item.trend?.name || item.name,
-                        volume: item.trend?.tweet_volume || item.tweet_volume || 0,
-                        rank: item.trend?.rank || index + 1
-                    }));
-                }
-
-                if (rawTrends.length > 0) {
-                    logger.info(`✅ Successfully got ${rawTrends.length} trends from TwitterAPI.io for ${regionName}`);
-                }
-            } catch (e) {
-                logger.warn(`⚠️ TwitterAPI.io failed: ${e.message}. Falling back to Web Scraper.`);
-            }
+        if (allSourceData.length === 0) {
+            logger.error(`❌ CRITICAL: All trend sources failed for ${regionName}.`);
+            throw new Error('All trend sources failed.');
         }
 
-        // 3. Fallback to Web Scraper (getdaytrends.com) — LAST RESORT
-        if (rawTrends.length === 0) {
-            try {
-                let scraperRegion = 'world';
-                if (woeid === 23424908) scraperRegion = 'nigeria';
-                if (woeid === 23424977) scraperRegion = 'united-states';
+        // TIER 3: FUSION BRAIN
+        logger.info(`[TIER 3] Fusing data from ${allSourceData.length} sources for ${regionName}...`);
+        const fused = this.fuseTrendSources(allSourceData);
+        
+        if (!fused || fused.length === 0) return null;
 
-                logger.info(`Scraping trends from getdaytrends.com for ${regionName}...`);
-                const scraped = await trendScraper.getTrends(scraperRegion);
-                rawTrends = scraped.map((t, index) => ({
-                    name: t.name,
-                    volume: t.tweet_volume || 0,
-                    rank: index + 1
-                }));
-                if (rawTrends.length > 0) {
-                    logger.info(`✅ Successfully scraped ${rawTrends.length} trends for ${regionName}`);
-                }
-            } catch (e) {
-                logger.error(`❌ All trend sources failed (Official, TwitterAPI.io, and Scraper): ${e.message}`);
-                throw new Error('All trend sources failed.');
-            }
-        }
+        const primaryTrend = fused[0];
+        const top5 = fused.slice(0, 5).map(t => ({ name: t.name, volume: t.volume, score: t.score.toFixed(2) }));
 
-        // 3. Smart Filtering & Ranking
-        const filteredTrends = rawTrends.filter(t => {
-            const isBlacklisted = BLACKLIST.some(word => t.name.toUpperCase().includes(word));
-            return t.name && !isBlacklisted;
-        });
-
-        if (filteredTrends.length === 0) return null;
-
-        // SMART RANKING: 
-        // We trust the SOURCE RANK (index in list) 70% and VOLUME 30%.
-        // This ensures a breaking news story at #1 wins over a high-volume steady trend at #10.
-        filteredTrends.sort((a, b) => {
-            // Lower rank is better (1 is best). 
-            // We give a 'bonus' to high volume, but rank is the primary driver.
-            const scoreA = a.rank + (a.volume > 100000 ? -2 : 0);
-            const scoreB = b.rank + (b.volume > 100000 ? -2 : 0);
-            return scoreA - scoreB;
-        });
-
-        const primaryTrend = filteredTrends[0];
-        const top5 = filteredTrends.slice(0, 5).map(t => ({ name: t.name, volume: t.volume, rank: t.rank }));
+        logger.info(`🏆 Winner for ${regionName}: ${primaryTrend.name} (Score: ${primaryTrend.score.toFixed(2)})`);
 
         return {
             region: regionName,
             topic: primaryTrend.name,
             volume: primaryTrend.volume,
             topTrends: top5,
-            confidence: this.calculateConfidence(primaryTrend.volume),
-            timestamp: new Date().toISOString()
+            confidence: this.calculateConfidence(primaryTrend.score, primaryTrend.volume),
+            timestamp: new Date().toISOString(),
+            sourcesUsed: allSourceData.map(s => s.source)
         };
+    }
+
+    async tryOfficialAPI(woeid) {
+        try {
+            const apiResponse = await twitterClient.getTrends(woeid);
+            let trendsList = null;
+            if (Array.isArray(apiResponse) && apiResponse[0]?.trends) trendsList = apiResponse[0].trends;
+            else if (apiResponse?.trends) trendsList = apiResponse.trends;
+            else if (apiResponse?.data?.trends) trendsList = apiResponse.data.trends;
+
+            if (trendsList && Array.isArray(trendsList)) {
+                return trendsList.map((t, index) => ({
+                    name: t.name || t.trend_name,
+                    volume: t.tweet_volume || t.volume || 0,
+                    rank: index + 1
+                }));
+            }
+            return [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async tryTwitterApiIo(woeid) {
+        try { return await twitterApiIo.getTrends(woeid); }
+        catch (e) { return []; }
+    }
+
+    async tryNativeScraper(regionName, isUS) {
+        try {
+            const nativeScraper = isUS ? require('../services/nativeXScraperUS') : require('../services/nativeXScraper');
+            return await nativeScraper.getTrends(regionName);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    fuseTrendSources(sources) {
+        const trendMap = new Map();
+
+        sources.forEach(source => {
+            const weight = this.weights[source.source] || 0.5;
+            source.trends.forEach(t => {
+                // Normalize name
+                const normName = t.name.trim().toUpperCase();
+                if (!normName || this.isBlacklisted(normName)) return;
+
+                if (!trendMap.has(normName)) {
+                    trendMap.set(normName, {
+                        name: t.name,
+                        normalized: normName,
+                        volume: 0,
+                        rankScore: 0,
+                        occurences: 0,
+                        sourcesInvolved: []
+                    });
+                }
+
+                const entry = trendMap.get(normName);
+                entry.occurences += 1;
+                entry.sourcesInvolved.push(source.source);
+                // Volume: Keep the max reported volume
+                if (t.volume > entry.volume) entry.volume = t.volume;
+                
+                // Rank Score: Lower rank is better. 
+                // Using (1 / Rank) * weight
+                entry.rankScore += (1 / t.rank) * weight;
+            });
+        });
+
+        // Calculate final scores
+        const results = Array.from(trendMap.values()).map(entry => {
+            // Formula: RankScore * (Frequency Bonus)
+            // Frequency Bonus: 1 + (occurences - 1) * 0.2
+            const frequencyBonus = 1 + (entry.occurences - 1) * 0.25;
+            const finalScore = entry.rankScore * frequencyBonus;
+
+            return {
+                ...entry,
+                score: finalScore
+            };
+        });
+
+        // Sort by final score descending
+        return results.sort((a, b) => b.score - a.score);
+    }
+
+    isBlacklisted(name) {
+        return BLACKLIST.some(word => name.includes(word));
     }
 
     getWOEID(region) {
@@ -145,12 +188,13 @@ class TrendDetector {
         return null;
     }
 
-    calculateConfidence(volume) {
-        if (volume > 100000) return 0.95;
-        if (volume > 50000) return 0.90;
-        if (volume > 20000) return 0.85;
-        if (volume > 10000) return 0.80;
-        return 0.60;
+    calculateConfidence(score, volume) {
+        // High score + High volume = High confidence
+        let confidence = 0.5;
+        if (score > 1.5) confidence += 0.2;
+        if (score > 0.8) confidence += 0.1;
+        if (volume > 50000) confidence += 0.15;
+        return Math.min(confidence, 0.98);
     }
 }
 
