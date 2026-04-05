@@ -52,6 +52,24 @@ class StateManager {
                     snapshot_json TEXT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )`, (err) => err ? reject(err) : resolve());
+
+                this.db.run(`CREATE TABLE IF NOT EXISTS token_metrics (
+                    token_address TEXT PRIMARY KEY,
+                    current_supply TEXT,
+                    total_liquidity_eth TEXT,
+                    last_price_eth TEXT,
+                    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`, (err) => err ? reject(err) : resolve());
+
+                this.db.run(`CREATE TABLE IF NOT EXISTS events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    event_type TEXT,
+                    topic TEXT,
+                    region TEXT,
+                    details TEXT,
+                    tx_hash TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`, (err) => err ? reject(err) : resolve());
             });
             logger.info('StateManager: Connected to SQLite.');
         });
@@ -187,21 +205,41 @@ class StateManager {
         });
     }
 
-    async getLastSnapshotVolume(topic, region) {
-        const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
-        const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
-        const query = `
-            SELECT volume 
-            FROM trend_snapshots 
-            WHERE trend_name = ?
-            AND region IN ${regionQuery}
-            ORDER BY timestamp DESC
-            LIMIT 1
-        `;
+    async saveTokenMetrics(tokenAddress, metrics) {
+        const query = `INSERT OR REPLACE INTO token_metrics 
+            (token_address, current_supply, total_liquidity_eth, last_price_eth) 
+            VALUES (?, ?, ?, ?)`;
+        const values = [
+            tokenAddress,
+            metrics.currentSupply || "0",
+            metrics.totalLiquidityETH || "0",
+            metrics.lastPriceETH || "0"
+        ];
         return new Promise((resolve, reject) => {
-            this.db.get(query, [topic], (err, row) => {
+            this.db.run(query, values, function (err) {
                 if (err) return reject(err);
-                resolve(row ? row.volume : null);
+                logger.info(`StateManager: Saved token metrics for ${tokenAddress}`);
+                resolve(this.lastID);
+            });
+        });
+    }
+
+    async logEvent(eventType, details) {
+        const query = `INSERT INTO events 
+            (event_type, topic, region, details, tx_hash) 
+            VALUES (?, ?, ?, ?, ?)`;
+        const values = [
+            eventType,
+            details.topic || null,
+            details.region || null,
+            JSON.stringify(details),
+            details.txHash || null
+        ];
+        return new Promise((resolve, reject) => {
+            this.db.run(query, values, function (err) {
+                if (err) return reject(err);
+                logger.info(`StateManager: Logged event ${eventType}`);
+                resolve(this.lastID);
             });
         });
     }

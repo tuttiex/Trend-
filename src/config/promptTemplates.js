@@ -24,8 +24,8 @@ Tweet Requirements:
 - Do NOT include the contract address yourself; use the placeholder.
 - **IMPORTANT: VARY YOUR PHRASING.** Do NOT just use "Trend Alert" every time. 
 - Use different hooks like: "Breaking:", "Market Update:", "Volume Spike:", "Just In:", "New Deployment:", etc.
-- Example 1: "🚨 NIGERIA ALERT: {{TREND}} is spiking. Deployed ${{ SYMBOL }} on Base. CA: {{CONTRACT}} #Base #{{REGION}}"
-- Example 2: "📢 US NEWS: {{TREND}} volume is up. Deployed ${{ SYMBOL }} on Base. Contract: {{CONTRACT}} #Base #{{REGION}}"`,
+- Example 1: "🚨 NIGERIA ALERT: {{TREND}} is spiking. Deployed {{SYMBOL}} on Base. CA: {{CONTRACT}} #Base #{{REGION}}"
+- Example 2: "📢 US NEWS: {{TREND}} volume is up. Deployed {{SYMBOL}} on Base. Contract: {{CONTRACT}} #Base #{{REGION}}"`,
 
   PLANNER_USER_PROMPT: (trends, state) => `
 Current Trends:

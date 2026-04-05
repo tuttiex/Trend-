@@ -19,11 +19,46 @@ class Pipeline {
         const executionId = `exec_${Date.now()}`;
         logger.info(`Pipeline: Starting execution ${executionId} for trend: ${trend.name} in region: ${region}`);
 
+        // Log pipeline start
+        if (this.stateManager) {
+            await this.stateManager.logEvent('PIPELINE_START', {
+                topic: trend.name,
+                region: region,
+                executionId: executionId,
+                volume: trend.volume,
+                confidence: trend.confidence
+            });
+        }
+
         try {
             const result = await this._runStages(trend, region, executionId);
+            
+            // Log pipeline success
+            if (this.stateManager) {
+                await this.stateManager.logEvent('PIPELINE_SUCCESS', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    tokenAddress: result.tokenAddress,
+                    txHash: result.liquidityTx
+                });
+            }
+            
             return { status: 'success', result };
         } catch (error) {
             logger.error(`Pipeline: Execution encountered an error: ${error.message}`);
+            
+            // Log pipeline error
+            if (this.stateManager) {
+                await this.stateManager.logEvent('PIPELINE_ERROR', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    error: error.message,
+                    tokenAddress: error.tokenAddress || null
+                });
+            }
+            
             throw error;
         }
     }
@@ -34,6 +69,17 @@ class Pipeline {
         const moderationResult = await contentModerator.checkTopic(trend.name);
         if (!moderationResult.approved) {
             logger.warn(`Pipeline: Trend "${trend.name}" rejected by AI: ${moderationResult.reason}. Skipping deployment.`);
+            
+            // Log AI rejection
+            if (this.stateManager) {
+                await this.stateManager.logEvent('AI_REJECTION', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    reason: moderationResult.reason
+                });
+            }
+            
             return { status: 'skipped', reason: 'ai_rejected' };
         }
         logger.info(`Pipeline: ✅ Trend "${trend.name}" APPROVED for deployment! Symbol: ${moderationResult.symbol}`);
@@ -92,6 +138,26 @@ class Pipeline {
         try {
             result = await this.orchestrator.executeDeployment(plan);
             logger.info(`Pipeline: Execution successful. Token: ${result.tokenAddress}`);
+            
+            // Log token deployment
+            if (this.stateManager) {
+                await this.stateManager.logEvent('TOKEN_DEPLOYED', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    tokenAddress: result.tokenAddress,
+                    poolAddress: result.poolAddress,
+                    txHash: result.liquidityTx,
+                    supply: plan.initialLiquidityTokens
+                });
+                
+                // Save token metrics
+                await this.stateManager.saveTokenMetrics(result.tokenAddress, {
+                    currentSupply: plan.initialLiquidityTokens,
+                    totalLiquidityETH: plan.initialLiquidityETH,
+                    lastPriceETH: "0" // Will be updated later
+                });
+            }
         } catch (error) {
             logger.error(`Pipeline: Onchain execution failed: ${error.message}`);
             if (this.stateManager) {
@@ -100,6 +166,16 @@ class Pipeline {
                     metadata_cid: error.metadataCid,
                     pool_address: error.poolAddress,
                     tx_hash: error.txHash
+                });
+                
+                // Log deployment error
+                await this.stateManager.logEvent('DEPLOYMENT_ERROR', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    error: error.message,
+                    tokenAddress: error.tokenAddress || null,
+                    txHash: error.txHash || null
                 });
             }
             throw error;
@@ -121,6 +197,14 @@ class Pipeline {
                 // 5. Sync Uniswap Token List
                 logger.info('Pipeline: Stage 5 - Syncing Uniswap Token List');
                 await tokenListManager.generateAndUploadList();
+                
+                // Log token list sync
+                await this.stateManager.logEvent('TOKEN_LIST_SYNCED', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    tokenAddress: result.tokenAddress
+                });
 
                 // 6. Trigger External Webhook (trend$)
                 logger.info('Pipeline: Stage 6 - Triggering trend$ Webhook');
@@ -135,10 +219,28 @@ class Pipeline {
                     poolAddress: result.poolAddress,
                     liquidityTx: result.liquidityTx
                 });
+                
+                // Log webhook notification
+                await this.stateManager.logEvent('WEBHOOK_SENT', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    tokenAddress: result.tokenAddress,
+                    webhookUrl: process.env.WEBHOOK_URL || 'unknown'
+                });
 
                 logger.info(`✅ Pipeline: All stages complete for ${trend.name}`);
             } catch (dbError) {
                 logger.error(`Pipeline: Failed to save final state: ${dbError.message}`);
+                
+                // Log final state error
+                await this.stateManager.logEvent('FINAL_STATE_ERROR', {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId,
+                    error: dbError.message,
+                    tokenAddress: result.tokenAddress
+                });
             }
         }
         return result;

@@ -1,15 +1,17 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const GroqClient = require('../services/groqClient');
 const logger = require('../utils/logger');
 const promptTemplates = require('../config/promptTemplates');
 require('dotenv').config();
 
 class Planner {
     constructor() {
-        if (!process.env.GEMINI_API_KEY) {
-            logger.warn('GEMINI_API_KEY is missing. Planner will fail.');
+        this.groq = new GroqClient();
+        // Use environment variable or default to llama-3.3-70b-versatile
+        this.model = process.env.GROQ_PLANNER_MODEL || 'llama-3.3-70b-versatile';
+        
+        if (!process.env.GROQ_API_KEY) {
+            logger.warn('GROQ_API_KEY is missing. Planner will fail.');
         }
-        this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     }
 
     /**
@@ -18,7 +20,7 @@ class Planner {
      * @param {Object} state - Agent financial/wallet state.
      */
     async plan(trends, state) {
-        logger.info('🧠 Planner: Analyzing trends with Gemini AI...');
+        logger.info('🧠 Planner: Analyzing trends with Groq Llama...');
 
         // Security Check
         if (JSON.stringify(state).toLowerCase().includes('key') || JSON.stringify(state).toLowerCase().includes('private')) {
@@ -29,14 +31,20 @@ class Planner {
             const systemPrompt = promptTemplates.PLANNER_SYSTEM_PROMPT;
             const userPrompt = promptTemplates.PLANNER_USER_PROMPT(trends, state);
 
-            const prompt = `${systemPrompt}\n\nUser Context:\n${userPrompt}\n\nRespond strictly in valid JSON format.`;
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: `${userPrompt}\n\nRespond strictly in valid JSON format.` }
+            ];
 
-            const result = await this.model.generateContent(prompt);
-            const response = await result.response;
-            let text = response.text();
+            const response = await this.groq.chatCompletion(messages, {
+                model: this.model,
+                jsonMode: true,
+                temperature: 0.7,
+                maxTokens: 1024
+            });
 
             // Clean markdown blocks if present
-            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            let text = response.replace(/```json/g, '').replace(/```/g, '').trim();
 
             const plan = JSON.parse(text);
 
@@ -44,7 +52,7 @@ class Planner {
             return plan;
 
         } catch (error) {
-            logger.error('Planner Error (Gemini):', error.message);
+            logger.error('Planner Error (Groq):', error.message);
             // Fallback to safe WAIT if AI fails
             return { action: 'WAIT', rationale: 'AI Service Failure' };
         }

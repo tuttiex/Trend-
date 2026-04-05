@@ -33,6 +33,18 @@ class Scheduler {
                 const names = trendData.topTrends.map(t => t.name).join(', ');
                 logger.info(`[Monitoring] Top trends for ${region}: ${names}`);
                 
+                // Log trend detection event
+                if (this.pipeline && this.pipeline.stateManager) {
+                    await this.pipeline.stateManager.logEvent('TRENDS_DETECTED', {
+                        region: region,
+                        champion: trendData.topic,
+                        championVolume: trendData.volume,
+                        confidence: trendData.confidence,
+                        sources: trendData.sourcesUsed,
+                        top5: trendData.topTrends
+                    });
+                }
+                
                 if (this.pipeline && this.pipeline.stateManager) {
                     const momentumCalculator = require('./modules/momentumCalculator');
                     const hre = require("hardhat");
@@ -65,14 +77,43 @@ class Scheduler {
                                             const mintTx = await tokenContract.agentMint(supplyWei);
                                             await mintTx.wait();
                                             
+                                            // Log momentum mint
+                                            await this.pipeline.stateManager.logEvent('MOMENTUM_MINT', {
+                                                topic: t.name,
+                                                region: region,
+                                                tokenAddress: deployment.token_address,
+                                                previousVolume: previousVolume,
+                                                newVolume: t.volume,
+                                                additionalSupply: additionalSupply,
+                                                txHash: mintTx.hash
+                                            });
+                                            
                                             logger.info(`Minting successful. Injecting supply to liquidity pool...`);
                                             await this.pipeline.orchestrator.liquidityManager.injectSupplyToPool(
                                                 deployment.token_address, 
                                                 additionalSupply
                                             );
+                                            
+                                            // Log liquidity injection
+                                            await this.pipeline.stateManager.logEvent('LIQUIDITY_INJECTED', {
+                                                topic: t.name,
+                                                region: region,
+                                                tokenAddress: deployment.token_address,
+                                                injectedSupply: additionalSupply
+                                            });
+                                            
                                             logger.info(`✅ Successfully inflated paired Liquidity for ${t.name}`);
                                         } catch (txErr) {
                                             logger.error(`❌ Tx failed for momentum minting (${t.name}): ${txErr.message}`);
+                                            
+                                            // Log momentum mint error
+                                            await this.pipeline.stateManager.logEvent('MOMENTUM_MINT_ERROR', {
+                                                topic: t.name,
+                                                region: region,
+                                                tokenAddress: deployment.token_address,
+                                                error: txErr.message,
+                                                attemptedSupply: additionalSupply
+                                            });
                                         }
                                     }
                                 }

@@ -5,22 +5,22 @@ const path = require('path');
 
 /**
  * Generates token logos using:
- *   1. Gemini 2.5 Flash Image (primary)
- *   2. SiliconFlow FLUX.1-schnell (fallback if Gemini fails)
+ *   1. SiliconFlow FLUX-1.1-pro (primary)
+ *   2. Gemini 2.5 Flash Image (fallback if FLUX fails)
  */
 class ImageGenerator {
     constructor() {
-        // Primary: Gemini 2.5 Flash Image
+        // Primary: SiliconFlow FLUX-1.1-pro
+        this.siliconFlowKey = process.env.SILICONFLOW_API_KEY;
+        this.siliconFlowEndpoint = 'https://api.siliconflow.com/v1/images/generations';
+        this.siliconFlowModel = 'black-forest-labs/FLUX-1.1-pro';
+
+        // Fallback: Gemini 2.5 Flash Image
         this.geminiKey = process.env.GEMINI_API_KEY;
         this.geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
 
-        // Fallback: SiliconFlow FLUX.1-schnell
-        this.siliconFlowKey = process.env.SILICONFLOW_API_KEY;
-        this.siliconFlowEndpoint = 'https://api.siliconflow.com/v1/images/generations';
-        this.siliconFlowModel = 'black-forest-labs/FLUX.1-schnell';
-
-        if (!this.geminiKey) logger.warn('ImageGenerator: GEMINI_API_KEY is missing — will use SiliconFlow only.');
-        if (!this.siliconFlowKey) logger.warn('ImageGenerator: SILICONFLOW_API_KEY is missing — no fallback available.');
+        if (!this.siliconFlowKey) logger.warn('ImageGenerator: SILICONFLOW_API_KEY is missing — will use Gemini fallback or fail.');
+        if (!this.geminiKey) logger.warn('ImageGenerator: GEMINI_API_KEY is missing — no fallback available.');
     }
 
     async generateTokenLogo(topic, symbol, region) {
@@ -31,40 +31,10 @@ class ImageGenerator {
             Background: Clean, single solid-color professional background. 
             No text, no small details. Centered composition. PNG format.`;
 
-        // ── Primary: Gemini 2.5 Flash Image ──────────────────────────────────
-        if (this.geminiKey) {
-            try {
-                logger.info('🤖 Trying Gemini 2.5 Flash Image...');
-                const response = await axios.post(
-                    `${this.geminiEndpoint}?key=${this.geminiKey}`,
-                    {
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
-                    },
-                    { headers: { 'Content-Type': 'application/json' }, timeout: 60000 }
-                );
-
-                const parts = response.data?.candidates?.[0]?.content?.parts || [];
-                const imagePart = parts.find(p => p.inlineData?.data);
-
-                if (imagePart) {
-                    const buffer = Buffer.from(imagePart.inlineData.data, 'base64');
-                    this._saveTempFile(buffer, symbol);
-                    logger.info('✅ Gemini image generated successfully!');
-                    return buffer;
-                }
-                throw new Error('No image part in Gemini response');
-
-            } catch (err) {
-                const detail = err.response?.data?.error?.message || err.message;
-                logger.warn(`⚠️ Gemini failed: ${detail}. Trying SiliconFlow fallback...`);
-            }
-        }
-
-        // ── Fallback: SiliconFlow FLUX.1-schnell ─────────────────────────────
+        // ── Primary: SiliconFlow FLUX-1.1-pro ────────────────────────────────
         if (this.siliconFlowKey) {
             try {
-                logger.info('🔁 Trying SiliconFlow FLUX.1-schnell...');
+                logger.info('🤖 Trying SiliconFlow FLUX-1.1-pro...');
                 const response = await axios.post(
                     this.siliconFlowEndpoint,
                     {
@@ -94,7 +64,37 @@ class ImageGenerator {
 
             } catch (err) {
                 const detail = err.response?.data?.message || err.message;
-                logger.error(`❌ SiliconFlow also failed: ${detail}`);
+                logger.warn(`⚠️ SiliconFlow FLUX failed: ${detail}. Trying Gemini fallback...`);
+            }
+        }
+
+        // ── Fallback: Gemini 2.5 Flash Image ─────────────────────────────────
+        if (this.geminiKey) {
+            try {
+                logger.info('🔁 Trying Gemini 2.5 Flash Image...');
+                const response = await axios.post(
+                    `${this.geminiEndpoint}?key=${this.geminiKey}`,
+                    {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+                    },
+                    { headers: { 'Content-Type': 'application/json' }, timeout: 60000 }
+                );
+
+                const parts = response.data?.candidates?.[0]?.content?.parts || [];
+                const imagePart = parts.find(p => p.inlineData?.data);
+
+                if (imagePart) {
+                    const buffer = Buffer.from(imagePart.inlineData.data, 'base64');
+                    this._saveTempFile(buffer, symbol);
+                    logger.info('✅ Gemini image generated successfully!');
+                    return buffer;
+                }
+                throw new Error('No image part in Gemini response');
+
+            } catch (err) {
+                const detail = err.response?.data?.error?.message || err.message;
+                logger.error(`❌ Gemini also failed: ${detail}`);
             }
         }
 
