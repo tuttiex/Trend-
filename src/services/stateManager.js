@@ -244,6 +244,24 @@ class StateManager {
         });
     }
 
+    async getTotalCreatorFees() {
+        const query = `
+            SELECT COUNT(*) as count, 
+                   SUM(CAST(json_extract(details, '$.feeAmount') AS REAL)) as totalFees
+            FROM events 
+            WHERE event_type IN ('CREATOR_FEE_COLLECTED', 'CREATOR_FEE_COLLECTED_MOMENTUM')
+        `;
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [], (err, row) => {
+                if (err) return reject(err);
+                resolve({
+                    totalFees: row.totalFees || 0,
+                    transactionCount: row.count || 0
+                });
+            });
+        });
+    }
+
     async close() {
         this.db.close();
     }

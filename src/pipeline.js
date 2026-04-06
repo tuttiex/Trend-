@@ -99,10 +99,10 @@ class Pipeline {
         // 2. Planning (Momentum Engine determines the dynamic supply of the new token)
         logger.info('Pipeline: Stage 2 - Planning');
         const momentumCalculator = require('./modules/momentumCalculator');
-        let supply = "10000000"; // baseline fallback
+        let supplyBreakdown = { totalSupply: 10000000, creatorFee: 100000, netSupply: 9900000, feePercent: 1.0 }; // baseline fallback
         if (this.stateManager) {
             const avgVolume = await this.stateManager.getAverageVolume(region);
-            supply = momentumCalculator.calculateSupply(trend.volume, avgVolume);
+            supplyBreakdown = momentumCalculator.calculateSupplyWithFee(trend.volume, avgVolume);
         }
 
         const plan = {
@@ -110,7 +110,10 @@ class Pipeline {
             symbol: moderationResult.symbol,
             region: region,
             initialLiquidityETH: "0.0004",  // Testnet WETH config
-            initialLiquidityTokens: supply.toString()
+            initialLiquidityTokens: supplyBreakdown.netSupply.toString(),
+            creatorFee: supplyBreakdown.creatorFee.toString(),
+            totalSupply: supplyBreakdown.totalSupply.toString(),
+            feePercent: supplyBreakdown.feePercent
         };
 
         // If for any reason the deploy was partially interrupted previously, we attempt resumption
@@ -139,6 +142,48 @@ class Pipeline {
             result = await this.orchestrator.executeDeployment(plan);
             logger.info(`Pipeline: Execution successful. Token: ${result.tokenAddress}`);
             
+            // Mint creator fee if applicable
+            if (plan.creatorFee && parseFloat(plan.creatorFee) > 0) {
+                try {
+                    const hre = require("hardhat");
+                    const { ethers } = hre;
+                    const feeAmountWei = ethers.parseUnits(plan.creatorFee, 18);
+                    const creatorAddress = await this.signer.getAddress();
+                    
+                    logger.info(`Pipeline: Minting creator fee ${plan.creatorFee} tokens to ${creatorAddress}...`);
+                    
+                    const tokenContract = new ethers.Contract(
+                        result.tokenAddress,
+                        ['function agentMint(uint256) external'],
+                        this.signer
+                    );
+                    
+                    const feeTx = await tokenContract.agentMint(feeAmountWei);
+                    await feeTx.wait();
+                    
+                    logger.info(`✅ Creator fee minted. TX: ${feeTx.hash}`);
+                    result.creatorFeeTx = feeTx.hash;
+                    result.creatorFeeAmount = plan.creatorFee;
+                    
+                    // Log creator fee collection
+                    if (this.stateManager) {
+                        await this.stateManager.logEvent('CREATOR_FEE_COLLECTED', {
+                            topic: trend.name,
+                            region: region,
+                            executionId: executionId,
+                            tokenAddress: result.tokenAddress,
+                            feeAmount: plan.creatorFee,
+                            feePercent: plan.feePercent,
+                            creatorAddress: creatorAddress,
+                            txHash: feeTx.hash
+                        });
+                    }
+                } catch (feeErr) {
+                    logger.error(`⚠️ Failed to mint creator fee: ${feeErr.message}`);
+                    // Don't fail deployment if fee minting fails
+                }
+            }
+            
             // Log token deployment
             if (this.stateManager) {
                 await this.stateManager.logEvent('TOKEN_DEPLOYED', {
@@ -148,7 +193,9 @@ class Pipeline {
                     tokenAddress: result.tokenAddress,
                     poolAddress: result.poolAddress,
                     txHash: result.liquidityTx,
-                    supply: plan.initialLiquidityTokens
+                    supply: plan.totalSupply,
+                    netSupply: plan.initialLiquidityTokens,
+                    creatorFee: plan.creatorFee
                 });
                 
                 // Save token metrics

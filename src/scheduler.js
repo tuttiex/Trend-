@@ -59,10 +59,10 @@ class Scheduler {
                                 // --- EXISTING TREND: INFLATE MOMENTUM ---
                                 const previousVolume = await this.pipeline.stateManager.getLastSnapshotVolume(t.name, region);
                                 if (previousVolume) {
-                                    const additionalSupply = momentumCalculator.calculateAdditionalSupply(t.volume, previousVolume);
+                                    const feeBreakdown = momentumCalculator.calculateAdditionalSupplyWithFee(t.volume, previousVolume);
                                     
-                                    if (additionalSupply > 0) {
-                                        logger.info(`📈 Momentum surge detected for ${t.name}! Minting ${additionalSupply} new tokens...`);
+                                    if (feeBreakdown.totalAdditional > 0) {
+                                        logger.info(`📈 Momentum surge detected for ${t.name}! Minting ${feeBreakdown.totalAdditional} total (${feeBreakdown.netAdditional} to pool, ${feeBreakdown.creatorFee} fee)...`);
                                         
                                         const signer = this.pipeline.orchestrator.signer;
                                         const tokenContract = new ethers.Contract(
@@ -71,11 +71,34 @@ class Scheduler {
                                             signer
                                         );
                                         
-                                        const supplyWei = ethers.parseUnits(additionalSupply.toString(), 18);
-                                        
                                         try {
-                                            const mintTx = await tokenContract.agentMint(supplyWei);
+                                            // Mint 99% to agent for liquidity injection
+                                            const netSupplyWei = ethers.parseUnits(feeBreakdown.netAdditional.toString(), 18);
+                                            const mintTx = await tokenContract.agentMint(netSupplyWei);
                                             await mintTx.wait();
+                                            
+                                            // Mint 1% creator fee to creator wallet
+                                            let feeTxHash = null;
+                                            if (feeBreakdown.creatorFee > 0) {
+                                                const creatorAddress = await signer.getAddress();
+                                                const feeWei = ethers.parseUnits(feeBreakdown.creatorFee.toString(), 18);
+                                                const feeTx = await tokenContract.agentMint(feeWei);
+                                                await feeTx.wait();
+                                                feeTxHash = feeTx.hash;
+                                                
+                                                logger.info(`✅ Creator fee minted: ${feeBreakdown.creatorFee} to ${creatorAddress}`);
+                                                
+                                                // Log creator fee from momentum
+                                                await this.pipeline.stateManager.logEvent('CREATOR_FEE_COLLECTED_MOMENTUM', {
+                                                    topic: t.name,
+                                                    region: region,
+                                                    tokenAddress: deployment.token_address,
+                                                    feeAmount: feeBreakdown.creatorFee,
+                                                    feePercent: feeBreakdown.feePercent,
+                                                    creatorAddress: creatorAddress,
+                                                    txHash: feeTxHash
+                                                });
+                                            }
                                             
                                             // Log momentum mint
                                             await this.pipeline.stateManager.logEvent('MOMENTUM_MINT', {
@@ -84,14 +107,17 @@ class Scheduler {
                                                 tokenAddress: deployment.token_address,
                                                 previousVolume: previousVolume,
                                                 newVolume: t.volume,
-                                                additionalSupply: additionalSupply,
-                                                txHash: mintTx.hash
+                                                totalAdditional: feeBreakdown.totalAdditional,
+                                                netAdditional: feeBreakdown.netAdditional,
+                                                creatorFee: feeBreakdown.creatorFee,
+                                                txHash: mintTx.hash,
+                                                feeTxHash: feeTxHash
                                             });
                                             
                                             logger.info(`Minting successful. Injecting supply to liquidity pool...`);
                                             await this.pipeline.orchestrator.liquidityManager.injectSupplyToPool(
                                                 deployment.token_address, 
-                                                additionalSupply
+                                                feeBreakdown.netAdditional
                                             );
                                             
                                             // Log liquidity injection
@@ -99,7 +125,7 @@ class Scheduler {
                                                 topic: t.name,
                                                 region: region,
                                                 tokenAddress: deployment.token_address,
-                                                injectedSupply: additionalSupply
+                                                injectedSupply: feeBreakdown.netAdditional
                                             });
                                             
                                             logger.info(`✅ Successfully inflated paired Liquidity for ${t.name}`);
@@ -112,7 +138,7 @@ class Scheduler {
                                                 region: region,
                                                 tokenAddress: deployment.token_address,
                                                 error: txErr.message,
-                                                attemptedSupply: additionalSupply
+                                                attemptedSupply: feeBreakdown.totalAdditional
                                             });
                                         }
                                     }
