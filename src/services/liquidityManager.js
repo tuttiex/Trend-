@@ -345,7 +345,7 @@ class LiquidityManager {
      * @param {string} amountETH   - ETH amount as a string (e.g. "0.0004")
      * @param {number} fee         - Fee tier: 500 | 3000 | 10000
      */
-    async addLiquidity(tokenAddress, amountToken, amountETH, fee = 3000) {
+    async addLiquidity(tokenAddress, amountToken, amountETH, fee = 10000) {
         this._requireInit(); // FIX #7
 
         // FIX #6: Resolve tick spacing from fee tier (was hardcoded to 60 for 0.3% only)
@@ -499,7 +499,7 @@ class LiquidityManager {
      * Injects additional inflationary supply into the pool as paired liquidity (Option A).
      * Calculates the required ETH to match the tokens at the current price and deepens the pool.
      */
-    async injectSupplyToPool(tokenAddress, amountToken, fee = 3000) {
+    async injectSupplyToPool(tokenAddress, amountToken, fee = 10000) {
         this._requireInit();
         const tickSpacing = FEE_TO_TICK_SPACING[fee];
         if (!tickSpacing) throw new Error(`Unsupported fee: ${fee}`);

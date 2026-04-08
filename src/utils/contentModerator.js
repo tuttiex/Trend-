@@ -4,25 +4,23 @@ require('dotenv').config();
 
 class ContentModerator {
     constructor() {
-        // Layer 1: Blocklist (Hardcoded terms)
-        this.blocklist = [
-            // Profanity
+        // Examples of inappropriate terms for AI guidance (not automatic blocking)
+        this.prohibitedExamples = [
+            // Profanity examples
             'fuck', 'shit', 'piss', 'cunt', 'asshole', 'badword',
-            // Harmful/Violent (keep these)
+            // Harmful/Violent examples
             'war', 'death', 'kill', 'suicide', 'bomb', 'terrorism',
             'nazi', 'racist', 'hate', 'slur',
-            // Scam/Deceptive
+            // Scam/Deceptive examples
             'scam', 'rug', 'honeypot', 'ponzi', 'hack', 'steal'
-            // Note: Political terms removed - now handled by LLM moderation layer
         ];
 
-        // Layer 3: Groq LLM moderation
-        // Uses llama-3.3-70b-versatile — same model as planner for consistency
+        // Layer 2: Groq LLM moderation
         if (process.env.GROQ_API_KEY) {
             this.groq = new GroqClient();
             this.model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
         } else {
-            logger.warn('ContentModerator: GROQ_API_KEY not set — LLM layer disabled, using blocklist only.');
+            logger.warn('ContentModerator: GROQ_API_KEY not set — AI moderation disabled.');
             this.groq = null;
         }
     }
@@ -35,24 +33,16 @@ class ContentModerator {
     async checkTopic(topic) {
         logger.info(`Moderating topic: "${topic}"`);
 
-        // Layer 1: Blocklist Check
-        const blocklistMatch = this.checkBlocklist(topic);
-        if (blocklistMatch.blocked) {
-            logger.warn(`Moderation REJECTED (Blocklist): "${topic}" matched term "${blocklistMatch.term}"`);
-            return { approved: false, reason: `Matches banned term: ${blocklistMatch.term}` };
-        }
-
-        // Layer 2: Length and Character Check
+        // Layer 1: Length and Character Check
         if (topic.length < 2 || topic.length > 50) {
             return { approved: false, reason: 'Topic length out of bounds' };
         }
 
-        // Layer 3: LLM Context Analysis (Placeholder for Trends Agent/LLM call)
-        // In a real scenario, we'd call an LLM to ask if the topic is sensitive or inappropriate.
-        const isSensitive = await this.checkLLMSensitivity(topic);
-        if (isSensitive) {
-            logger.warn(`Moderation REJECTED (LLM): "${topic}" deemed sensitive by AI.`);
-            return { approved: false, reason: 'AI detected sensitive or inappropriate context' };
+        // Layer 2: AI Context Analysis (Primary Decision Maker)
+        const aiDecision = await this.checkLLMSensitivity(topic);
+        if (aiDecision.blocked) {
+            logger.warn(`Moderation REJECTED (AI): "${topic}" - ${aiDecision.reason}`);
+            return { approved: false, reason: aiDecision.reason };
         }
 
         // Sanitization
@@ -61,48 +51,45 @@ class ContentModerator {
 
         return {
             approved: true,
-            reason: 'Passed all safety checks',
+            reason: aiDecision.reason || 'Passed all safety checks',
             sanitized: sanitized,
             symbol: symbol
         };
     }
 
     /**
-     * Checks if topic contains any items from the blocklist.
-     */
-    checkBlocklist(topic) {
-        const lowerTopic = topic.toLowerCase();
-        for (const term of this.blocklist) {
-            if (lowerTopic.includes(term)) {
-                return { blocked: true, term };
-            }
-        }
-        return { blocked: false };
-    }
-
-    /**
-     * Real Gemini LLM sensitivity check.
-     * Asks Gemini to classify the topic as safe or unsafe for crypto token deployment.
-     *
-     * Fail-safe design: any API error or unexpected response blocks the topic.
-     * This ensures a network blip can't accidentally let a harmful trend through.
-     *
+     * AI-based sensitivity check using Groq LLM.
+     * Uses prohibitedExamples as guidance for the AI.
+     * 
      * @param {string} topic
-     * @returns {Promise<boolean>} true = sensitive (block), false = safe (allow)
+     * @returns {Promise<Object>} { blocked: boolean, reason: string }
      */
     async checkLLMSensitivity(topic) {
-        // If Groq is not configured, skip LLM check (blocklist still runs)
         if (!this.groq) {
-            logger.warn('ContentModerator: LLM check skipped (no API key).');
-            return false;
+            logger.warn('ContentModerator: LLM check skipped (no API key). Allowing all topics.');
+            return { blocked: false, reason: 'AI moderation disabled' };
         }
+
+        const examplesList = this.prohibitedExamples.join(', ');
 
         const systemPrompt = `You are a content moderation assistant for an autonomous crypto token deployment agent.
 Your job is to decide if a trending Twitter/X topic is safe to tokenize.
 
+EXAMPLES OF INAPPROPRIATE TERMS (use as guidance, not strict rules):
+${examplesList}
+
 A topic is UNSAFE if it relates to: genocide, mass violence, war crimes, terrorism, ethnic cleansing,
 human tragedy, death of specific people, natural disasters, hate crimes, abuse, suicide, or any deeply
 offensive or politically explosive content that would be inappropriate to profit from.
+
+CONTEXT MATTERS:
+- "Warren Buffett" (person) is SAFE even though it contains "war"
+- "Killer Whale Documentary" is SAFE even though it contains "kill"
+- "Crypto Scam Awareness" might be SAFE if educational context
+- "Hitler" alone is UNSAFE (historical figure associated with genocide)
+- "Blockchain Death Cross" is SAFE (technical trading term)
+
+Use your judgment. Consider the full context of the topic, not just individual words.
 
 A topic is SAFE if it relates to: sports, entertainment, celebrity culture, technology, business,
 finance, gaming, movies, music, general pop culture, or neutral news events.
@@ -115,7 +102,7 @@ or
 {"safe": false, "reason": "one sentence reason"}`;
 
         try {
-            logger.info(`ContentModerator: Sending "${topic}" to Groq for LLM sensitivity check...`);
+            logger.info(`ContentModerator: Sending "${topic}" to Groq for AI analysis...`);
             
             const messages = [
                 { role: 'system', content: systemPrompt },
@@ -125,35 +112,35 @@ or
             const response = await this.groq.chatCompletion(messages, {
                 model: this.model,
                 jsonMode: true,
-                temperature: 0.1,  // Low temperature for consistent classification
-                maxTokens: 100
+                temperature: 0.2,
+                maxTokens: 150
             });
 
             let text = response.replace(/```json|```/g, '').trim();
             const parsed = JSON.parse(text);
 
-            if (typeof parsed.safe !== 'boolean') {
+            if (typeof parsed.safe !== 'boolean' || !parsed.reason) {
                 throw new Error('Unexpected response format from Groq');
             }
 
             const verdict = parsed.safe ? 'SAFE' : 'UNSAFE';
-            logger.info(`ContentModerator: Groq verdict for "${topic}": ${verdict} — ${parsed.reason}`);
+            logger.info(`ContentModerator: AI verdict for "${topic}": ${verdict} — ${parsed.reason}`);
 
-            // Return true if sensitive (i.e. NOT safe)
-            return !parsed.safe;
+            return {
+                blocked: !parsed.safe,
+                reason: parsed.reason
+            };
 
         } catch (err) {
-            // FALLBACK FOR QUOTA/RATE LIMIT ERRORS
+            // Fallback: if AI fails, default to allowing (but log warning)
             const errorStr = err.message.toLowerCase();
             if (errorStr.includes('quota') || errorStr.includes('429') || errorStr.includes('rate limit')) {
-                logger.warn(`ContentModerator: Groq API quota exceeded or rate limited. Falling back to blocklist-only moderation for "${topic}".`);
-                return false; // Treat as safe from LLM's perspective, relying entirely on the prior blocklist check
+                logger.warn(`ContentModerator: Groq API quota exceeded. Allowing "${topic}" with warning.`);
+                return { blocked: false, reason: 'AI check skipped due to API limits' };
             }
 
-            // FAIL SAFE: For general API errors, block the topic.
-            // A network blip should never let a harmful trend slip through.
-            logger.error(`ContentModerator: LLM check failed for "${topic}": ${err.message}. Blocking topic as a safety precaution.`);
-            return true; // treated as sensitive = blocked
+            logger.error(`ContentModerator: AI check failed for "${topic}": ${err.message}. Blocking as precaution.`);
+            return { blocked: true, reason: 'AI moderation check failed - blocked for safety' };
         }
     }
 
