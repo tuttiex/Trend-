@@ -20,8 +20,6 @@ describe("BondingCurve Integration", function () {
             swapFeeBps: 70
         }));
 
-        // Accept DEX ownership
-        await dex.acceptOwnership();
     });
 
     describe("Full Token Lifecycle", function () {

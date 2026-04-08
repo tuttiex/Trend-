@@ -26,9 +26,6 @@ describe("BondingCurveDEX", function () {
         const BondingCurveDEX = await ethers.getContractFactory("BondingCurveDEX");
         dex = BondingCurveDEX.attach(dexAddress);
 
-        // Accept ownership of DEX (two-step process)
-        await dex.acceptOwnership();
-        
         // Seed initial liquidity
         await utils.seedLiquidity(token, dex, owner, "500000", "1");
     });
