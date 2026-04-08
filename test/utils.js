@@ -22,13 +22,15 @@ class TestUtils {
      */
     async getPoolState(dex) {
         const info = await dex.getPoolInfo();
+        // Ethers v6 returns array, destructure by index
+        const [tokenReserve, ethReserve, k, swapFeeBps, totalFeesCollected, price] = info;
         return {
-            tokenReserve: ethers.formatUnits(info.tokenReserve, 18),
-            ethReserve: ethers.formatEther(info.ethReserve),
-            k: ethers.formatUnits(info.k, 18),
-            swapFeeBps: info.swapFeeBps.toString(),
-            totalFeesCollected: ethers.formatEther(info.totalFeesCollected),
-            price: ethers.formatUnits(info.price, 18)
+            tokenReserve: ethers.formatUnits(tokenReserve, 18),
+            ethReserve: ethers.formatEther(ethReserve),
+            k: ethers.formatUnits(k, 18),
+            swapFeeBps: swapFeeBps.toString(),
+            totalFeesCollected: ethers.formatEther(totalFeesCollected),
+            price: ethers.formatUnits(price, 18)
         };
     }
 

@@ -275,10 +275,6 @@ describe("BondingCurve Integration", function () {
             // Transfer ownership to new address (simulating agent handover)
             await token.transferOwnership(trader1.address);
             await dex.transferOwnership(trader1.address);
-            
-            // New owner accepts
-            await token.connect(trader1).acceptOwnership();
-            await dex.connect(trader1).acceptOwnership();
 
             // New owner can operate
             await token.connect(trader1).agentMint(ethers.parseUnits("1000", 18), trader1.address);
