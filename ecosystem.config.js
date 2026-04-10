@@ -11,9 +11,9 @@ module.exports = {
       env: {
         NODE_ENV: 'production'
       },
-      log_file: '/home/ubuntu/logs/trends-agent.log',
-      out_file: '/home/ubuntu/logs/trends-agent-out.log',
-      error_file: '/home/ubuntu/logs/trends-agent-error.log',
+      log_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent.log',
+      out_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-out.log',
+      error_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-error.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z'
     }
     // Telegram bot runs inside trends-agent process (integrated)

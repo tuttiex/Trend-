@@ -129,7 +129,7 @@ class TelegramContextService {
    */
   async getRecentLogs() {
     try {
-      const { stdout } = await execPromise('tail -100 /home/ubuntu/logs/trends-agent.log 2>/dev/null || tail -100 ./logs/trends-agent.log 2>/dev/null || echo "No logs available"');
+      const { stdout } = await execPromise('tail -100 /home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent.log 2>/dev/null || echo "No logs available"');
       
       const lines = stdout.split('\n').filter(l => l.trim());
       
