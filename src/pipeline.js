@@ -8,9 +8,10 @@ const tokenListManager = require('./services/tokenListManager');
 const { ethers } = require('ethers');
 
 class Pipeline {
-    constructor(signer, stateManager) {
+    constructor(signer, stateManager, notifier = null) {
         this.signer = signer;
         this.stateManager = stateManager;
+        this.notifier = notifier;
         this.orchestrator = new DeploymentOrchestrator(signer);
         this.safety = new SafetyManager(signer);
     }
@@ -56,6 +57,15 @@ class Pipeline {
                     executionId: executionId,
                     error: error.message,
                     tokenAddress: error.tokenAddress || null
+                });
+            }
+            
+            // Notify about error
+            if (this.notifier) {
+                this.notifier.error('Pipeline Execution', error, {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId
                 });
             }
             
@@ -142,6 +152,27 @@ class Pipeline {
             result = await this.orchestrator.executeDeployment(plan);
             logger.info(`Pipeline: Execution successful. Token: ${result.tokenAddress}`);
             
+            // Notify about successful deployment
+            if (this.notifier) {
+                this.notifier.tokenDeployed({
+                    symbol: moderationResult.symbol,
+                    name: plan.topic,
+                    trendTopic: trend.name,
+                    tokenAddress: result.tokenAddress,
+                    poolAddress: result.poolAddress,
+                    metadataCid: result.metadataCid,
+                    imageCid: result.imageCid
+                });
+
+                // Notify about initial liquidity added
+                if (result.liquidityTx) {
+                    this.notifier.liquidityAdded({
+                        symbol: moderationResult.symbol,
+                        poolAddress: result.poolAddress
+                    }, plan.initialLiquidityETH, plan.initialLiquidityTokens, true, result.liquidityTx);
+                }
+            }
+            
             // Mint creator fee if applicable
             if (plan.creatorFee && parseFloat(plan.creatorFee) > 0) {
                 try {
@@ -160,10 +191,18 @@ class Pipeline {
                     
                     const feeTx = await tokenContract.agentMint(feeAmountWei);
                     await feeTx.wait();
-                    
+
                     logger.info(`✅ Creator fee minted. TX: ${feeTx.hash}`);
                     result.creatorFeeTx = feeTx.hash;
                     result.creatorFeeAmount = plan.creatorFee;
+
+                    // Notify about creator fee minted
+                    if (this.notifier) {
+                        this.notifier.creatorFeeMinted({
+                            symbol: moderationResult.symbol,
+                            feePercent: plan.feePercent
+                        }, plan.creatorFee, feeTx.hash);
+                    }
                     
                     // Log creator fee collection
                     if (this.stateManager) {
@@ -207,6 +246,16 @@ class Pipeline {
             }
         } catch (error) {
             logger.error(`Pipeline: Onchain execution failed: ${error.message}`);
+            
+            // Notify about deployment error
+            if (this.notifier) {
+                this.notifier.error('Onchain Deployment', error, {
+                    topic: trend.name,
+                    region: region,
+                    executionId: executionId
+                });
+            }
+            
             if (this.stateManager) {
                 await this.stateManager.updateDeploymentByTopic(trend.name, region, {
                     token_address: error.tokenAddress,
@@ -256,16 +305,33 @@ class Pipeline {
                 // 6. Trigger External Webhook (trend$)
                 logger.info('Pipeline: Stage 6 - Triggering trend$ Webhook');
                 const webhookService = require('./services/webhookService');
-                await webhookService.notify({
-                    topic: trend.name,
-                    symbol: moderationResult.symbol,
-                    region: region,
-                    tokenAddress: result.tokenAddress,
-                    metadataCid: result.metadataCid,
-                    imageCid: result.imageCid,
-                    poolAddress: result.poolAddress,
-                    liquidityTx: result.liquidityTx
-                });
+                let webhookSuccess = false;
+                let webhookError = null;
+                
+                try {
+                    await webhookService.notify({
+                        topic: trend.name,
+                        symbol: moderationResult.symbol,
+                        region: region,
+                        tokenAddress: result.tokenAddress,
+                        metadataCid: result.metadataCid,
+                        imageCid: result.imageCid,
+                        poolAddress: result.poolAddress,
+                        liquidityTx: result.liquidityTx
+                    });
+                    webhookSuccess = true;
+                } catch (webhookErr) {
+                    webhookError = webhookErr.message;
+                    logger.error(`Pipeline: Webhook failed: ${webhookErr.message}`);
+                }
+                
+                // Notify about webhook delivery
+                if (this.notifier) {
+                    this.notifier.webhookDelivered(webhookSuccess, {
+                        symbol: moderationResult.symbol,
+                        tokenAddress: result.tokenAddress
+                    }, webhookError);
+                }
                 
                 // Log webhook notification
                 await this.stateManager.logEvent('WEBHOOK_SENT', {

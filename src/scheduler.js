@@ -2,8 +2,9 @@ const trendDetector = require('./modules/trendDetection');
 const logger = require('./utils/logger');
 
 class Scheduler {
-    constructor(pipeline) {
+    constructor(pipeline, notifier = null) {
         this.pipeline = pipeline;
+        this.notifier = notifier;
     }
 
     start() {
@@ -87,7 +88,15 @@ class Scheduler {
                                                 feeTxHash = feeTx.hash;
                                                 
                                                 logger.info(`✅ Creator fee minted: ${feeBreakdown.creatorFee} to ${creatorAddress}`);
-                                                
+
+                                                // Notify about creator fee from momentum
+                                                if (this.notifier) {
+                                                    this.notifier.creatorFeeMinted({
+                                                        symbol: deployment.token_symbol || 'UNKNOWN',
+                                                        feePercent: feeBreakdown.feePercent
+                                                    }, feeBreakdown.creatorFee, feeTxHash);
+                                                }
+
                                                 // Log creator fee from momentum
                                                 await this.pipeline.stateManager.logEvent('CREATOR_FEE_COLLECTED_MOMENTUM', {
                                                     topic: t.name,
@@ -113,13 +122,21 @@ class Scheduler {
                                                 txHash: mintTx.hash,
                                                 feeTxHash: feeTxHash
                                             });
-                                            
+
+                                            // Notify about supply expansion
+                                            if (this.notifier) {
+                                                this.notifier.supplyExpanded({
+                                                    symbol: deployment.token_symbol || 'UNKNOWN',
+                                                    poolAddress: deployment.pool_address || 'N/A'
+                                                }, t.volume - previousVolume, feeBreakdown.totalAdditional, feeBreakdown.netAdditional, feeBreakdown.creatorFee, mintTx.hash);
+                                            }
+
                                             logger.info(`Minting successful. Injecting supply to liquidity pool...`);
-                                            await this.pipeline.orchestrator.liquidityManager.injectSupplyToPool(
-                                                deployment.token_address, 
+                                            const injectTxHash = await this.pipeline.orchestrator.liquidityManager.injectSupplyToPool(
+                                                deployment.token_address,
                                                 feeBreakdown.netAdditional
                                             );
-                                            
+
                                             // Log liquidity injection
                                             await this.pipeline.stateManager.logEvent('LIQUIDITY_INJECTED', {
                                                 topic: t.name,
@@ -127,7 +144,27 @@ class Scheduler {
                                                 tokenAddress: deployment.token_address,
                                                 injectedSupply: feeBreakdown.netAdditional
                                             });
-                                            
+
+                                            // Notify about liquidity injection
+                                            if (this.notifier) {
+                                                // Get pool info to determine ETH paired
+                                                const { ethers } = hre;
+                                                const tokenContract = new ethers.Contract(deployment.token_address, [
+                                                    'function dexContract() external view returns (address)'
+                                                ], signer);
+                                                const dexAddress = await tokenContract.dexContract();
+                                                const dex = new ethers.Contract(dexAddress, [
+                                                    'function getPoolInfo() external view returns (uint256 tokenReserve, uint256 ethReserve, uint256 k, uint256 swapFeeBps, uint256 totalFeesCollected, uint256 price)'
+                                                ], signer);
+                                                const poolInfo = await dex.getPoolInfo();
+                                                const ethPaired = ethers.formatEther(poolInfo.ethReserve);
+
+                                                this.notifier.liquidityInjected({
+                                                    symbol: deployment.token_symbol || 'UNKNOWN',
+                                                    poolAddress: deployment.pool_address || 'N/A'
+                                                }, feeBreakdown.netAdditional, ethPaired, injectTxHash);
+                                            }
+
                                             logger.info(`✅ Successfully inflated paired Liquidity for ${t.name}`);
                                         } catch (txErr) {
                                             logger.error(`❌ Tx failed for momentum minting (${t.name}): ${txErr.message}`);
