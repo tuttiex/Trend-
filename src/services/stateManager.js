@@ -95,23 +95,54 @@ class StateManager {
 
     async saveTrendSnapshot(data) {
         const query = `INSERT INTO trend_snapshots (region, trend_name, volume, confidence, snapshot_json) VALUES (?, ?, ?, ?, ?)`;
-        const values = [
-            data.region,
-            data.topic || "Unknown",
-            data.volume || 0,
-            data.confidence || 0,
-            JSON.stringify(data.topTrends || [])
-        ];
-        return new Promise((resolve, reject) => {
-            this.db.run(query, values, function (err) {
-                if (err) {
-                    logger.error(`StateManager: Failed to save snapshot: ${err.message}`);
-                    return reject(err);
-                }
-                logger.info(`StateManager: Saved trend snapshot for ${data.region} (${data.topic})`);
-                resolve(this.lastID);
+        const snapshotJson = JSON.stringify(data.topTrends || []);
+
+        // Save each trend individually so momentum can track per-trend volume changes
+        const trends = data.topTrends || [];
+        if (trends.length === 0) {
+            // Fallback: save champion only if no topTrends array
+            const values = [
+                data.region,
+                data.topic || "Unknown",
+                data.volume || 0,
+                data.confidence || 0,
+                snapshotJson
+            ];
+            return new Promise((resolve, reject) => {
+                this.db.run(query, values, function (err) {
+                    if (err) {
+                        logger.error(`StateManager: Failed to save snapshot: ${err.message}`);
+                        return reject(err);
+                    }
+                    logger.info(`StateManager: Saved trend snapshot for ${data.region} (${data.topic})`);
+                    resolve(this.lastID);
+                });
+            });
+        }
+
+        // Save each trend with its individual volume
+        const promises = trends.map(trend => {
+            const values = [
+                data.region,
+                trend.name || "Unknown",
+                trend.volume || trend.tweet_volume || 0,
+                data.confidence || 0,
+                snapshotJson
+            ];
+            return new Promise((resolve, reject) => {
+                this.db.run(query, values, function (err) {
+                    if (err) {
+                        logger.error(`StateManager: Failed to save snapshot for ${trend.name}: ${err.message}`);
+                        return reject(err);
+                    }
+                    resolve(this.lastID);
+                });
             });
         });
+
+        await Promise.all(promises);
+        logger.info(`StateManager: Saved ${trends.length} trend snapshots for ${data.region}`);
+        return trends.length;
     }
 
     async getLastSnapshotVolume(trendName, region) {
