@@ -18,7 +18,6 @@ class TrendDetector {
     constructor() {
         this.weights = {
             'OFFICIAL_API': 1.2,
-            'NATIVE_SCRAPER': 1.0,
             'TWITTER_API_IO': 0.8,
             'TRENDS24': 0.7,
             'GETDAYTRENDS': 0.6
@@ -28,7 +27,6 @@ class TrendDetector {
 
     async detectTrend(regionName) {
         const woeid = this.getWOEID(regionName);
-        const isUS = regionName.toLowerCase() === 'united states' || regionName.toLowerCase() === 'us';
 
         // TIER 1: APIs (Parallel)
         logger.info(`[TIER 1] Attempting API Parallel Fetch for ${regionName}...`);
@@ -52,14 +50,13 @@ class TrendDetector {
             
             // TIER 2: Scrapers (Parallel)
             const scraperResults = await Promise.allSettled([
-                this.tryNativeScraper(regionName, isUS),
                 trendScraper.scrapeTrends24(regionName),
                 trendScraper.scrapeGetDayTrends(regionName)
             ]);
 
             scraperResults.forEach((res, i) => {
                 if (res.status === 'fulfilled' && res.value.length > 0) {
-                    const sourceNames = ['NATIVE_SCRAPER', 'TRENDS24', 'GETDAYTRENDS'];
+                    const sourceNames = ['TRENDS24', 'GETDAYTRENDS'];
                     allSourceData.push({ source: sourceNames[i], trends: res.value });
                 }
             });
@@ -116,15 +113,6 @@ class TrendDetector {
     async tryTwitterApiIo(woeid) {
         try { return await twitterApiIo.getTrends(woeid); }
         catch (e) { return []; }
-    }
-
-    async tryNativeScraper(regionName, isUS) {
-        try {
-            const nativeScraper = isUS ? require('../services/nativeXScraperUS') : require('../services/nativeXScraper');
-            return await nativeScraper.getTrends(regionName);
-        } catch (e) {
-            return [];
-        }
     }
 
     fuseTrendSources(sources) {
