@@ -114,6 +114,24 @@ class StateManager {
         });
     }
 
+    async getLastSnapshotVolume(trendName, region) {
+        const query = `
+            SELECT volume FROM trend_snapshots 
+            WHERE trend_name = ? AND region = ? 
+            ORDER BY timestamp DESC 
+            LIMIT 1
+        `;
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [trendName, region], (err, row) => {
+                if (err) {
+                    logger.error(`StateManager: Failed to get last snapshot: ${err.message}`);
+                    return reject(err);
+                }
+                resolve(row ? row.volume : null);
+            });
+        });
+    }
+
     async getDeploymentByTopic(topic, region) {
         const isUS = region.toLowerCase() === 'us' || region.toLowerCase() === 'united states';
         const regionQuery = isUS ? "('US', 'United States')" : `('${region}')`;
