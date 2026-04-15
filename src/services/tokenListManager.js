@@ -89,9 +89,8 @@ class TokenListManager {
         } catch (error) {
             logger.error(`❌ Token List Failed: ${error.message}`);
             throw error;
-        } finally {
-            try { await this.stateManager.close(); } catch (e) { }
         }
+        // Note: Database connection kept open for pipeline continuation
     }
 }
 
