@@ -25,7 +25,12 @@ async function generateMissingImages() {
             ORDER BY timestamp DESC
         `;
         
-        const deployments = await stateManager.db.all(query);
+        const deployments = await new Promise((resolve, reject) => {
+            stateManager.db.all(query, [], (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows || []);
+            });
+        });
         
         if (deployments.length === 0) {
             logger.info('✅ No tokens found missing images in the last 7 days');
@@ -63,10 +68,13 @@ async function generateMissingImages() {
 
                 // Update database
                 logger.info(`  💾 Updating database...`);
-                await stateManager.db.run(
-                    `UPDATE deployments SET logo_uri = ?, image_cid = ? WHERE token_address = ?`,
-                    [logoUri, imageCid, deployment.token_address]
-                );
+                await new Promise((resolve, reject) => {
+                    stateManager.db.run(
+                        `UPDATE deployments SET logo_uri = ?, image_cid = ? WHERE token_address = ?`,
+                        [logoUri, imageCid, deployment.token_address],
+                        (err) => err ? reject(err) : resolve()
+                    );
+                });
 
                 // Generate and upload metadata
                 const metadata = {
@@ -84,10 +92,13 @@ async function generateMissingImages() {
                 const metadataCid = await ipfsUploader.uploadMetadata(metadata);
 
                 // Update metadata_cid in database
-                await stateManager.db.run(
-                    `UPDATE deployments SET metadata_cid = ? WHERE token_address = ?`,
-                    [metadataCid, deployment.token_address]
-                );
+                await new Promise((resolve, reject) => {
+                    stateManager.db.run(
+                        `UPDATE deployments SET metadata_cid = ? WHERE token_address = ?`,
+                        [metadataCid, deployment.token_address],
+                        (err) => err ? reject(err) : resolve()
+                    );
+                });
 
                 // Send webhook to update website
                 logger.info(`  📡 Sending webhook to website...`);
