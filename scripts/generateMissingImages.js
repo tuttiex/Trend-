@@ -106,7 +106,7 @@ async function generateMissingImages() {
                 // Send webhook to update website
                 logger.info(`  📡 Sending webhook to website...`);
                 await webhookService.notify({
-                    event: 'TOKEN_UPDATED',
+                    event: 'TOKEN_DEPLOYED',
                     timestamp: new Date().toISOString(),
                     data: {
                         topic: deployment.trend_topic,
