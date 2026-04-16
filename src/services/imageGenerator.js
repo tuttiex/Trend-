@@ -2,6 +2,7 @@ const axios = require('axios');
 const logger = require('../utils/logger');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 /**
  * Generates token logos using:
