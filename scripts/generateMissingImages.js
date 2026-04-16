@@ -17,7 +17,7 @@ async function generateMissingImages() {
     try {
         // Find all deployments from the last 7 days without logo_uri
         const query = `
-            SELECT trend_topic, token_symbol, token_address, region, timestamp, image_cid, metadata_cid
+            SELECT trend_topic, token_symbol, token_address, region, timestamp, metadata_cid
             FROM deployments 
             WHERE (logo_uri IS NULL OR logo_uri = '') 
             AND timestamp >= date('now', '-7 days')
@@ -70,35 +70,38 @@ async function generateMissingImages() {
                 logger.info(`  💾 Updating database...`);
                 await new Promise((resolve, reject) => {
                     stateManager.db.run(
-                        `UPDATE deployments SET logo_uri = ?, image_cid = ? WHERE token_address = ?`,
-                        [logoUri, imageCid, deployment.token_address],
+                        `UPDATE deployments SET logo_uri = ? WHERE token_address = ?`,
+                        [logoUri, deployment.token_address],
                         (err) => err ? reject(err) : resolve()
                     );
                 });
 
-                // Generate and upload metadata
-                const metadata = {
-                    name: `${deployment.trend_topic} Token`,
-                    symbol: deployment.token_symbol,
-                    description: `Deployed by Trends Agent. Bonding Curve DEX with 0.7% swap fee. Trend: ${deployment.trend_topic} in ${deployment.region}.`,
-                    image: logoUri,
-                    external_url: `https://basescan.org/token/${deployment.token_address}`,
-                    attributes: [
-                        { trait_type: "Region", value: deployment.region },
-                        { trait_type: "Trend", value: deployment.trend_topic },
-                        { trait_type: "DEX Type", value: "Bonding Curve" }
-                    ]
-                };
-                const metadataCid = await ipfsUploader.uploadMetadata(metadata);
-
-                // Update metadata_cid in database
-                await new Promise((resolve, reject) => {
-                    stateManager.db.run(
-                        `UPDATE deployments SET metadata_cid = ? WHERE token_address = ?`,
-                        [metadataCid, deployment.token_address],
-                        (err) => err ? reject(err) : resolve()
-                    );
-                });
+                // Use existing metadata_cid or create new one
+                let metadataCid = deployment.metadata_cid;
+                if (!metadataCid) {
+                    const metadata = {
+                        name: `${deployment.trend_topic} Token`,
+                        symbol: deployment.token_symbol,
+                        description: `Deployed by Trends Agent. Bonding Curve DEX with 0.7% swap fee. Trend: ${deployment.trend_topic} in ${deployment.region}.`,
+                        image: logoUri,
+                        external_url: `https://basescan.org/token/${deployment.token_address}`,
+                        attributes: [
+                            { trait_type: "Region", value: deployment.region },
+                            { trait_type: "Trend", value: deployment.trend_topic },
+                            { trait_type: "DEX Type", value: "Bonding Curve" }
+                        ]
+                    };
+                    metadataCid = await ipfsUploader.uploadMetadata(metadata);
+                    
+                    // Update metadata_cid in database
+                    await new Promise((resolve, reject) => {
+                        stateManager.db.run(
+                            `UPDATE deployments SET metadata_cid = ? WHERE token_address = ?`,
+                            [metadataCid, deployment.token_address],
+                            (err) => err ? reject(err) : resolve()
+                        );
+                    });
+                }
 
                 // Send webhook to update website
                 logger.info(`  📡 Sending webhook to website...`);
