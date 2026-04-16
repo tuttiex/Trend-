@@ -13,7 +13,6 @@ const logger = require('../src/utils/logger');
 
 async function generateMissingImages() {
     const stateManager = new StateManager();
-    await stateManager.init();
 
     try {
         // Find all deployments from the last 7 days without logo_uri
