@@ -6,17 +6,18 @@ require('dotenv').config();
 
 /**
  * Generates token logos using:
- *   1. SiliconFlow FLUX-1.1-pro (primary)
- *   2. Gemini 2.5 Flash Image (fallback if FLUX fails)
+ *   1. Pollinations.ai (primary - free, fast, no API key)
+ *   2. SiliconFlow FLUX-1.1-pro (fallback - paid, higher quality)
+ *   3. Gemini 2.5 Flash Image (final fallback)
  */
 class ImageGenerator {
     constructor() {
-        // Primary: SiliconFlow FLUX-1.1-pro
+        // Fallback 1: SiliconFlow FLUX-1.1-pro (paid, higher quality)
         this.siliconFlowKey = process.env.SILICONFLOW_API_KEY;
         this.siliconFlowEndpoint = 'https://api.siliconflow.com/v1/images/generations';
         this.siliconFlowModel = 'black-forest-labs/FLUX-1.1-pro';
 
-        // Fallback: Gemini 2.5 Flash Image
+        // Fallback 2: Gemini 2.5 Flash Image
         this.geminiKey = process.env.GEMINI_API_KEY;
         this.geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
 
@@ -32,7 +33,28 @@ class ImageGenerator {
             Background: Clean, single solid-color professional background. 
             No text, no small details. Centered composition. PNG format.`;
 
-        // ── Primary: SiliconFlow FLUX-1.1-pro ────────────────────────────────
+        // ── Primary: Pollinations.ai (free, no API key) ────────────────────────
+        try {
+            logger.info('🎨 Trying Pollinations.ai (free, no API key)...');
+            const encodedPrompt = encodeURIComponent(prompt);
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true`;
+            
+            const response = await axios.get(imageUrl, { 
+                responseType: 'arraybuffer',
+                timeout: 60000,
+                headers: { 'Accept': 'image/png' }
+            });
+
+            const buffer = Buffer.from(response.data);
+            this._saveTempFile(buffer, symbol);
+            logger.info('✅ Pollinations.ai image generated successfully!');
+            return buffer;
+
+        } catch (err) {
+            logger.warn(`⚠️ Pollinations failed: ${err.message}. Trying SiliconFlow fallback...`);
+        }
+
+        // ── Fallback: SiliconFlow FLUX-1.1-pro ───────────────────────────────
         if (this.siliconFlowKey) {
             try {
                 logger.info('🤖 Trying SiliconFlow FLUX-1.1-pro...');
