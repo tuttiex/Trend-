@@ -43,7 +43,9 @@ class DeploymentOrchestrator {
                 // 1. Generate & Upload Image Metadata
                 try {
                     logger.info("🎨 Orchestrator: Generating Token Logo...");
-                    const imageBuffer = await imageGenerator.generateTokenLogo(plan.topic, plan.symbol, plan.region);
+                    // Use LLM-enhanced prompts for semantic trend context
+                    const useEnhancedPrompt = true;
+                    const imageBuffer = await imageGenerator.generateTokenLogo(plan.topic, plan.symbol, plan.region, useEnhancedPrompt);
 
                     if (imageBuffer) {
                         imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);

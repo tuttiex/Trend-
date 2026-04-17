@@ -2,6 +2,7 @@ const axios = require('axios');
 const logger = require('../utils/logger');
 const fs = require('fs');
 const path = require('path');
+const promptEnhancer = require('./promptEnhancer');
 require('dotenv').config();
 
 /**
@@ -25,13 +26,23 @@ class ImageGenerator {
         if (!this.geminiKey) logger.warn('ImageGenerator: GEMINI_API_KEY is missing — no fallback available.');
     }
 
-    async generateTokenLogo(topic, symbol, region) {
+    async generateTokenLogo(topic, symbol, region, useEnhancedPrompt = false) {
         logger.info(`🎨 Generating Logo for ${symbol} (${topic} in ${region})...`);
 
-        const prompt = `A minimalist 3D crypto token logo for "${topic}". 
-            Style: Vector art, smooth gradients, high contrast. 
-            Background: Clean, single solid-color professional background. 
-            No text, no small details. Centered composition. PNG format.`;
+        let prompt;
+        if (useEnhancedPrompt) {
+            // Use LLM to analyze trend context (name + region only)
+            prompt = await promptEnhancer.enhancePrompt({
+                name: topic,
+                region: region
+            });
+        } else {
+            // Standard prompt
+            prompt = `A minimalist 3D crypto token logo for "${topic}". 
+                Style: Vector art, smooth gradients, high contrast. 
+                Background: Clean, single solid-color professional background. 
+                No text, no small details. Centered composition. PNG format.`;
+        }
 
         // ── Primary: Pollinations.ai (free, no API key) ────────────────────────
         try {
