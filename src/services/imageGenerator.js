@@ -52,7 +52,7 @@ class ImageGenerator {
             
             const response = await axios.get(imageUrl, { 
                 responseType: 'arraybuffer',
-                timeout: 60000,
+                timeout: 120000,  // 2 minutes for generation
                 headers: { 'Accept': 'image/png' }
             });
 
