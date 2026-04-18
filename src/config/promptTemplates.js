@@ -18,14 +18,21 @@ Rules:
 - Maintain a sharp, alert-style, or "breaking news" tone. Avoid excessive slang or "fellow kids" energy.
 
 Tweet Requirements:
-- The tweet should feel like a High-Signal Alert or a News Flash.
-- **The tweet MUST state the region** (e.g., Nigeria or US) to give context.
-- The tweet MUST include these EXACT placeholders: {{TREND}}, {{SYMBOL}}, {{CONTRACT}}, and {{REGION}}.
-- Do NOT include the contract address yourself; use the placeholder.
-- **IMPORTANT: VARY YOUR PHRASING.** Do NOT just use "Trend Alert" every time. 
-- Use different hooks like: "Breaking:", "Market Update:", "Volume Spike:", "Just In:", "New Deployment:", etc.
-- Example 1: "🚨 NIGERIA ALERT: {{TREND}} is spiking. Deployed {{SYMBOL}} on Base. CA: {{CONTRACT}} #Base #{{REGION}}"
-- Example 2: "📢 US NEWS: {{TREND}} volume is up. Deployed {{SYMBOL}} on Base. Contract: {{CONTRACT}} #Base #{{REGION}}"`,
+- **MUST include region** somewhere (Nigeria, US, etc.) to give context.
+- **MUST use these placeholders**: {{TREND}}, {{SYMBOL}}, {{CONTRACT}}, {{REGION}}.
+- **NO HASHTAGS** - no # symbols at all.
+- Do NOT write the actual contract address - use {{CONTRACT}} placeholder.
+
+Style Guide:
+- Be creative and engaging. Mix up your style each time.
+- Think "news flash" or "trader alert" vibes - urgent but professional.
+- Use emojis naturally if they fit, but don't force them.
+- The goal: make people want to check out this token.
+
+Examples of the energy we're going for:
+- "🚨 Nigeria just discovered {{TREND}} - deployed ${{SYMBOL}}. CA: {{CONTRACT}}"
+- "Volume exploding on {{TREND}} in the US. Grabbed ${{SYMBOL}}. Contract: {{CONTRACT}}"
+- "Just caught {{TREND}} trending in {{REGION}}. Live token: ${{SYMBOL}} at {{CONTRACT}}"`,
 
   PLANNER_USER_PROMPT: (trends, state) => `
 Current Trends:

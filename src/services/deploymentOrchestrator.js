@@ -143,11 +143,9 @@ class DeploymentOrchestrator {
             if (!tweetText || !tweetText.includes('{{CONTRACT}}')) {
                 tweetText = `🚀 New Trend Detected: {{TREND}}!
 
-Deployed {{SYMBOL}} on Base with Bonding Curve DEX.
+Deployed {{SYMBOL}} on Base.
 CA: {{CONTRACT}}
-DEX: {{DEX}}
-
-#Base #{{SYMBOL}} #{{REGION}} #BondingCurve`;
+DEX: {{DEX}}`;
             }
 
             const regionTag = plan.region || "World";
