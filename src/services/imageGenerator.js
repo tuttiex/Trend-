@@ -24,6 +24,10 @@ class ImageGenerator {
 
         if (!this.siliconFlowKey) logger.warn('ImageGenerator: SILICONFLOW_API_KEY is missing — will use Gemini fallback or fail.');
         if (!this.geminiKey) logger.warn('ImageGenerator: GEMINI_API_KEY is missing — no fallback available.');
+
+        // Rate limiting: minimum 3 seconds between Pollinations requests
+        this.lastPollinationsRequest = 0;
+        this.minPollinationsInterval = 3000; // 3 seconds
     }
 
     async generateTokenLogo(topic, symbol, region, useEnhancedPrompt = false) {
@@ -46,7 +50,17 @@ class ImageGenerator {
 
         // ── Primary: Pollinations.ai (free, no API key) ────────────────────────
         try {
+            // Rate limiting: ensure minimum spacing between requests
+            const now = Date.now();
+            const timeSinceLastRequest = now - this.lastPollinationsRequest;
+            if (timeSinceLastRequest < this.minPollinationsInterval) {
+                const waitTime = this.minPollinationsInterval - timeSinceLastRequest;
+                logger.info(`⏳ Rate limiting: Waiting ${waitTime}ms before next Pollinations request...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+            }
+
             logger.info('🎨 Trying Pollinations.ai (free, no API key)...');
+            this.lastPollinationsRequest = Date.now();
             const encodedPrompt = encodeURIComponent(prompt);
             const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true`;
             
@@ -62,7 +76,35 @@ class ImageGenerator {
             return buffer;
 
         } catch (err) {
-            logger.warn(`⚠️ Pollinations failed: ${err.message}. Trying SiliconFlow fallback...`);
+            const status = err.response?.status;
+            const statusText = err.response?.statusText;
+            const errorData = err.response?.data;
+            const code = err.code;
+
+            logger.warn(`⚠️ Pollinations failed: ${err.message}`);
+            logger.warn(`   Status: ${status} ${statusText}`);
+            logger.warn(`   Error Code: ${code}`);
+
+            // Retry logic for rate limits or server errors
+            if (status === 429 || status === 503 || status >= 500) {
+                logger.info('⏳ Retrying Pollinations after 5 second delay...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                try {
+                    const retryResponse = await axios.get(imageUrl, {
+                        responseType: 'arraybuffer',
+                        timeout: 120000,
+                        headers: { 'Accept': 'image/png' }
+                    });
+                    const retryBuffer = Buffer.from(retryResponse.data);
+                    this._saveTempFile(retryBuffer, symbol);
+                    logger.info('✅ Pollinations.ai retry successful!');
+                    return retryBuffer;
+                } catch (retryErr) {
+                    logger.warn(`⚠️ Pollinations retry also failed: ${retryErr.message}`);
+                }
+            }
+
+            logger.info('🔄 Trying SiliconFlow fallback...');
         }
 
         // ── Fallback: SiliconFlow FLUX-1.1-pro ───────────────────────────────
