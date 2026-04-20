@@ -39,16 +39,9 @@ class IpfsUploader {
             logger.info(`✅ Image uploaded. CID: ${result.IpfsHash}`);
             return result.IpfsHash;
         } catch (error) {
-            const errorDetails = {
-                message: error?.message,
-                code: error?.code,
-                status: error?.response?.status,
-                statusText: error?.response?.statusText,
-                data: error?.response?.data,
-                fullError: error?.toString?.()
-            };
-            logger.error(`❌ IPFS Image Upload Failed: ${JSON.stringify(errorDetails)}`);
-            throw new Error(`IPFS upload failed: ${error?.message || error?.toString?.() || 'Unknown error'}`);
+            const errorStr = typeof error === 'object' ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error);
+            logger.error(`❌ IPFS Image Upload Failed: ${errorStr}`);
+            throw new Error(`IPFS upload failed: ${errorStr}`);
         }
     }
 
@@ -69,16 +62,9 @@ class IpfsUploader {
             logger.info(`✅ Metadata uploaded. CID: ${result.IpfsHash}`);
             return result.IpfsHash;
         } catch (error) {
-            const errorDetails = {
-                message: error?.message,
-                code: error?.code,
-                status: error?.response?.status,
-                statusText: error?.response?.statusText,
-                data: error?.response?.data,
-                fullError: error?.toString?.()
-            };
-            logger.error(`❌ IPFS Metadata Upload Failed: ${JSON.stringify(errorDetails)}`);
-            throw new Error(`IPFS upload failed: ${error?.message || error?.toString?.() || 'Unknown error'}`);
+            const errorStr = typeof error === 'object' ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error);
+            logger.error(`❌ IPFS Metadata Upload Failed: ${errorStr}`);
+            throw new Error(`IPFS upload failed: ${errorStr}`);
         }
     }
 }
