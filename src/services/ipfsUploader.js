@@ -18,6 +18,12 @@ class IpfsUploader {
         if (!this.pinata) throw new Error("Pinata not initialized. Check .env keys.");
         try {
             logger.info(`☁️ Uploading logo to IPFS for ${symbol}...`);
+            
+            // Validate buffer
+            if (!buffer || buffer.length === 0) {
+                throw new Error("Invalid image buffer: empty or undefined");
+            }
+            logger.info(`   Buffer size: ${buffer.length} bytes`);
 
             const stream = Readable.from(buffer);
             const options = {
@@ -33,8 +39,16 @@ class IpfsUploader {
             logger.info(`✅ Image uploaded. CID: ${result.IpfsHash}`);
             return result.IpfsHash;
         } catch (error) {
-            logger.error(`❌ IPFS Image Upload Failed: ${error.message}`);
-            throw error;
+            const errorDetails = {
+                message: error?.message,
+                code: error?.code,
+                status: error?.response?.status,
+                statusText: error?.response?.statusText,
+                data: error?.response?.data,
+                fullError: error?.toString?.()
+            };
+            logger.error(`❌ IPFS Image Upload Failed: ${JSON.stringify(errorDetails)}`);
+            throw new Error(`IPFS upload failed: ${error?.message || error?.toString?.() || 'Unknown error'}`);
         }
     }
 
@@ -55,8 +69,16 @@ class IpfsUploader {
             logger.info(`✅ Metadata uploaded. CID: ${result.IpfsHash}`);
             return result.IpfsHash;
         } catch (error) {
-            logger.error(`❌ IPFS Metadata Upload Failed: ${error.message}`);
-            throw error;
+            const errorDetails = {
+                message: error?.message,
+                code: error?.code,
+                status: error?.response?.status,
+                statusText: error?.response?.statusText,
+                data: error?.response?.data,
+                fullError: error?.toString?.()
+            };
+            logger.error(`❌ IPFS Metadata Upload Failed: ${JSON.stringify(errorDetails)}`);
+            throw new Error(`IPFS upload failed: ${error?.message || error?.toString?.() || 'Unknown error'}`);
         }
     }
 }
