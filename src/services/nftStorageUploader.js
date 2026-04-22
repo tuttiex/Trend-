@@ -4,11 +4,11 @@ const logger = require('../utils/logger');
 
 class NftStorageUploader {
     constructor() {
-        this.keyId = process.env.NFT_STORAGE_KEY_ID;      // e.g., f80c66eb
-        this.secret = process.env.NFT_STORAGE_SECRET;      // e.g., 91e3229538954348a0ae9c72d4e7401f
+        // New NFT.Storage API uses Bearer token (full key like "f80c66eb.91e3229...")
+        this.apiKey = process.env.NFT_STORAGE_API_KEY;
         
-        if (!this.keyId || !this.secret) {
-            logger.warn('NFTStorageUploader: NFT_STORAGE_KEY_ID or NFT_STORAGE_SECRET is missing!');
+        if (!this.apiKey) {
+            logger.warn('NFTStorageUploader: NFT_STORAGE_API_KEY is missing!');
             this.initialized = false;
             return;
         }
@@ -17,7 +17,7 @@ class NftStorageUploader {
 
     async uploadImage(buffer, symbol) {
         if (!this.initialized) {
-            throw new Error("NFT.Storage not initialized. Check NFT_STORAGE_KEY_ID and NFT_STORAGE_SECRET in .env");
+            throw new Error("NFT.Storage not initialized. Check NFT_STORAGE_API_KEY in .env");
         }
         
         try {
@@ -40,7 +40,7 @@ class NftStorageUploader {
             const response = await axios.post('https://api.nft.storage/upload', formData, {
                 headers: {
                     ...formData.getHeaders(),
-                    'Authorization': `Basic ${Buffer.from(`${this.keyId}:${this.secret}`).toString('base64')}`
+                    'Authorization': `Bearer ${this.apiKey}`
                 },
                 maxBodyLength: Infinity,
                 maxContentLength: Infinity
@@ -62,7 +62,7 @@ class NftStorageUploader {
 
     async uploadMetadata(metadata) {
         if (!this.initialized) {
-            throw new Error("NFT.Storage not initialized. Check NFT_STORAGE_KEY_ID and NFT_STORAGE_SECRET in .env");
+            throw new Error("NFT.Storage not initialized. Check NFT_STORAGE_API_KEY in .env");
         }
         
         try {
@@ -82,7 +82,7 @@ class NftStorageUploader {
             const response = await axios.post('https://api.nft.storage/upload', formData, {
                 headers: {
                     ...formData.getHeaders(),
-                    'Authorization': `Basic ${Buffer.from(`${this.keyId}:${this.secret}`).toString('base64')}`
+                    'Authorization': `Bearer ${this.apiKey}`
                 },
                 maxBodyLength: Infinity,
                 maxContentLength: Infinity
