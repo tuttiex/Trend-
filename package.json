@@ -25,6 +25,7 @@
     "axios": "^1.15.0",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.1",
+    "nft.storage": "^7.2.0",
     "node-cron": "^4.2.1",
     "node-telegram-bot-api": "^0.67.0",
     "pg": "^8.18.0",

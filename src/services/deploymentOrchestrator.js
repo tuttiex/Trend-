@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const TweetApiCom = require('../services/tweetApiCom');
 const imageGenerator = require('./imageGenerator');
-const ipfsUploader = require('./ipfsUploader');
+const ipfsUploader = require('./nftStorageUploader');
 const tokenRegistryService = require('./tokenRegistryService');
 const logger = require('../utils/logger');
 
@@ -49,7 +49,7 @@ class DeploymentOrchestrator {
 
                     if (imageBuffer) {
                         imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);
-                        const gatewayBase = "https://gateway.pinata.cloud/ipfs/";
+                        const gatewayBase = "https://nftstorage.link/ipfs/";
 
                         const metadata = {
                             name: `${plan.topic} Token`,
