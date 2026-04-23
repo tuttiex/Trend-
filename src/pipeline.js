@@ -133,7 +133,7 @@ class Pipeline {
             if (existing && existing.token_address) {
                 logger.info(`Pipeline: Found partial deployment for ${trend.name}. Resuming from ${existing.token_address}...`);
                 plan.existingToken = existing.token_address;
-                plan.metadataCid = existing.metadata_cid;
+                plan.metadataUrl = existing.metadata_cid;
             }
         }
 
@@ -160,8 +160,8 @@ class Pipeline {
                     trendTopic: trend.name,
                     tokenAddress: result.tokenAddress,
                     poolAddress: result.poolAddress,
-                    metadataCid: result.metadataCid,
-                    imageCid: result.imageCid
+                    metadataUrl: result.metadataUrl,
+                    imageUrl: result.imageUrl
                 });
 
                 // Notify about initial liquidity added
@@ -259,7 +259,7 @@ class Pipeline {
             if (this.stateManager) {
                 await this.stateManager.updateDeploymentByTopic(trend.name, region, {
                     token_address: error.tokenAddress,
-                    metadata_cid: error.metadataCid,
+                    metadata_cid: error.metadataUrl,
                     pool_address: error.poolAddress,
                     tx_hash: error.txHash
                 });
@@ -284,8 +284,8 @@ class Pipeline {
                 await this.stateManager.updateDeploymentByTopic(trend.name, region, {
                     token_address: result.tokenAddress,
                     token_symbol: moderationResult.symbol,
-                    metadata_cid: result.metadataCid,
-                    logo_uri: result.imageCid,
+                    metadata_cid: result.metadataUrl,
+                    logo_uri: result.imageUrl,
                     pool_address: result.poolAddress,
                     tx_hash: result.liquidityTx
                 });
@@ -314,8 +314,8 @@ class Pipeline {
                         symbol: moderationResult.symbol,
                         region: region,
                         tokenAddress: result.tokenAddress,
-                        metadataCid: result.metadataCid,
-                        imageCid: result.imageCid,
+                        metadataUrl: result.metadataUrl,
+                        imageUrl: result.imageUrl,
                         poolAddress: result.poolAddress,
                         liquidityTx: result.liquidityTx
                     });

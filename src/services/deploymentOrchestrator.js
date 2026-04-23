@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const TweetApiCom = require('../services/tweetApiCom');
 const imageGenerator = require('./imageGenerator');
-const ipfsUploader = require('./nftStorageUploader');
+const r2Uploader = require('./r2Uploader');
 const tokenRegistryService = require('./tokenRegistryService');
 const logger = require('../utils/logger');
 
@@ -34,9 +34,9 @@ class DeploymentOrchestrator {
 
         let tokenAddress = plan.existingToken;
         let dexAddress = plan.existingDex;
-        let metadataCid = plan.metadataCid;
+        let metadataUrl = plan.metadataUrl;
         let txHash;
-        let imageCid;
+        let imageUrl;
 
         try {
             if (!tokenAddress) {
@@ -48,14 +48,13 @@ class DeploymentOrchestrator {
                     const imageBuffer = await imageGenerator.generateTokenLogo(plan.topic, plan.symbol, plan.region, useEnhancedPrompt);
 
                     if (imageBuffer) {
-                        imageCid = await ipfsUploader.uploadImage(imageBuffer, plan.symbol);
-                        const gatewayBase = "https://nftstorage.link/ipfs/";
+                        imageUrl = await r2Uploader.uploadImage(imageBuffer, plan.symbol);
 
                         const metadata = {
                             name: `${plan.topic} Token`,
                             symbol: plan.symbol,
                             description: `Deployed by Trends Agent. Bonding Curve DEX with 0.7% swap fee. Trend: ${plan.topic} in ${plan.region}.`,
-                            image: `${gatewayBase}${imageCid}?filename=${plan.symbol}.png`,
+                            image: imageUrl,
                             external_url: `https://basescan.org/token/`,
                             attributes: [
                                 { trait_type: "Region", value: plan.region },
@@ -63,7 +62,7 @@ class DeploymentOrchestrator {
                                 { trait_type: "DEX Type", value: "Bonding Curve" }
                             ]
                         };
-                        metadataCid = await ipfsUploader.uploadMetadata(metadata);
+                        metadataUrl = await r2Uploader.uploadMetadata(metadata);
                     }
                 } catch (imgError) {
                     logger.error(`⚠️ Image Gen/Upload Failed: ${imgError.message}. Proceeding without metadata.`);
@@ -110,12 +109,12 @@ class DeploymentOrchestrator {
                 logger.info(`✅ Liquidity Seeded. Tx: ${txHash}`);
 
                 // 4. Register Metadata On-Chain
-                if (metadataCid) {
+                if (metadataUrl) {
                     try {
-                        logger.info(`Orchestrator: Registering metadata CID ${metadataCid} for token ${tokenAddress}...`);
+                        logger.info(`Orchestrator: Registering metadata URL ${metadataUrl} for token ${tokenAddress}...`);
                         await tokenRegistryService.registerTokenMetadata(
                             tokenAddress,
-                            metadataCid,
+                            metadataUrl,
                             this.signer,
                             {
                                 maxPriorityFeePerGas: hre.ethers.parseUnits("0.2", "gwei")
@@ -167,8 +166,8 @@ DEX: {{DEX}}`;
                 success: true,
                 tokenAddress,
                 dexAddress,
-                metadataCid,
-                imageCid: plan.imageCid || imageCid,
+                metadataUrl,
+                imageUrl: plan.imageUrl || imageUrl,
                 liquidityTx: txHash
             };
 
@@ -176,7 +175,7 @@ DEX: {{DEX}}`;
             logger.error(`❌ Deployment Orchestration Failed: ${error.message}`);
             error.tokenAddress = tokenAddress;
             error.dexAddress = dexAddress;
-            error.metadataCid = metadataCid;
+            error.metadataUrl = metadataUrl;
             error.txHash = txHash;
             throw error;
         }

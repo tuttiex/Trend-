@@ -28,8 +28,8 @@ class WebhookService {
                     symbol: data.symbol,
                     region: data.region,
                     tokenAddress: data.tokenAddress,
-                    metadataCid: data.metadataCid,
-                    imageCid: data.imageCid,
+                    metadataUrl: data.metadataUrl,
+                    imageUrl: data.imageUrl,
                     poolAddress: data.poolAddress,
                     liquidityTx: data.liquidityTx,
                     chainId: process.env.CHAIN_ID || 8453
