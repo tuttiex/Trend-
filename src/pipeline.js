@@ -185,11 +185,11 @@ class Pipeline {
                     
                     const tokenContract = new ethers.Contract(
                         result.tokenAddress,
-                        ['function agentMint(uint256) external'],
+                        ['function agentMint(uint256, address) external'],
                         this.signer
                     );
                     
-                    const feeTx = await tokenContract.agentMint(feeAmountWei);
+                    const feeTx = await tokenContract.agentMint(feeAmountWei, creatorAddress);
                     await feeTx.wait();
 
                     logger.info(`✅ Creator fee minted. TX: ${feeTx.hash}`);

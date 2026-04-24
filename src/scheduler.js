@@ -68,22 +68,23 @@ class Scheduler {
                                         const signer = this.pipeline.orchestrator.signer;
                                         const tokenContract = new ethers.Contract(
                                             deployment.token_address,
-                                            ['function agentMint(uint256) external'],
+                                            ['function agentMint(uint256, address) external'],
                                             signer
                                         );
                                         
                                         try {
+                                            const creatorAddress = await signer.getAddress();
+                                            
                                             // Mint 99% to agent for liquidity injection
                                             const netSupplyWei = ethers.parseUnits(feeBreakdown.netAdditional.toString(), 18);
-                                            const mintTx = await tokenContract.agentMint(netSupplyWei);
+                                            const mintTx = await tokenContract.agentMint(netSupplyWei, creatorAddress);
                                             await mintTx.wait();
                                             
                                             // Mint 1% creator fee to creator wallet
                                             let feeTxHash = null;
                                             if (feeBreakdown.creatorFee > 0) {
-                                                const creatorAddress = await signer.getAddress();
                                                 const feeWei = ethers.parseUnits(feeBreakdown.creatorFee.toString(), 18);
-                                                const feeTx = await tokenContract.agentMint(feeWei);
+                                                const feeTx = await tokenContract.agentMint(feeWei, creatorAddress);
                                                 await feeTx.wait();
                                                 feeTxHash = feeTx.hash;
                                                 

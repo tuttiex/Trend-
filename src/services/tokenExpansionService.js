@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 // AgentControlledToken ABI for expansion operations
 const TOKEN_ABI = [
     "function dexContract() external view returns (address)",
-    "function agentMint(uint256 amount) external",
+    "function agentMint(uint256 amount, address recipient) external",
     "function approve(address spender, uint256 amount) external returns (bool)",
     "function balanceOf(address account) external view returns (uint256)",
     "function totalAgentMinted() external view returns (uint256)"
@@ -42,8 +42,9 @@ class TokenExpansionService {
         const ethWei = hre.ethers.parseEther(ethToAdd.toString());
 
         // 1. Mint new tokens to deployer
-        logger.info(`Minting ${amount} tokens via agentMint...`);
-        const mintTx = await token.agentMint(amountWei, {
+        const deployerAddress = await this.signer.getAddress();
+        logger.info(`Minting ${amount} tokens via agentMint to ${deployerAddress}...`);
+        const mintTx = await token.agentMint(amountWei, deployerAddress, {
             maxPriorityFeePerGas: hre.ethers.parseUnits("0.1", "gwei"),
             maxFeePerGas: hre.ethers.parseUnits("2", "gwei")
         });
