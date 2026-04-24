@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const logger = require('../utils/logger');
-const ipfsUploader = require('./ipfsUploader');
-const tokenRegistryService = require('./tokenRegistryService');
+const r2Uploader = require('./r2Uploader');
 const StateManager = require('./stateManager');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats').default;
@@ -20,7 +19,7 @@ class TokenListManager {
 
     async generateAndUploadList() {
         try {
-            logger.info("📊 Generating Uniswap Token List from On-Chain Registry...");
+            logger.info("📊 Generating Uniswap Token List from Database...");
 
             await this.stateManager.connect();
             const deployments = await this.stateManager.getAllDeployments();
@@ -31,18 +30,17 @@ class TokenListManager {
             for (const dep of deployments) {
                 if (!dep.token_address) continue;
 
-                const metadataCid = await tokenRegistryService.getMetadata(dep.token_address);
+                // Use metadata from database (now contains R2 URLs)
+                const metadataUrl = dep.metadata_cid;
 
-                if (metadataCid) {
-                    let logoURI = dep.logo_uri || metadataCid.replace('ipfs://', '');
+                if (metadataUrl) {
+                    // Use logo_uri from database (now contains R2 URLs)
+                    let logoURI = dep.logo_uri;
 
-                    // If it's just a CID, convert to ipfs:// (Uniswap standard)
-                    if (!logoURI.startsWith('http') && !logoURI.startsWith('ipfs://')) {
-                        logoURI = `ipfs://${logoURI}`;
+                    // Fallback to metadata URL if no logo_uri
+                    if (!logoURI) {
+                        logoURI = metadataUrl.replace('/metadata/', '/logos/').replace('.json', '.png');
                     }
-
-                    // Clean up any double gateway if it sneaked in
-                    logoURI = logoURI.replace('https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/', 'https://gateway.pinata.cloud/ipfs/');
 
                     tokens.push({
                         chainId: chainId,
@@ -80,11 +78,12 @@ class TokenListManager {
             }
             logger.info("✅ Validation Passed!");
 
-            // 2. Upload to IPFS
-            const listCid = await ipfsUploader.uploadMetadata(tokenList);
-            const listUrl = `https://gateway.pinata.cloud/ipfs/${listCid}`;
+            // 2. Upload to R2
+            const timestamp = Date.now();
+            const listBuffer = Buffer.from(JSON.stringify(tokenList, null, 2));
+            const listUrl = await r2Uploader.uploadTokenList(listBuffer, `tokenlist_${timestamp}.json`);
 
-            logger.info(`✅ Token List published to IPFS: ${listUrl}`);
+            logger.info(`✅ Token List published to R2: ${listUrl}`);
             return listUrl;
         } catch (error) {
             logger.error(`❌ Token List Failed: ${error.message}`);

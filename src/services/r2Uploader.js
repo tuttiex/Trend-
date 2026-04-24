@@ -103,6 +103,38 @@ class R2Uploader {
             throw new Error(`R2 upload failed: ${errorStr}`);
         }
     }
+
+    async uploadTokenList(buffer, filename) {
+        if (!this.initialized) {
+            throw new Error("R2 not initialized. Check R2 credentials in .env");
+        }
+        
+        try {
+            logger.info("☁️ Uploading token list JSON to R2...");
+            
+            const key = `tokenlists/${filename}`;
+            
+            const command = new PutObjectCommand({
+                Bucket: this.bucketName,
+                Key: key,
+                Body: buffer,
+                ContentType: 'application/json'
+            });
+            
+            await this.client.send(command);
+            
+            const publicUrl = `${this.publicUrl}/${key}`;
+            logger.info(`✅ Token list uploaded to R2. URL: ${publicUrl}`);
+            return publicUrl;
+            
+        } catch (error) {
+            const errorStr = typeof error === 'object' 
+                ? JSON.stringify(error, Object.getOwnPropertyNames(error)) 
+                : String(error);
+            logger.error(`❌ R2 Token List Upload Failed: ${errorStr}`);
+            throw new Error(`R2 upload failed: ${errorStr}`);
+        }
+    }
 }
 
 module.exports = new R2Uploader();
