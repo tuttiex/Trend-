@@ -165,7 +165,8 @@ DEX: {{DEX}}`;
             return {
                 success: true,
                 tokenAddress,
-                dexAddress,
+                poolAddress: dexAddress,  // Named poolAddress for consistency with pipeline
+                dexAddress,              // Keep for backward compatibility
                 metadataUrl,
                 imageUrl: plan.imageUrl || imageUrl,
                 liquidityTx: txHash
