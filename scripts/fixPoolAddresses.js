@@ -39,6 +39,8 @@ if (process.env.DATABASE_URL) {
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
 const VERBOSE = args.includes('--verbose');
+const LOG_FILE_ARG = args.find(arg => arg.startsWith('--log-file='))?.split('=')[1];
+const USE_PM2 = args.includes('--pm2');
 
 console.log('🔧 Pool Address Fix Script');
 console.log('==========================');
@@ -79,38 +81,134 @@ function createBackup() {
 }
 
 /**
- * Step 2: Extract DEX addresses from PM2 logs
+ * Step 2: Extract DEX addresses from database events and logs
  */
-function extractFromLogs() {
-    console.log('📜 Extracting DEX addresses from logs...');
+async function extractPoolAddresses() {
+    console.log('📜 Extracting DEX addresses from database events and logs...');
     
     const results = new Map(); // tokenAddress -> { dexAddress, symbol, timestamp }
     
+    // First, try to get from database events table (most reliable)
+    console.log('  Checking events table in database...');
     try {
-        // Get logs from PM2
-        let logContent;
-        try {
-            logContent = execSync(
-                `pm2 logs trends-agent --lines ${LOG_LINES_TO_SCAN} --nostream 2>/dev/null || echo ""`,
-                { encoding: 'utf-8', timeout: 30000 }
-            );
-        } catch (e) {
-            // Fallback to log file directly
-            const logPath = '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-out.log';
+        const eventsFromDb = await new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(DB_PATH, sqlite3.OPEN_READONLY, (err) => {
+                if (err) {
+                    reject(new Error(`Cannot open database: ${err.message}`));
+                    return;
+                }
+            });
+            
+            // Query events table for TOKEN_DEPLOYED events with poolAddress in details JSON
+            const query = `
+                SELECT 
+                    event_type,
+                    details,
+                    timestamp
+                FROM events 
+                WHERE event_type = 'TOKEN_DEPLOYED'
+                ORDER BY timestamp DESC
+            `;
+            
+            db.all(query, [], (err, rows) => {
+                db.close();
+                if (err) {
+                    reject(new Error(`Query failed: ${err.message}`));
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+        
+        console.log(`  Found ${eventsFromDb.length} TOKEN_DEPLOYED events`);
+        
+        for (const row of eventsFromDb) {
             try {
-                if (fs.existsSync(logPath)) {
-                    logContent = fs.readFileSync(logPath, 'utf-8');
-                    // Take last N lines
+                const details = JSON.parse(row.details);
+                if (details.tokenAddress && details.poolAddress) {
+                    const tokenAddress = details.tokenAddress.toLowerCase();
+                    results.set(tokenAddress, {
+                        dexAddress: details.poolAddress,
+                        symbol: details.topic || 'UNKNOWN',
+                        source: 'database-events',
+                        timestamp: row.timestamp
+                    });
+                }
+            } catch (parseError) {
+                // Skip invalid JSON
+            }
+        }
+        
+        console.log(`  ✅ Extracted ${results.size} addresses from events table`);
+    } catch (error) {
+        console.warn(`  Could not query events table: ${error.message}`);
+    }
+    
+    // Also try to get from logs as backup
+    try {
+        let logContent = '';
+        
+        // Option 1: Use specified log file
+        if (LOG_FILE_ARG) {
+            console.log(`  Reading from specified log file: ${LOG_FILE_ARG}`);
+            try {
+                if (fs.existsSync(LOG_FILE_ARG)) {
+                    logContent = fs.readFileSync(LOG_FILE_ARG, 'utf-8');
                     const lines = logContent.split('\n');
                     logContent = lines.slice(-LOG_LINES_TO_SCAN).join('\n');
                 } else {
-                    console.warn(`  Log file not found: ${logPath}`);
-                    logContent = '';
+                    console.warn(`  Specified log file not found: ${LOG_FILE_ARG}`);
                 }
             } catch (readError) {
                 console.warn(`  Could not read log file: ${readError.message}`);
-                logContent = '';
             }
+        }
+        
+        // Option 2: Try PM2 logs
+        if (!logContent && USE_PM2) {
+            try {
+                console.log('  Trying to read PM2 logs...');
+                logContent = execSync(
+                    `pm2 logs trends-agent --lines ${LOG_LINES_TO_SCAN} --nostream`,
+                    { encoding: 'utf-8', timeout: 30000, maxBuffer: 50 * 1024 * 1024 }
+                );
+            } catch (e) {
+                console.warn(`  PM2 logs failed: ${e.message}`);
+            }
+        }
+        
+        // Option 3: Try common log file locations
+        if (!logContent) {
+            const possibleLogPaths = [
+                '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-out.log',
+                '/home/ubuntu/trends-agent/logs/trends-agent-out.log',
+                '/home/ubuntu/.pm2/logs/trends-agent-out.log',
+                path.join(process.cwd(), 'logs', 'trends-agent-out.log'),
+                path.join(process.cwd(), 'trendy-thebot-logs', 'trends-agent-out.log'),
+                path.join(process.cwd(), 'trends-agent-out.log'),
+            ];
+            
+            for (const logPath of possibleLogPaths) {
+                try {
+                    if (fs.existsSync(logPath)) {
+                        console.log(`  Found log file: ${logPath}`);
+                        logContent = fs.readFileSync(logPath, 'utf-8');
+                        const lines = logContent.split('\n');
+                        logContent = lines.slice(-LOG_LINES_TO_SCAN).join('\n');
+                        break;
+                    }
+                } catch (e) {
+                    // Continue to next path
+                }
+            }
+        }
+        
+        if (!logContent) {
+            console.warn('  No log file found. Searched locations:');
+            console.warn('    - ./trendy-thebot-logs/trends-agent-out.log');
+            console.warn('    - ./logs/trends-agent-out.log');
+            console.warn('    - ~/.pm2/logs/trends-agent-out.log');
+            console.warn('    Use --log-file=/path/to/log to specify location');
         }
 
         if (!logContent || logContent.trim() === '') {
@@ -383,11 +481,11 @@ async function main() {
         // Step 1: Backup
         const backupPath = createBackup();
         
-        // Step 2: Extract from logs
-        const extractedData = extractFromLogs();
+        // Step 2: Extract pool addresses from events table and logs
+        const extractedData = await extractPoolAddresses();
         
         if (extractedData.size === 0) {
-            console.warn('\n⚠️ No DEX addresses found in logs');
+            console.warn('\n⚠️ No DEX addresses found in database events or logs');
             console.log('Possible reasons:');
             console.log('  - Logs have rotated (check pm2 log rotation)');
             console.log('  - Agent not running or no deployments yet');
