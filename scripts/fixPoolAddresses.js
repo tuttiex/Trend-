@@ -14,13 +14,26 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
+// Load .env file first
+require('dotenv').config();
+
 const sqlite3 = require('sqlite3').verbose();
 const { ethers } = require('ethers');
 
 // Configuration
-const DB_PATH = process.env.DATABASE_URL || '/home/ubuntu/trends-agent/data/trends.db';
 const LOG_LINES_TO_SCAN = 5000; // How many log lines to scan
 const BACKUP_DIR = '/home/ubuntu/trends-agent/backups';
+
+// Resolve database path (same logic as StateManager)
+let DB_PATH;
+if (process.env.DATABASE_URL) {
+    // Remove leading ./ and join with cwd
+    const dbPath = process.env.DATABASE_URL.replace(/^\.\//, '');
+    DB_PATH = path.join(process.cwd(), dbPath);
+} else {
+    DB_PATH = '/home/ubuntu/trends-agent/data/trends.db';
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -30,7 +43,9 @@ const VERBOSE = args.includes('--verbose');
 console.log('🔧 Pool Address Fix Script');
 console.log('==========================');
 console.log(`Mode: ${DRY_RUN ? 'DRY RUN (no changes)' : 'LIVE (will update database)'}`);
-console.log(`Database: ${DB_PATH}`);
+console.log(`Working directory: ${process.cwd()}`);
+console.log(`DATABASE_URL env: ${process.env.DATABASE_URL || '(not set)'}`);
+console.log(`Resolved DB path: ${DB_PATH}`);
 console.log('');
 
 /**
