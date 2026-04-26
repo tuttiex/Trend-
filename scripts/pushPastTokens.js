@@ -25,16 +25,25 @@ async function pushPastTokens() {
                     }
                 }
 
-                console.log(`📡 Pushing ${dep.trend_topic} (${dep.token_address}) - Image CID: ${imageCid}`);
+                console.log(`📡 Pushing ${dep.trend_topic} (${dep.token_address})`);
+
+                // Build full R2 URLs from CIDs
+                const r2BaseUrl = 'https://pub-2b1b0fa907a44fc8873846faa41ecb74.r2.dev';
+                const metadataUrl = dep.metadata_cid || `${r2BaseUrl}/metadata/${dep.token_symbol}_${Date.now()}.json`;
+                const imageUrl = dep.logo_uri && dep.logo_uri.startsWith('http') 
+                    ? dep.logo_uri 
+                    : imageCid ? `${r2BaseUrl}/logos/${imageCid}.png` : null;
 
                 const payload = {
                     topic: dep.trend_topic,
                     symbol: dep.token_symbol,
+                    region: dep.region,
                     tokenAddress: dep.token_address,
-                    metadataCid: dep.token_uri, // The JSON metadata CID
-                    imageCid: imageCid,         // The raw image CID
+                    metadataUrl: metadataUrl,
+                    imageUrl: imageUrl,
                     poolAddress: dep.pool_address,
-                    liquidityTx: dep.tx_hash
+                    liquidityTx: dep.tx_hash,
+                    chainId: process.env.CHAIN_ID || 8453
                 };
 
                 const success = await webhookService.notify(payload);
