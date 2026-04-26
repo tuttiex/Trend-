@@ -42,6 +42,17 @@ class TokenListManager {
                         logoURI = metadataUrl.replace('/metadata/', '/logos/').replace('.json', '.png');
                     }
 
+                    // Validate logoURI is a valid URI format
+                    const isValidUri = logoURI && 
+                        (logoURI.startsWith('http://') || 
+                         logoURI.startsWith('https://') || 
+                         logoURI.startsWith('ipfs://'));
+
+                    if (!isValidUri) {
+                        logger.warn(`Skipping ${dep.token_symbol}: Invalid logoURI format "${logoURI}"`);
+                        continue;
+                    }
+
                     tokens.push({
                         chainId: chainId,
                         address: dep.token_address,
