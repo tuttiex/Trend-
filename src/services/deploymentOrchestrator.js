@@ -90,7 +90,29 @@ class DeploymentOrchestrator {
                 );
                 await token.waitForDeployment();
                 tokenAddress = await token.getAddress();
-                dexAddress = await token.dexContract();
+                
+                // Retry dexContract() call with delay to avoid race condition
+                let dexRetries = 0;
+                const maxDexRetries = 5;
+                while (dexRetries < maxDexRetries) {
+                    try {
+                        dexAddress = await token.dexContract();
+                        if (dexAddress && dexAddress !== '0x0000000000000000000000000000000000000000') {
+                            break;
+                        }
+                    } catch (dexErr) {
+                        logger.warn(`⚠️ dexContract() attempt ${dexRetries + 1} failed: ${dexErr.message}`);
+                    }
+                    dexRetries++;
+                    if (dexRetries < maxDexRetries) {
+                        logger.info(`⏳ Waiting 1s before retrying dexContract()...`);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
+                
+                if (!dexAddress || dexAddress === '0x0000000000000000000000000000000000000000') {
+                    throw new Error(`Failed to get DEX address after ${maxDexRetries} retries`);
+                }
                 
                 logger.info(`✅ Token Deployed at: ${tokenAddress}`);
                 logger.info(`✅ BondingCurveDEX Deployed at: ${dexAddress}`);

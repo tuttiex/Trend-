@@ -257,10 +257,26 @@ class Pipeline {
             }
             
             if (this.stateManager) {
+                // If token was deployed but we failed later, try to get pool address
+                let poolAddress = error.poolAddress;
+                if (error.tokenAddress && !poolAddress && this.orchestrator) {
+                    try {
+                        logger.info(`🔍 Attempting to recover pool address for deployed token...`);
+                        const hre = require("hardhat");
+                        const token = new hre.ethers.Contract(error.tokenAddress, [
+                            "function dexContract() view returns (address)"
+                        ], this.orchestrator.signer.provider);
+                        poolAddress = await token.dexContract();
+                        logger.info(`✅ Recovered pool address: ${poolAddress}`);
+                    } catch (recoverErr) {
+                        logger.warn(`⚠️ Could not recover pool address: ${recoverErr.message}`);
+                    }
+                }
+                
                 await this.stateManager.updateDeploymentByTopic(trend.name, region, {
                     token_address: error.tokenAddress,
                     metadata_cid: error.metadataUrl,
-                    pool_address: error.poolAddress,
+                    pool_address: poolAddress,
                     tx_hash: error.txHash
                 });
                 
@@ -271,8 +287,33 @@ class Pipeline {
                     executionId: executionId,
                     error: error.message,
                     tokenAddress: error.tokenAddress || null,
+                    poolAddress: poolAddress || null,
                     txHash: error.txHash || null
                 });
+                
+                // If token was deployed, still try to sync to website
+                if (error.tokenAddress) {
+                    try {
+                        logger.info(`🔄 Attempting to sync partially deployed token to website...`);
+                        const tokenListManager = require('./services/tokenListManager');
+                        await tokenListManager.generateAndUploadList();
+                        
+                        const webhookService = require('./services/webhookService');
+                        await webhookService.notify({
+                            topic: trend.name,
+                            symbol: moderationResult.symbol,
+                            region: region,
+                            tokenAddress: error.tokenAddress,
+                            metadataUrl: error.metadataUrl,
+                            poolAddress: poolAddress,
+                            liquidityTx: error.txHash,
+                            partialDeployment: true
+                        });
+                        logger.info(`✅ Partial deployment synced to website`);
+                    } catch (webhookErr) {
+                        logger.error(`❌ Failed to sync partial deployment: ${webhookErr.message}`);
+                    }
+                }
             }
             throw error;
         }
