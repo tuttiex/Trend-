@@ -30,8 +30,9 @@ async function main() {
         const stateManager = new StateManager();
         await stateManager.connect(); 
 
-        // 3. Initialize Signer (using hardhat's default for this environment)
-        const [deployer] = await hre.ethers.getSigners();
+        // 3. Initialize Signer with Base Sepolia RPC
+        const provider = new hre.ethers.JsonRpcProvider(process.env.BASE_SEPOLIA_RPC || 'https://sepolia.base.org');
+        const deployer = new hre.ethers.Wallet(process.env.AGENT_WALLET_PRIVATE_KEY, provider);
         logger.info(`Agent active with address: ${deployer.address}`);
 
         // Notify about agent startup

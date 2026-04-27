@@ -17,9 +17,10 @@ async function main() {
         const stateManager = new StateManager();
         await stateManager.connect();
 
-        // 2. Initialize Signer
-        logger.info(`[DEBUG] Step 2: Awaiting Hardhat signers...`);
-        const [deployer] = await hre.ethers.getSigners();
+        // 2. Initialize Signer with Base Sepolia RPC
+        logger.info(`[DEBUG] Step 2: Initializing signer with Base Sepolia...`);
+        const provider = new hre.ethers.JsonRpcProvider(process.env.BASE_SEPOLIA_RPC || 'https://sepolia.base.org');
+        const deployer = new hre.ethers.Wallet(process.env.AGENT_WALLET_PRIVATE_KEY, provider);
         logger.info(`[DEBUG] Agent active with address: ${deployer.address}`);
 
         // 3. Initialize Pipeline
