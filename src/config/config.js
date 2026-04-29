@@ -59,5 +59,9 @@ module.exports = {
         maxGas: parseFloat(process.env.MAX_GAS_PER_DEPLOYMENT || '0.005'),
         maxLiquidity: parseFloat(process.env.MAX_LIQUIDITY_PER_TOKEN || '0.015'),
         maxDailySpend: parseFloat(process.env.MAX_DAILY_SPEND || '0.04')
+    },
+    website: {
+        url: process.env.WEBSITE_URL,
+        apiSecret: process.env.WEBSITE_API_SECRET
     }
 };

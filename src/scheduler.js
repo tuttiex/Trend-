@@ -1,10 +1,12 @@
 const trendDetector = require('./modules/trendDetection');
+const PriceSyncService = require('./services/priceSyncService');
 const logger = require('./utils/logger');
 
 class Scheduler {
     constructor(pipeline, notifier = null) {
         this.pipeline = pipeline;
         this.notifier = notifier;
+        this.priceSyncService = new PriceSyncService();
     }
 
     start() {
@@ -13,6 +15,9 @@ class Scheduler {
         // --- Agent V2: High-Frequency Rolling Monitoring Engine ---
         this.startTrendMonitoring('Nigeria', 15 * 60 * 1000);
         this.startTrendMonitoring('United States', 15 * 60 * 1000);
+        
+        // --- Price Sync Service for Candlestick Charts ---
+        this.startPriceSyncMonitoring(5 * 60 * 1000); // Every 5 minutes
     }
 
     startTrendMonitoring(region, intervalMs) {
@@ -201,6 +206,65 @@ class Scheduler {
             }
         } catch (error) {
             logger.error(`[Monitoring] Error detecting trends for ${region}: ${error.message}`);
+        }
+    }
+
+    /**
+     * Start price sync monitoring for candlestick charts
+     * @param {number} intervalMs - Interval in milliseconds (default 5 minutes)
+     */
+    startPriceSyncMonitoring(intervalMs) {
+        logger.info(`[PriceSync] Starting price sync monitoring every ${intervalMs / 1000 / 60} minutes...`);
+        
+        // Initialize price sync service with provider from orchestrator
+        if (this.pipeline && this.pipeline.orchestrator && this.pipeline.orchestrator.signer) {
+            const hre = require("hardhat");
+            const provider = this.pipeline.orchestrator.signer.provider;
+            this.priceSyncService = new PriceSyncService(provider);
+            
+            // Initial sync after 30 seconds
+            setTimeout(async () => {
+                await this._syncAllPrices();
+            }, 30000);
+            
+            // Periodic sync
+            setInterval(async () => {
+                await this._syncAllPrices();
+            }, intervalMs);
+        } else {
+            logger.warn('[PriceSync] No orchestrator signer available, price sync disabled');
+        }
+    }
+
+    /**
+     * Sync prices for all deployed tokens
+     */
+    async _syncAllPrices() {
+        try {
+            if (!this.pipeline || !this.pipeline.stateManager) {
+                logger.warn('[PriceSync] State manager not available, skipping sync');
+                return;
+            }
+            
+            // Get all deployments with pool addresses
+            const query = `SELECT token_symbol, token_address, pool_address FROM deployments WHERE pool_address IS NOT NULL AND pool_address != ''`;
+            const deployments = await new Promise((resolve, reject) => {
+                this.pipeline.stateManager.db.all(query, [], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+            
+            if (deployments.length === 0) {
+                logger.info('[PriceSync] No deployments with pool addresses found');
+                return;
+            }
+            
+            logger.info(`[PriceSync] Syncing prices for ${deployments.length} tokens`);
+            await this.priceSyncService.syncAllPrices(deployments);
+            
+        } catch (error) {
+            logger.error(`[PriceSync] Error syncing prices: ${error.message}`);
         }
     }
 }
