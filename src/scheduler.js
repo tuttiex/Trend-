@@ -225,6 +225,8 @@ class Scheduler {
             // Initial sync after 30 seconds
             setTimeout(async () => {
                 await this._syncAllPrices();
+                // Also start event listeners for real-time trade tracking
+                await this._startEventListeners();
             }, 30000);
             
             // Periodic sync
@@ -265,6 +267,38 @@ class Scheduler {
             
         } catch (error) {
             logger.error(`[PriceSync] Error syncing prices: ${error.message}`);
+        }
+    }
+
+    /**
+     * Start event listeners for all deployed tokens
+     */
+    async _startEventListeners() {
+        try {
+            if (!this.pipeline || !this.pipeline.stateManager) {
+                logger.warn('[PriceSync] State manager not available, skipping event listeners');
+                return;
+            }
+            
+            // Get all deployments with pool addresses
+            const query = `SELECT token_symbol, token_address, pool_address FROM deployments WHERE pool_address IS NOT NULL AND pool_address != ''`;
+            const deployments = await new Promise((resolve, reject) => {
+                this.pipeline.stateManager.db.all(query, [], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+            
+            if (deployments.length === 0) {
+                logger.info('[PriceSync] No deployments for event listeners');
+                return;
+            }
+            
+            logger.info(`[PriceSync] Starting event listeners for ${deployments.length} tokens`);
+            await this.priceSyncService.startEventListeners(deployments);
+            
+        } catch (error) {
+            logger.error(`[PriceSync] Error starting event listeners: ${error.message}`);
         }
     }
 }

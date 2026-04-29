@@ -3,9 +3,11 @@ const hre = require('hardhat');
 const config = require('../config/config');
 const logger = require('../utils/logger');
 
-// BondingCurveDEX ABI (minimal for price queries)
+// BondingCurveDEX ABI (with swap events)
 const DEX_ABI = [
-    "function getPoolInfo() external view returns (uint256 tokenReserve, uint256 ethReserve, uint256 k, uint256 swapFeeBps, uint256 totalFeesCollected, uint256 price)"
+    "function getPoolInfo() external view returns (uint256 tokenReserve, uint256 ethReserve, uint256 k, uint256 swapFeeBps, uint256 totalFeesCollected, uint256 price)",
+    "event TokensPurchased(address indexed buyer, uint256 ethIn, uint256 tokensOut, uint256 fee)",
+    "event TokensSold(address indexed seller, uint256 tokensIn, uint256 ethOut, uint256 fee)"
 ];
 
 class PriceSyncService {
@@ -14,6 +16,7 @@ class PriceSyncService {
         this.websiteUrl = config.website?.url;
         this.apiSecret = config.website?.apiSecret;
         this.lastSyncTime = {};
+        this.eventListeners = new Map(); // Track active listeners per pool
     }
 
     /**
@@ -106,6 +109,129 @@ class PriceSyncService {
             const status = error.response?.status || 'N/A';
             logger.error(`PriceSync: Failed to send snapshot for ${snapshot.symbol} - Status: ${status}, Error: ${error.message}`);
         }
+    }
+
+    /**
+     * Start listening for swap events on all deployed tokens
+     * @param {Array} deployments - Array of deployment objects
+     */
+    async startEventListeners(deployments) {
+        if (!this.websiteUrl) {
+            logger.warn('PriceSync: WEBSITE_URL not configured, skipping event listeners');
+            return;
+        }
+
+        logger.info(`PriceSync: Starting event listeners for ${deployments.length} tokens`);
+
+        for (const deployment of deployments) {
+            const { pool_address, token_symbol, token_address } = deployment;
+            
+            if (!pool_address || this.eventListeners.has(pool_address)) {
+                continue; // Skip if no pool or already listening
+            }
+
+            try {
+                await this.setupEventListener(deployment);
+            } catch (error) {
+                logger.error(`PriceSync: Failed to setup listener for ${token_symbol}: ${error.message}`);
+            }
+        }
+    }
+
+    /**
+     * Setup event listener for a single DEX
+     * @param {Object} deployment - Deployment object
+     */
+    async setupEventListener(deployment) {
+        const { pool_address, token_symbol, token_address } = deployment;
+        
+        const dex = new hre.ethers.Contract(pool_address, DEX_ABI, this.provider);
+        
+        // Listen for buy events
+        dex.on('TokensPurchased', async (buyer, ethIn, tokensOut, fee, event) => {
+            try {
+                const price = Number(hre.ethers.formatEther(ethIn)) / Number(hre.ethers.formatUnits(tokensOut, 18));
+                
+                logger.info(`PriceSync: Buy detected on ${token_symbol} - ${hre.ethers.formatEther(ethIn)} ETH, ${hre.ethers.formatUnits(tokensOut, 18)} tokens`);
+                
+                await this.sendTrade({
+                    tokenAddress: token_address,
+                    poolAddress: pool_address,
+                    type: 'buy',
+                    buyer: buyer,
+                    ethAmount: hre.ethers.formatEther(ethIn),
+                    tokenAmount: hre.ethers.formatUnits(tokensOut, 18),
+                    fee: hre.ethers.formatEther(fee),
+                    price: price.toString(),
+                    txHash: event.log.transactionHash,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                logger.error(`PriceSync: Error processing buy event for ${token_symbol}: ${error.message}`);
+            }
+        });
+
+        // Listen for sell events
+        dex.on('TokensSold', async (seller, tokensIn, ethOut, fee, event) => {
+            try {
+                const price = Number(hre.ethers.formatEther(ethOut)) / Number(hre.ethers.formatUnits(tokensIn, 18));
+                
+                logger.info(`PriceSync: Sell detected on ${token_symbol} - ${hre.ethers.formatEther(ethOut)} ETH, ${hre.ethers.formatUnits(tokensIn, 18)} tokens`);
+                
+                await this.sendTrade({
+                    tokenAddress: token_address,
+                    poolAddress: pool_address,
+                    type: 'sell',
+                    seller: seller,
+                    ethAmount: hre.ethers.formatEther(ethOut),
+                    tokenAmount: hre.ethers.formatUnits(tokensIn, 18),
+                    fee: hre.ethers.formatEther(fee),
+                    price: price.toString(),
+                    txHash: event.log.transactionHash,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                logger.error(`PriceSync: Error processing sell event for ${token_symbol}: ${error.message}`);
+            }
+        });
+
+        this.eventListeners.set(pool_address, dex);
+        logger.info(`PriceSync: Event listener started for ${token_symbol} at ${pool_address}`);
+    }
+
+    /**
+     * Send trade data to website API
+     * @param {Object} trade - Trade data
+     */
+    async sendTrade(trade) {
+        const url = `${this.websiteUrl}/api/trade`;
+        
+        try {
+            const response = await axios.post(url, trade, {
+                timeout: 10000,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Source': 'trends-agent',
+                    'X-Secret': this.apiSecret || 'trends-agent-secret'
+                }
+            });
+            
+            logger.info(`PriceSync: Sent trade for ${trade.tokenAddress} - Status: ${response.status}`);
+        } catch (error) {
+            const status = error.response?.status || 'N/A';
+            logger.error(`PriceSync: Failed to send trade - Status: ${status}, Error: ${error.message}`);
+        }
+    }
+
+    /**
+     * Stop all event listeners
+     */
+    stopAllListeners() {
+        for (const [poolAddress, contract] of this.eventListeners) {
+            contract.removeAllListeners();
+            logger.info(`PriceSync: Stopped listener for ${poolAddress}`);
+        }
+        this.eventListeners.clear();
     }
 }
 
