@@ -233,6 +233,12 @@ class Scheduler {
             setInterval(async () => {
                 await this._syncAllPrices();
             }, intervalMs);
+
+            // Restart event listeners every 10 minutes to handle filter expiration
+            setInterval(async () => {
+                logger.info('[PriceSync] Restarting event listeners to prevent filter expiration');
+                await this._startEventListeners();
+            }, 10 * 60 * 1000); // 10 minutes
         } else {
             logger.warn('[PriceSync] No orchestrator signer available, price sync disabled');
         }

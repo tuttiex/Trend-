@@ -139,13 +139,32 @@ class PriceSyncService {
     }
 
     /**
-     * Setup event listener for a single DEX
+     * Setup event listener for a single DEX with auto-restart on filter expiration
      * @param {Object} deployment - Deployment object
      */
     async setupEventListener(deployment) {
         const { pool_address, token_symbol, token_address } = deployment;
         
+        // Remove existing listener if present
+        if (this.eventListeners.has(pool_address)) {
+            const existing = this.eventListeners.get(pool_address);
+            existing.removeAllListeners();
+            this.eventListeners.delete(pool_address);
+        }
+        
         const dex = new hre.ethers.Contract(pool_address, DEX_ABI, this.provider);
+        
+        // Handle provider errors (filter expiration)
+        const handleProviderError = (error) => {
+            const isFilterError = error?.code === 'UNKNOWN_ERROR' && 
+                                 error?.error?.message?.includes('filter not found');
+            
+            if (isFilterError) {
+                logger.warn(`PriceSync: Filter expired for ${token_symbol}, will restart listener`);
+                // Remove from tracking so it gets recreated on next cycle
+                this.eventListeners.delete(pool_address);
+            }
+        };
         
         // Listen for buy events
         dex.on('TokensPurchased', async (buyer, ethIn, tokensOut, fee, event) => {
@@ -194,6 +213,11 @@ class PriceSyncService {
                 logger.error(`PriceSync: Error processing sell event for ${token_symbol}: ${error.message}`);
             }
         });
+
+        // Attach error handler to provider for this contract
+        if (this.provider.on) {
+            this.provider.on('error', handleProviderError);
+        }
 
         this.eventListeners.set(pool_address, dex);
         logger.info(`PriceSync: Event listener started for ${token_symbol} at ${pool_address}`);
