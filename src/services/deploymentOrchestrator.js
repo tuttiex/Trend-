@@ -211,6 +211,74 @@ DEX: {{DEX}}`;
      * @param {string} amountTokens - Token amount (in ether units)
      * @param {string} amountETH - ETH amount (in ether units)
      */
+    /**
+     * Get dynamic gas prices with buffer for network conditions
+     */
+    async _getGasOptions(retryCount = 0) {
+        try {
+            // Get current fee data from provider
+            const feeData = await this.signer.provider.getFeeData();
+            
+            // Base values with buffer
+            const basePriorityFee = feeData.maxPriorityFeePerGas || hre.ethers.parseUnits("0.1", "gwei");
+            const baseMaxFee = feeData.maxFeePerGas || hre.ethers.parseUnits("2", "gwei");
+            
+            // Add 20% buffer per retry (e.g., 0 retries = 1.0x, 1 retry = 1.2x, 2 retries = 1.4x)
+            const multiplier = 100 + (retryCount * 20);
+            
+            const priorityFee = (basePriorityFee * BigInt(multiplier)) / BigInt(100);
+            const maxFee = (baseMaxFee * BigInt(multiplier)) / BigInt(100);
+            
+            // Ensure minimum values
+            const minPriorityFee = hre.ethers.parseUnits("0.1", "gwei");
+            const minMaxFee = hre.ethers.parseUnits("2", "gwei");
+            
+            return {
+                maxPriorityFeePerGas: priorityFee > minPriorityFee ? priorityFee : minPriorityFee,
+                maxFeePerGas: maxFee > minMaxFee ? maxFee : minMaxFee
+            };
+        } catch (error) {
+            logger.warn(`Failed to get dynamic gas prices, using defaults: ${error.message}`);
+            // Fallback to higher defaults
+            const multiplier = 100 + (retryCount * 20);
+            return {
+                maxPriorityFeePerGas: (hre.ethers.parseUnits("0.1", "gwei") * BigInt(multiplier)) / BigInt(100),
+                maxFeePerGas: (hre.ethers.parseUnits("2", "gwei") * BigInt(multiplier)) / BigInt(100)
+            };
+        }
+    }
+
+    /**
+     * Execute transaction with retry logic and gas price bumping
+     */
+    async _executeWithRetry(operation, operationName, maxRetries = 3) {
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                const gasOptions = await this._getGasOptions(attempt);
+                logger.info(`${operationName}: Attempt ${attempt + 1}/${maxRetries} with gas (priority: ${hre.ethers.formatUnits(gasOptions.maxPriorityFeePerGas, "gwei")} gwei, max: ${hre.ethers.formatUnits(gasOptions.maxFeePerGas, "gwei")} gwei)`);
+                
+                const tx = await operation(gasOptions);
+                const receipt = await tx.wait();
+                
+                logger.info(`✅ ${operationName} succeeded on attempt ${attempt + 1}`);
+                return receipt;
+            } catch (error) {
+                const isGasError = error.code === 'REPLACEMENT_UNDERPRICED' || 
+                                  error.message?.includes('replacement transaction underpriced') ||
+                                  error.message?.includes('fee too low');
+                
+                if (isGasError && attempt < maxRetries - 1) {
+                    logger.warn(`${operationName}: Gas too low on attempt ${attempt + 1}, retrying with higher gas...`);
+                    // Wait 2 seconds before retry
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } else {
+                    throw error;
+                }
+            }
+        }
+        throw new Error(`${operationName}: Failed after ${maxRetries} attempts`);
+    }
+
     async _seedLiquidity(tokenAddress, dexAddress, amountTokens, amountETH) {
         logger.info(`Seeding liquidity: ${amountTokens} tokens + ${amountETH} ETH`);
 
@@ -231,30 +299,32 @@ DEX: {{DEX}}`;
             throw new Error(`Insufficient token balance. Have: ${balance}, Need: ${tokenAmountWei}`);
         }
 
-        // Approve DEX to spend tokens
+        // Approve DEX to spend tokens with retry
         logger.info(`Approving DEX to spend ${amountTokens} tokens...`);
-        const approveTx = await token.approve(dexAddress, tokenAmountWei, {
-            maxPriorityFeePerGas: hre.ethers.parseUnits("0.1", "gwei"),
-            maxFeePerGas: hre.ethers.parseUnits("2", "gwei")
-        });
-        await approveTx.wait();
-        logger.info(`✅ Approval confirmed: ${approveTx.hash}`);
+        const approveReceipt = await this._executeWithRetry(
+            async (gasOptions) => await token.approve(dexAddress, tokenAmountWei, gasOptions),
+            "Token Approval",
+            3
+        );
+        logger.info(`✅ Approval confirmed: ${approveReceipt.hash}`);
 
-        // Add liquidity to DEX
+        // Add liquidity to DEX with retry
         logger.info(`Adding liquidity to DEX...`);
-        const addLiquidityTx = await dex.addLiquidity(tokenAmountWei, {
-            value: ethAmountWei,
-            maxPriorityFeePerGas: hre.ethers.parseUnits("0.1", "gwei"),
-            maxFeePerGas: hre.ethers.parseUnits("2", "gwei")
-        });
-        await addLiquidityTx.wait();
-        logger.info(`✅ Liquidity added: ${addLiquidityTx.hash}`);
+        const addLiquidityReceipt = await this._executeWithRetry(
+            async (gasOptions) => await dex.addLiquidity(tokenAmountWei, {
+                value: ethAmountWei,
+                ...gasOptions
+            }),
+            "Add Liquidity",
+            3
+        );
+        logger.info(`✅ Liquidity added: ${addLiquidityReceipt.hash}`);
 
         // Verify pool state
         const poolInfo = await dex.getPoolInfo();
         logger.info(`Pool initialized - Token Reserve: ${hre.ethers.formatUnits(poolInfo.tokenReserve, 18)}, ETH Reserve: ${hre.ethers.formatEther(poolInfo.ethReserve)}`);
 
-        return addLiquidityTx.hash;
+        return addLiquidityReceipt.hash;
     }
 
     /**
