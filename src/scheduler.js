@@ -13,12 +13,14 @@ class Scheduler {
     start() {
         logger.info('Agent V2 Scheduler starting...');
         
+        // --- Initialize PriceSync service (runs after trend pipelines) ---
+        this.initPriceSyncService();
+        
         // --- Agent V2: High-Frequency Rolling Monitoring Engine ---
         this.startTrendMonitoring('Nigeria', 15 * 60 * 1000);
         this.startTrendMonitoring('United States', 15 * 60 * 1000);
         
-        // --- Price Sync Service for Candlestick Charts ---
-        this.startPriceSyncMonitoring(3 * 60 * 1000); // Every 3 minutes
+        // Note: PriceSync now runs AFTER trend pipelines complete (every 15 min)
     }
 
     startTrendMonitoring(region, intervalMs) {
@@ -64,6 +66,10 @@ class Scheduler {
             // STEP 2: TikTok pipeline (complete full cycle)
             logger.info(`[Monitoring] === STEP 2: TikTok pipeline for ${region} ===`);
             await this._checkTikTokTrends(region);
+            
+            // STEP 3: PriceSync (runs LAST after all trend pipelines)
+            logger.info(`[Monitoring] === STEP 3: PriceSync for ${region} ===`);
+            await this._syncAllPrices();
             
             logger.info(`[Monitoring] Sequential trend check complete for ${region}`);
         } catch (error) {
@@ -224,24 +230,19 @@ class Scheduler {
      * Start price sync monitoring for candlestick charts
      * @param {number} intervalMs - Interval in milliseconds (default 5 minutes)
      */
-    startPriceSyncMonitoring(intervalMs) {
-        logger.info(`[PriceSync] Starting price sync monitoring every ${intervalMs / 1000 / 60} minutes...`);
+    /**
+     * Initialize price sync service (without auto-starting intervals)
+     * PriceSync is now called manually after trend pipelines complete
+     */
+    initPriceSyncService() {
+        logger.info('[PriceSync] Initializing price sync service...');
         
         // Initialize price sync service with provider from orchestrator
         if (this.pipeline && this.pipeline.orchestrator && this.pipeline.orchestrator.signer) {
             const hre = require("hardhat");
             const provider = this.pipeline.orchestrator.signer.provider;
             this.priceSyncService = new PriceSyncService(provider);
-            
-            // Initial sync after 30 seconds
-            setTimeout(async () => {
-                await this._syncAllPrices();
-            }, 30000);
-            
-            // Periodic sync
-            setInterval(async () => {
-                await this._syncAllPrices();
-            }, intervalMs);
+            logger.info('[PriceSync] Service initialized (will run after trend pipelines)');
         } else {
             logger.warn('[PriceSync] No orchestrator signer available, price sync disabled');
         }
