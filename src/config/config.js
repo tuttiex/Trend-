@@ -63,5 +63,13 @@ module.exports = {
     website: {
         url: process.env.WEBSITE_URL,
         apiSecret: process.env.WEBSITE_API_SECRET
+    },
+    tiktok: {
+        apifyToken: process.env.APIFY_TOKEN,
+        // Proxy country codes for regional trend scraping
+        proxyCountries: {
+            'United States': 'US',
+            'Nigeria': 'NG'
+        }
     }
 };

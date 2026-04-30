@@ -1,6 +1,7 @@
 const trendScraper = require('../services/trendScraper');
 const twitterApiIo = require('../services/twitterApiIo');
 const twitterClient = require('../services/twitterClient');
+const tikTokService = require('../services/tikTokService');
 const logger = require('../utils/logger');
 
 // WOEID (Where On Earth ID)
@@ -19,6 +20,7 @@ class TrendDetector {
         this.weights = {
             'OFFICIAL_API': 1.2,
             'TWITTER_API_IO': 0.8,
+            'TIKTOK_API': 1.0,
             'TRENDS24': 0.7,
             'GETDAYTRENDS': 0.6
         };
@@ -32,14 +34,15 @@ class TrendDetector {
         logger.info(`[TIER 1] Attempting API Parallel Fetch for ${regionName}...`);
         const apiResults = await Promise.allSettled([
             this.tryOfficialAPI(woeid),
-            this.tryTwitterApiIo(woeid)
+            this.tryTwitterApiIo(woeid),
+            this.tryTikTokApi(regionName)
         ]);
 
         let allSourceData = [];
+        const sourceNames = ['OFFICIAL_API', 'TWITTER_API_IO', 'TIKTOK_API'];
         apiResults.forEach((res, i) => {
             if (res.status === 'fulfilled' && res.value.length > 0) {
-                const sourceName = i === 0 ? 'OFFICIAL_API' : 'TWITTER_API_IO';
-                allSourceData.push({ source: sourceName, trends: res.value });
+                allSourceData.push({ source: sourceNames[i], trends: res.value });
             }
         });
 
@@ -113,6 +116,14 @@ class TrendDetector {
     async tryTwitterApiIo(woeid) {
         try { return await twitterApiIo.getTrends(woeid); }
         catch (e) { return []; }
+    }
+
+    async tryTikTokApi(region) {
+        try { return await tikTokService.getTrends(region); }
+        catch (e) {
+            logger.warn(`TikTok API failed: ${e.message}`);
+            return [];
+        }
     }
 
     fuseTrendSources(sources) {
