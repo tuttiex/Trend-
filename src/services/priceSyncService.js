@@ -142,21 +142,43 @@ class PriceSyncService {
             return;
         }
 
-        logger.info(`PriceSync: Starting event listeners for ${deployments.length} tokens`);
+        const BATCH_SIZE = 20;
+        const BATCH_DELAY_MS = 5000; // 5 seconds between batches
 
-        for (const deployment of deployments) {
-            const { pool_address, token_symbol, token_address } = deployment;
-            
-            if (!pool_address || this.eventListeners.has(pool_address)) {
-                continue; // Skip if no pool or already listening
+        logger.info(`PriceSync: Starting event listeners for ${deployments.length} tokens in batches of ${BATCH_SIZE}`);
+
+        const totalBatches = Math.ceil(deployments.length / BATCH_SIZE);
+        let successCount = 0;
+
+        for (let i = 0; i < deployments.length; i += BATCH_SIZE) {
+            const batch = deployments.slice(i, i + BATCH_SIZE);
+            const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+
+            logger.info(`PriceSync: Setting up listeners batch ${batchNum}/${totalBatches} (${batch.length} tokens)`);
+
+            for (const deployment of batch) {
+                const { pool_address, token_symbol } = deployment;
+                
+                if (!pool_address || this.eventListeners.has(pool_address)) {
+                    continue; // Skip if no pool or already listening
+                }
+
+                try {
+                    await this.setupEventListener(deployment);
+                    successCount++;
+                } catch (error) {
+                    logger.error(`PriceSync: Failed to setup listener for ${token_symbol}: ${error.message}`);
+                }
             }
 
-            try {
-                await this.setupEventListener(deployment);
-            } catch (error) {
-                logger.error(`PriceSync: Failed to setup listener for ${token_symbol}: ${error.message}`);
+            // Delay between batches (except after last batch)
+            if (i + BATCH_SIZE < deployments.length) {
+                logger.info(`PriceSync: Waiting ${BATCH_DELAY_MS}ms before next listener batch...`);
+                await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
             }
         }
+
+        logger.info(`PriceSync: Event listeners setup complete (${successCount}/${deployments.length} successful)`);
     }
 
     /**
