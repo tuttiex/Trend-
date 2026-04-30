@@ -29,13 +29,34 @@ class PriceSyncService {
             return;
         }
 
-        logger.info(`PriceSync: Starting price sync for ${deployments.length} tokens`);
+        const BATCH_SIZE = 50;
+        const BATCH_DELAY_MS = 10000; // 10 seconds between batches
+
+        logger.info(`PriceSync: Starting price sync for ${deployments.length} tokens in batches of ${BATCH_SIZE}`);
         
-        for (const deployment of deployments) {
-            try {
-                await this.syncTokenPrice(deployment);
-            } catch (error) {
-                logger.error(`PriceSync: Failed to sync ${deployment.token_symbol}: ${error.message}`);
+        const totalBatches = Math.ceil(deployments.length / BATCH_SIZE);
+        
+        for (let i = 0; i < deployments.length; i += BATCH_SIZE) {
+            const batch = deployments.slice(i, i + BATCH_SIZE);
+            const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+            
+            logger.info(`PriceSync: Processing batch ${batchNum}/${totalBatches} (${batch.length} tokens)`);
+            
+            // Process batch concurrently
+            const results = await Promise.allSettled(
+                batch.map(deployment => this.syncTokenPrice(deployment))
+            );
+            
+            // Log failures for this batch
+            const failures = results.filter(r => r.status === 'rejected').length;
+            if (failures > 0) {
+                logger.warn(`PriceSync: Batch ${batchNum} had ${failures} failures`);
+            }
+            
+            // Delay between batches (except after last batch)
+            if (i + BATCH_SIZE < deployments.length) {
+                logger.info(`PriceSync: Waiting ${BATCH_DELAY_MS}ms before next batch...`);
+                await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
             }
         }
         
