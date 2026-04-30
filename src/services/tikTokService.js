@@ -13,7 +13,7 @@ class TikTokService {
         this.baseUrl = 'https://api.apify.com/v2';
 
         // Apify TikTok Scraper Actor ID
-        this.actorId = 'apidojo/tiktok-scraper';
+        this.actorId = 'clockworks/tiktok-scraper';
 
         // Cache: region -> { data, timestamp }
         this.cache = new Map();
