@@ -208,6 +208,28 @@ class TikTokService {
         if (normalized === 'us' || normalized === 'united states') return 'US';
         return 'US'; // Default to US
     }
+
+    /**
+     * Get cache age for a region
+     * @param {string} region - Region name
+     * @returns {number|null} Cache age in milliseconds, or null if no cache
+     */
+    getCacheAge(region) {
+        const cached = this.cache.get(region);
+        if (!cached) return null;
+        return Date.now() - cached.timestamp;
+    }
+
+    /**
+     * Check if cache is fresh for a region
+     * @param {string} region - Region name
+     * @returns {boolean} True if cache is fresh (< 60 mins)
+     */
+    isCacheFresh(region) {
+        const age = this.getCacheAge(region);
+        if (age === null) return false;
+        return age < this.CACHE_TTL_MS;
+    }
 }
 
 module.exports = new TikTokService();

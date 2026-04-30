@@ -126,6 +126,117 @@ class TrendDetector {
         }
     }
 
+    /**
+     * Detect trends from X/Twitter sources only (for sequential execution)
+     * @param {string} regionName - 'Nigeria' or 'United States'
+     * @returns {Promise<Object|null>} Trend data or null
+     */
+    async detectXTrends(regionName) {
+        const woeid = this.getWOEID(regionName);
+
+        // Fetch X/Twitter APIs (Parallel)
+        logger.info(`[X-ONLY] Fetching X/Twitter trends for ${regionName}...`);
+        const apiResults = await Promise.allSettled([
+            this.tryOfficialAPI(woeid),
+            this.tryTwitterApiIo(woeid)
+        ]);
+
+        let allSourceData = [];
+        const sourceNames = ['OFFICIAL_API', 'TWITTER_API_IO'];
+        apiResults.forEach((res, i) => {
+            if (res.status === 'fulfilled' && res.value.length > 0) {
+                allSourceData.push({ source: sourceNames[i], trends: res.value });
+            }
+        });
+
+        // Fallback to scrapers if APIs fail
+        if (allSourceData.length === 0) {
+            logger.warn(`[X-ONLY] X APIs failed for ${regionName}. Trying scrapers...`);
+            
+            const scraperResults = await Promise.allSettled([
+                trendScraper.scrapeTrends24(regionName),
+                trendScraper.scrapeGetDayTrends(regionName)
+            ]);
+
+            const scraperNames = ['TRENDS24', 'GETDAYTRENDS'];
+            scraperResults.forEach((res, i) => {
+                if (res.status === 'fulfilled' && res.value.length > 0) {
+                    allSourceData.push({ source: scraperNames[i], trends: res.value });
+                }
+            });
+        }
+
+        if (allSourceData.length === 0) {
+            logger.error(`❌ CRITICAL: All X/Twitter sources failed for ${regionName}.`);
+            throw new Error('All X/Twitter sources failed.');
+        }
+
+        // Fuse and return top trend
+        logger.info(`[X-ONLY] Fusing data from ${allSourceData.length} sources for ${regionName}...`);
+        const fused = this.fuseTrendSources(allSourceData);
+        
+        if (!fused || fused.length === 0) return null;
+
+        const primaryTrend = fused[0];
+        const top5 = fused.slice(0, 5).map(t => ({ name: t.name, volume: t.volume, score: t.score.toFixed(2) }));
+
+        logger.info(`🏆 [X-ONLY] Winner for ${regionName}: ${primaryTrend.name} (Score: ${primaryTrend.score.toFixed(2)})`);
+
+        return {
+            region: regionName,
+            topic: primaryTrend.name,
+            volume: primaryTrend.volume,
+            topTrends: top5,
+            confidence: this.calculateConfidence(primaryTrend.score, primaryTrend.volume),
+            timestamp: new Date().toISOString(),
+            sourcesUsed: allSourceData.map(s => s.source),
+            sourceType: 'X'
+        };
+    }
+
+    /**
+     * Detect trends from TikTok only (for sequential execution)
+     * @param {string} regionName - 'Nigeria' or 'United States'
+     * @returns {Promise<Object|null>} Trend data or null
+     */
+    async detectTikTokTrends(regionName) {
+        logger.info(`[TIKTOK-ONLY] Fetching TikTok trends for ${regionName}...`);
+        
+        let tiktokData = [];
+        try {
+            tiktokData = await this.tryTikTokApi(regionName);
+        } catch (e) {
+            logger.error(`❌ CRITICAL: TikTok source failed for ${regionName}: ${e.message}`);
+            throw new Error('TikTok source failed.');
+        }
+
+        if (!tiktokData || tiktokData.length === 0) {
+            logger.warn(`[TIKTOK-ONLY] No TikTok trends found for ${regionName}`);
+            return null;
+        }
+
+        // TikTok trends are already in the right format, just pick the top one
+        const primaryTrend = tiktokData[0];
+        const top5 = tiktokData.slice(0, 5).map(t => ({ 
+            name: t.name, 
+            volume: t.volume, 
+            score: (t.volume / 1000000).toFixed(2) // Normalize score
+        }));
+
+        logger.info(`🏆 [TIKTOK-ONLY] Winner for ${regionName}: ${primaryTrend.name} (Volume: ${primaryTrend.volume})`);
+
+        return {
+            region: regionName,
+            topic: primaryTrend.name,
+            volume: primaryTrend.volume,
+            topTrends: top5,
+            confidence: this.calculateConfidence(parseFloat(top5[0].score), primaryTrend.volume),
+            timestamp: new Date().toISOString(),
+            sourcesUsed: ['TIKTOK_API'],
+            sourceType: 'TIKTOK'
+        };
+    }
+
     fuseTrendSources(sources) {
         const trendMap = new Map();
 
