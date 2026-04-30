@@ -1,5 +1,4 @@
 const trendDetector = require('./modules/trendDetection');
-const PriceSyncService = require('./services/priceSyncService');
 const tikTokService = require('./services/tikTokService');
 const logger = require('./utils/logger');
 
@@ -7,20 +6,14 @@ class Scheduler {
     constructor(pipeline, notifier = null) {
         this.pipeline = pipeline;
         this.notifier = notifier;
-        this.priceSyncService = new PriceSyncService();
     }
 
     start() {
         logger.info('Agent V2 Scheduler starting...');
         
-        // --- Initialize PriceSync service (runs after trend pipelines) ---
-        this.initPriceSyncService();
-        
         // --- Agent V2: High-Frequency Rolling Monitoring Engine ---
         this.startTrendMonitoring('Nigeria', 15 * 60 * 1000);
         this.startTrendMonitoring('United States', 15 * 60 * 1000);
-        
-        // Note: PriceSync now runs AFTER trend pipelines complete (every 15 min)
     }
 
     startTrendMonitoring(region, intervalMs) {
@@ -66,10 +59,6 @@ class Scheduler {
             // STEP 2: TikTok pipeline (complete full cycle)
             logger.info(`[Monitoring] === STEP 2: TikTok pipeline for ${region} ===`);
             await this._checkTikTokTrends(region);
-            
-            // STEP 3: PriceSync (runs LAST after all trend pipelines)
-            logger.info(`[Monitoring] === STEP 3: PriceSync for ${region} ===`);
-            await this._syncAllPrices();
             
             logger.info(`[Monitoring] Sequential trend check complete for ${region}`);
         } catch (error) {
@@ -226,91 +215,6 @@ class Scheduler {
         }
     }
 
-    /**
-     * Start price sync monitoring for candlestick charts
-     * @param {number} intervalMs - Interval in milliseconds (default 5 minutes)
-     */
-    /**
-     * Initialize price sync service (without auto-starting intervals)
-     * PriceSync is now called manually after trend pipelines complete
-     */
-    initPriceSyncService() {
-        logger.info('[PriceSync] Initializing price sync service...');
-        
-        // Initialize price sync service with provider from orchestrator
-        if (this.pipeline && this.pipeline.orchestrator && this.pipeline.orchestrator.signer) {
-            const hre = require("hardhat");
-            const provider = this.pipeline.orchestrator.signer.provider;
-            this.priceSyncService = new PriceSyncService(provider);
-            logger.info('[PriceSync] Service initialized (will run after trend pipelines)');
-        } else {
-            logger.warn('[PriceSync] No orchestrator signer available, price sync disabled');
-        }
-    }
-
-    /**
-     * Sync prices for all deployed tokens
-     */
-    async _syncAllPrices() {
-        try {
-            if (!this.pipeline || !this.pipeline.stateManager) {
-                logger.warn('[PriceSync] State manager not available, skipping sync');
-                return;
-            }
-            
-            // Get all deployments with pool addresses
-            const query = `SELECT token_symbol, token_address, pool_address FROM deployments WHERE pool_address IS NOT NULL AND pool_address != ''`;
-            const deployments = await new Promise((resolve, reject) => {
-                this.pipeline.stateManager.db.all(query, [], (err, rows) => {
-                    if (err) reject(err);
-                    else resolve(rows || []);
-                });
-            });
-            
-            if (deployments.length === 0) {
-                logger.info('[PriceSync] No deployments with pool addresses found');
-                return;
-            }
-            
-            logger.info(`[PriceSync] Syncing prices for ${deployments.length} tokens`);
-            await this.priceSyncService.syncAllPrices(deployments);
-            
-        } catch (error) {
-            logger.error(`[PriceSync] Error syncing prices: ${error.message}`);
-        }
-    }
-
-    /**
-     * Start event listeners for all deployed tokens
-     */
-    async _startEventListeners() {
-        try {
-            if (!this.pipeline || !this.pipeline.stateManager) {
-                logger.warn('[PriceSync] State manager not available, skipping event listeners');
-                return;
-            }
-            
-            // Get all deployments with pool addresses
-            const query = `SELECT token_symbol, token_address, pool_address FROM deployments WHERE pool_address IS NOT NULL AND pool_address != ''`;
-            const deployments = await new Promise((resolve, reject) => {
-                this.pipeline.stateManager.db.all(query, [], (err, rows) => {
-                    if (err) reject(err);
-                    else resolve(rows || []);
-                });
-            });
-            
-            if (deployments.length === 0) {
-                logger.info('[PriceSync] No deployments for event listeners');
-                return;
-            }
-            
-            logger.info(`[PriceSync] Starting event listeners for ${deployments.length} tokens`);
-            await this.priceSyncService.startEventListeners(deployments);
-            
-        } catch (error) {
-            logger.error(`[PriceSync] Error starting event listeners: ${error.message}`);
-        }
-    }
 }
 
 module.exports = Scheduler;

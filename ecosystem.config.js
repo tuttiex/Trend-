@@ -16,7 +16,23 @@ module.exports = {
       out_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-out.log',
       error_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/trends-agent-error.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z'
+    },
+    {
+      name: 'price-sync',
+      script: './src/price-sync-standalone.js',
+      cwd: '/home/ubuntu/trends-agent',
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '500M',
+      exec_mode: 'fork',
+      env: {
+        NODE_ENV: 'production'
+      },
+      log_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/price-sync.log',
+      out_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/price-sync-out.log',
+      error_file: '/home/ubuntu/trends-agent/trendy-thebot-logs/price-sync-error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z'
     }
-    // Telegram bot runs inside trends-agent process (integrated)
   ]
 };
