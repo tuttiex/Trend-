@@ -5,6 +5,7 @@ const logger = require('../utils/logger');
 /**
  * TikTok Service using Apify TikTok Scraper
  * Fetches trending hashtags and aggregates video metrics
+ * Cached to limit API calls (60 minute TTL)
  */
 class TikTokService {
     constructor() {
@@ -14,6 +15,10 @@ class TikTokService {
         // Apify TikTok Scraper Actor ID
         this.actorId = 'apidojo/tiktok-scraper';
 
+        // Cache: region -> { data, timestamp }
+        this.cache = new Map();
+        this.CACHE_TTL_MS = 60 * 60 * 1000; // 60 minutes
+
         if (!this.apifyToken) {
             logger.warn('TikTok: APIFY_TOKEN not configured!');
         }
@@ -21,6 +26,7 @@ class TikTokService {
 
     /**
      * Get trending hashtags by searching for popular terms and aggregating results
+     * Cached: only fetches from Apify once per 60 minutes per region
      * @param {string} region - 'US' or 'NG' (Nigeria)
      * @returns {Promise<Array<{name: string, volume: number, rank: number}>>}
      */
@@ -29,8 +35,16 @@ class TikTokService {
             throw new Error('TikTok: APIFY_TOKEN not configured');
         }
 
+        // Check cache first
+        const cached = this.cache.get(region);
+        const now = Date.now();
+        if (cached && (now - cached.timestamp) < this.CACHE_TTL_MS) {
+            logger.info(`TikTok: Returning cached trends for ${region} (${Math.round((now - cached.timestamp) / 60000)} mins old)`);
+            return cached.data;
+        }
+
         const proxyCountry = this.getProxyCountry(region);
-        logger.info(`TikTok: Fetching trends for region ${region} (proxy: ${proxyCountry})`);
+        logger.info(`TikTok: Fetching fresh trends for region ${region} (proxy: ${proxyCountry})`);
 
         try {
             // Run Apify Actor to get trending content
@@ -54,7 +68,13 @@ class TikTokService {
                 .sort((a, b) => b.volume - a.volume)
                 .slice(0, 50);
 
-            logger.info(`TikTok: Found ${trends.length} trending hashtags`);
+            // Store in cache
+            this.cache.set(region, {
+                data: trends,
+                timestamp: Date.now()
+            });
+
+            logger.info(`TikTok: Found ${trends.length} trending hashtags (cached for 60 mins)`);
             return trends;
 
         } catch (error) {
