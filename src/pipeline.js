@@ -307,7 +307,8 @@ class Pipeline {
                             metadataUrl: error.metadataUrl,
                             poolAddress: poolAddress,
                             liquidityTx: error.txHash,
-                            partialDeployment: true
+                            partialDeployment: true,
+                            sources: trend.sources || []
                         });
                         logger.info(`✅ Partial deployment synced to website`);
                     } catch (webhookErr) {
@@ -358,7 +359,8 @@ class Pipeline {
                         metadataUrl: result.metadataUrl,
                         imageUrl: result.imageUrl,
                         poolAddress: result.poolAddress,
-                        liquidityTx: result.liquidityTx
+                        liquidityTx: result.liquidityTx,
+                        sources: trend.sources || []
                     });
                     webhookSuccess = true;
                 } catch (webhookErr) {

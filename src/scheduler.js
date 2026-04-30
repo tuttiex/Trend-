@@ -190,6 +190,8 @@ class Scheduler {
                                 // --- NEW TREND: DEPLOY TOKEN IMMEDIATELY ---
                                 logger.info(`✨ AGENT V2: New Viral Trend Discovered - "${t.name}". Triggering Deployment Pipeline!`);
                                 try {
+                                    // Attach sources to trend for source tracking in webhook
+                                    t.sources = trendData.sourcesUsed || [];
                                     await this.pipeline.execute(t, region);
                                 } catch (deployErr) {
                                     logger.error(`❌ Deployment failed for ${t.name}: ${deployErr.message}`);

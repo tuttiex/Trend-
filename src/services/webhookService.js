@@ -32,8 +32,9 @@ class WebhookService {
                     imageUrl: data.imageUrl,
                     poolAddress: data.poolAddress,
                     liquidityTx: data.liquidityTx,
-                    chainId: process.env.CHAIN_ID || 8453
-                    // Add any other relevant fields for the trend$ website
+                    chainId: process.env.CHAIN_ID || 8453,
+                    sources: data.sources || [], // e.g., ['TWITTER_API_IO', 'TIKTOK_API']
+                    primarySource: data.sources?.[0] || 'UNKNOWN' // First source for categorization
                 }
             };
 
