@@ -90,8 +90,9 @@ class TikTokService {
             }
         });
 
-        logger.info(`TikTok: Received ${response.data?.length || 0} posts from RapidAPI`);
-        return response.data || [];
+        const posts = response.data?.itemList || [];
+        logger.info(`TikTok: Received ${posts.length} posts from RapidAPI`);
+        return posts;
     }
 
     /**
@@ -103,11 +104,32 @@ class TikTokService {
         const hashtagMap = new Map();
 
         posts.forEach(post => {
-            const hashtags = post.hashtags || [];
-            const playCount = post.playCount || post.stats?.playCount || 0;
+            const playCount = post.stats?.playCount || 0;
 
-            hashtags.forEach(tag => {
-                const name = tag.name || tag;
+            // Extract hashtags from challenges array
+            const challenges = post.challenges || [];
+            challenges.forEach(challenge => {
+                const name = challenge.title;
+                if (!name) return;
+
+                const normalizedName = name.toLowerCase();
+
+                if (!hashtagMap.has(normalizedName)) {
+                    hashtagMap.set(normalizedName, {
+                        playCount: 0,
+                        count: 0
+                    });
+                }
+
+                const stats = hashtagMap.get(normalizedName);
+                stats.playCount += playCount;
+                stats.count += 1;
+            });
+
+            // Extract hashtags from textExtra array
+            const textExtra = post.textExtra || [];
+            textExtra.forEach(item => {
+                const name = item.hashtagName;
                 if (!name) return;
 
                 const normalizedName = name.toLowerCase();
